@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const globalErrorHandler = require("./controllers/error.Controller");
-const AppError = require("./utils/appError");
+const notFound = require("./middlewares/notFound.middleware");
 
 const app = express();
 
@@ -15,9 +15,7 @@ if (process.env.NODE_ENV !== "production") {
 // Middleware
 app.use(express.json());
 
-app.all("*", (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl}`, 404));
-});
+app.use(notFound);
 
 app.use(globalErrorHandler);
 
