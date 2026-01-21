@@ -1,7 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
+const rateLimit = require("express-rate-limit");
 const globalErrorHandler = require("./controllers/error.Controller");
 const notFound = require("./middlewares/notFound.middleware");
+const chatRouter = require("./routes/chat.Routes");
 
 const app = express();
 
@@ -10,10 +12,22 @@ if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
-// Routes
-
 // Middleware
 app.use(express.json());
+
+// Global Limiter
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 15 * 60 * 1000,
+  message: "Too many requests from this IP, please try again in an hour!",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Routes creation
+app.use("/api", limiter);
+
+app.use("/api/v1/chat", chatRouter);
 
 app.use(notFound);
 
