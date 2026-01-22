@@ -27,7 +27,8 @@ const limiter = rateLimit({
 // Routes creation
 app.use("/api", limiter);
 
-app.use("/api/v1/chat", chatRouter);
+app.use("/api/users", require("./routes/user.Routes"));
+app.use("/api/chat", chatRouter);
 
 app.use(notFound);
 
