@@ -23,6 +23,10 @@ const localizeDoctorData = (doc, lang) => {
     docObj.bio = docObj.bio[lang] || docObj.bio["en"] || "";
   }
 
+  if (docObj.education && typeof docObj.education === "object") {
+    docObj.education = docObj.education[lang] || docObj.education["en"] || "";
+  }
+
   return docObj;
 };
 // === Controllers ===
@@ -79,7 +83,10 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
 
 // 1. Get Current Doctor Profile
 exports.getDoctorProfile = catchAsync(async (req, res, next) => {
-  const doctor = await Doctor.findOne({ user: req.user.id }).populate("user");
+  const doctor = await Doctor.findOne({ user: req.user.id }).populate({
+    path: "user",
+    select: "name phone",
+  });
 
   if (!doctor) {
     return next(new AppError("You haven't completed your profile yet.", 404));

@@ -37,9 +37,17 @@ const doctorSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    fees: {
-      type: Number,
-      required: true,
+    education: {
+      en: {
+        type: String,
+        trim: true,
+        required: [true, "Education in English is required"],
+      },
+      ar: {
+        type: String,
+        trim: true,
+        required: [true, "Education in Arabic is required"],
+      },
     },
     bio: {
       en: {
