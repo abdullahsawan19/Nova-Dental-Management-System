@@ -1,13 +1,12 @@
 const express = require("express");
-const userController = require("../controllers/user.Controller"); // تأكد من الاسم
-const authController = require("../controllers/Auth.controller"); // تأكد من الاسم
+const userController = require("../controllers/user.Controller");
+const authController = require("../controllers/Auth.controller");
 const { authenticate } = require("../middlewares/auth.middleware");
 const { authorize } = require("../middlewares/role.middleware");
 
 const router = express.Router();
 
 // 1. Signup (Public)
-// دلوقتي دي هترجع التوكنز علطول
 router.post("/signup", userController.createUser("patient"));
 
 // 2. Login (Public)
@@ -24,7 +23,7 @@ router.patch("/me", userController.updateMe);
 router.use(authorize("admin"));
 
 // 4. User Management
-router.get("/", userController.getAllUsers); 
+router.get("/", userController.getAllUsers);
 router.post("/doctor", userController.createDoctor);
 router.patch("/deactivate/:id", userController.deactivateUser);
 router.delete("/:id", userController.deleteUser);

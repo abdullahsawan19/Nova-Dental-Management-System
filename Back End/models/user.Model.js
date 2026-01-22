@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     lowercase: true,
-    validate: [validator.isEmail, "Please provide a valid email"],
+    validate: validator.isEmail,
   },
   password: {
     type: String,
@@ -75,7 +75,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 12);
@@ -88,11 +87,10 @@ userSchema.pre(/^find/, function () {
 
 userSchema.methods.correctPassword = async function (
   candidatePassword,
-  userPassword
+  userPassword,
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
-
 
 const User = mongoose.model("User", userSchema);
 

@@ -1,13 +1,14 @@
 const User = require("../models/user.Model.js");
 const catchAsync = require("../utils/catchAsync.js");
 const AppError = require("../utils/appError.js");
-const APIFeatures = require("../utils/apiFeatures.js"); 
-const { createSendToken } = require("./Auth.controller.js"); 
+const APIFeatures = require("../utils/apiFeatures.js");
+const { createSendToken } = require("./Auth.controller.js");
 
 // 1. Create User (Signup returns Tokens now!) 🚀
 exports.createUser = (role) => {
   return catchAsync(async (req, res, next) => {
-    const { name, email, password, passwordConfirm, preferredLanguage, phone } = req.body;
+    const { name, email, password, passwordConfirm, preferredLanguage, phone } =
+      req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -15,7 +16,9 @@ exports.createUser = (role) => {
     }
     const existingPhone = await User.findOne({ phone });
     if (existingPhone) {
-      return next(new AppError("User with this phone number already exists", 400));
+      return next(
+        new AppError("User with this phone number already exists", 400),
+      );
     }
 
     const user = await User.create({
@@ -25,8 +28,8 @@ exports.createUser = (role) => {
       passwordConfirm,
       preferredLanguage,
       phone,
-      role: role, 
-      isActive: true, 
+      role: role,
+      isActive: true,
     });
 
     await createSendToken(user, 201, res);
@@ -86,35 +89,35 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
 // 5. Get All Users (With API Features)
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(User.find(), req.query)
+  const filter = { role: { $ne: "admin" } };
+  const features = new APIFeatures(User.find(filter), req.query)
     .filter()
     .sort()
     .limitFields()
     .paginate()
-    .search(["name", "email"]); 
+    .search(["name", "email"]);
   const users = await features.query;
 
   const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 100;
+  const limit = req.query.limit * 1 || 50;
 
   res.status(200).json({
     status: "success",
-    page: page,
-    limit: limit,
+    metadata: {
+      currentPage: page,
+      limit: limit,
+    },
     results: users.length,
     data: { users },
   });
-  
 });
-
-
 
 // 7. Deactivate User
 exports.deactivateUser = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.params.id,
     { isActive: false },
-    { new: true }
+    { new: true },
   );
 
   if (!user) return next(new AppError("No user found with that ID", 404));
