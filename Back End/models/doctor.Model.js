@@ -26,12 +26,11 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: "default.jpg",
     },
+
     specialization: {
-      type: String,
+      type: mongoose.Schema.ObjectId,
+      ref: "Service",
       required: true,
-      trim: true,
-      enum: Object.keys(SPECIALIZATIONS_MAP),
-      default: "General Dentist",
     },
     experienceYears: {
       type: Number,
@@ -76,11 +75,6 @@ const doctorSchema = new mongoose.Schema(
   },
 );
 
-doctorSchema.virtual("specializationInfo").get(function () {
-  return SPECIALIZATIONS_MAP[this.specialization];
-});
-
 const Doctor = mongoose.model("Doctor", doctorSchema);
 
 module.exports = Doctor;
-module.exports.SPECIALIZATIONS_MAP = SPECIALIZATIONS_MAP;

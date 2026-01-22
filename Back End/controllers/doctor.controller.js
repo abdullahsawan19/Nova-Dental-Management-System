@@ -1,5 +1,4 @@
 const Doctor = require("../models/doctor.Model");
-const { SPECIALIZATIONS_MAP } = require("../models/doctor.Model");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
@@ -8,27 +7,32 @@ const APIFeatures = require("../utils/apiFeatures");
 const localizeDoctorData = (doc, lang) => {
   const docObj = doc.toObject ? doc.toObject() : doc;
 
-  if (SPECIALIZATIONS_MAP[docObj.specialization]) {
-    const translatedSpec =
-      SPECIALIZATIONS_MAP[docObj.specialization][lang] ||
-      SPECIALIZATIONS_MAP[docObj.specialization]["en"];
+  if (docObj.specialization && typeof docObj.specialization === "object") {
+    const specName =
+      docObj.specialization.name[lang] || docObj.specialization.name["en"];
 
-    docObj.specialization = translatedSpec;
+    docObj.specializationData = {
+      id: docObj.specialization._id,
+      name: specName,
+      image: docObj.specialization.image,
+      description:
+        docObj.specialization.description[lang] ||
+        docObj.specialization.description["en"],
+    };
 
-    delete docObj.specializationInfo;
-    delete docObj.id;
+    docObj.specialization = specName;
   }
 
-  if (docObj.bio && typeof docObj.bio === "object") {
-    docObj.bio = docObj.bio[lang] || docObj.bio["en"] || "";
+  if (docObj.bio && docObj.bio[lang]) {
+    docObj.bio = docObj.bio[lang] || docObj.bio["en"];
   }
-
-  if (docObj.education && typeof docObj.education === "object") {
-    docObj.education = docObj.education[lang] || docObj.education["en"] || "";
+  if (docObj.education && docObj.education[lang]) {
+    docObj.education = docObj.education[lang] || docObj.education["en"];
   }
 
   return docObj;
 };
+
 // === Controllers ===
 
 exports.getAllDoctors = catchAsync(async (req, res, next) => {
@@ -38,10 +42,16 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
   }
 
   const features = new APIFeatures(
-    Doctor.find(filter).populate({
-      path: "user",
-      select: "name preferredLanguage",
-    }),
+    Doctor.find(filter)
+      .populate({
+        path: "user",
+        select: "name preferredLanguage",
+      })
+      .populate({
+        path: "specialization",
+        select: "name image description",
+        match: { isActive: true },
+      }),
     req.query,
   )
     .filter()
@@ -50,6 +60,10 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
     .paginate();
 
   const doctors = await features.query;
+
+  const activeSpecializationDoctors = doctors.filter(
+    (doc) => doc.specialization !== null,
+  );
 
   let userLang = req.query.lang;
 
@@ -60,7 +74,8 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
   if (!userLang) {
     userLang = "en";
   }
-  const localizedDoctors = doctors.map((doc) =>
+
+  const localizedDoctors = activeSpecializationDoctors.map((doc) =>
     localizeDoctorData(doc, userLang),
   );
 
@@ -83,10 +98,15 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
 
 // 1. Get Current Doctor Profile
 exports.getDoctorProfile = catchAsync(async (req, res, next) => {
-  const doctor = await Doctor.findOne({ user: req.user.id }).populate({
-    path: "user",
-    select: "name phone",
-  });
+  const doctor = await Doctor.findOne({ user: req.user.id })
+    .populate({
+      path: "user",
+      select: "name phone",
+    })
+    .populate({
+      path: "specialization",
+      select: "name image",
+    });
 
   if (!doctor) {
     return next(new AppError("You haven't completed your profile yet.", 404));

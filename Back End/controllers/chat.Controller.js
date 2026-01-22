@@ -1,6 +1,6 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const Doctor = require("../models/doctor.Model");
-const Service = require("../models/serviceModel");
+const Service = require("../models/service.Model");
 const Faq = require("../models/faq.Model");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");

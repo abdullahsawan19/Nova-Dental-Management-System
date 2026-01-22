@@ -29,6 +29,7 @@ app.use("/api", limiter);
 
 app.use("/api/users", require("./routes/user.Routes"));
 app.use("/api/doctors", require("./routes/doctor.Routes"));
+app.use("/api/services", require("./routes/service.Routes"));
 app.use("/api/chat", chatRouter);
 
 app.use(notFound);
