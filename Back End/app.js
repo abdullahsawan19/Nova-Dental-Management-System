@@ -32,6 +32,7 @@ app.use("/api/doctors", require("./routes/doctor.Routes"));
 app.use("/api/services", require("./routes/service.Routes"));
 app.use("/api/branches", require("./routes/branch.Routes"));
 app.use("/api/faqs", require("./routes/faq.Routes"));
+app.use("/api/reviews", require("./routes/review.Routes"));
 app.use("/api/chat", chatRouter);
 
 app.use(notFound);

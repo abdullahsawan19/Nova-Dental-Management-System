@@ -4,7 +4,7 @@ const AppError = require("../utils/appError.js");
 const APIFeatures = require("../utils/apiFeatures.js");
 const { createSendToken } = require("./Auth.controller.js");
 
-// 1. Create User (Signup returns Tokens now!) 🚀
+// 1. Create User
 exports.createUser = (role) => {
   return catchAsync(async (req, res, next) => {
     const { name, email, password, passwordConfirm, preferredLanguage, phone } =
