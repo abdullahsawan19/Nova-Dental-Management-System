@@ -11,7 +11,6 @@ const localizeService = (service, lang) => {
   return srvObj;
 };
 
-// 1. عرض كل الخدمات (للكروت في الصفحة الرئيسية)
 // Public Route
 exports.getAllServices = catchAsync(async (req, res, next) => {
   const services = await Service.find({ isActive: true });
@@ -48,7 +47,6 @@ exports.getService = catchAsync(async (req, res, next) => {
 
 //(ADMIN ONLY)
 exports.createService = catchAsync(async (req, res, next) => {
-  // المفروض هنا ترفع الصورة بـ Multer وتاخد المسار
   if (req.file) req.body.image = req.file.filename;
 
   const newService = await Service.create(req.body);
@@ -59,23 +57,16 @@ exports.createService = catchAsync(async (req, res, next) => {
   });
 });
 
-//(ADMIN ONLY)
 // (ADMIN ONLY)
 exports.updateService = catchAsync(async (req, res, next) => {
-  // 1. تجهيز البيانات للتحديث
   const updateData = { ...req.body };
 
-  // 2. معالجة الصورة لو موجودة
   if (req.file) updateData.image = req.file.filename;
-
-  // 3. (Fix) معالجة الحقول المتداخلة (name & description)
-  // بنحولها لـ Dot Notation عشان التحديث الجزئي يشتغل صح
-  // وما يمسحش اللغة التانية أو يطلبها إجباري
 
   if (updateData.name) {
     if (updateData.name.en) updateData["name.en"] = updateData.name.en;
     if (updateData.name.ar) updateData["name.ar"] = updateData.name.ar;
-    delete updateData.name; // امسح الأوبجكت الكبير عشان ميعملش استبدال كامل
+    delete updateData.name;
   }
 
   if (updateData.description) {
@@ -88,7 +79,7 @@ exports.updateService = catchAsync(async (req, res, next) => {
 
   const service = await Service.findByIdAndUpdate(req.params.id, updateData, {
     new: true,
-    runValidators: true, //
+    runValidators: true,
   });
 
   if (!service) return next(new AppError("No service found with that ID", 404));
