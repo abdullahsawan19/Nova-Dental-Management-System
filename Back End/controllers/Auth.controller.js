@@ -1,17 +1,17 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.Model");
 const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError"); 
+const AppError = require("../utils/appError");
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_KEY, {
-    expiresIn: process.env.JWT_ACCESS || '15m',
+    expiresIn: process.env.JWT_ACCESS || "15m",
   });
 };
 
 const signRefreshToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_REFRESH || process.env.JWT_KEY, {
-    expiresIn: process.env.JWT_REFRESH || '7d',
+    expiresIn: process.env.JWT_REFRESH || "7d",
   });
 };
 
@@ -23,11 +23,12 @@ const createSendToken = async (user, statusCode, res) => {
   await user.save({ validateBeforeSave: false });
 
   user.password = undefined;
-  user.refreshToken = undefined; 
+  user.refreshToken = undefined;
 
   res.status(statusCode).json({
     status: "success",
-    message: statusCode === 201 ? "Account created successfully" : "Login successful",
+    message:
+      statusCode === 201 ? "Account created successfully" : "Login successful",
     accessToken,
     refreshToken,
     data: { user },
@@ -41,14 +42,19 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError("Please provide email and password", 400));
   }
 
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({
+    email,
+    isActive: true,
+  }).select("+password");
 
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Invalid email or password", 401));
   }
 
   if (!user.isActive) {
-    return next(new AppError("Your account is deactivated. Contact admin.", 403));
+    return next(
+      new AppError("Your account is deactivated. Contact admin.", 403),
+    );
   }
 
   await createSendToken(user, 200, res);

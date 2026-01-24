@@ -147,3 +147,37 @@ exports.updateDoctorProfile = catchAsync(async (req, res, next) => {
     data: { doctor },
   });
 });
+
+// 3. Get Specific Doctor by ID (Public)
+exports.getDoctorById = catchAsync(async (req, res, next) => {
+  const doctor = await Doctor.findOne({
+    _id: req.params.id,
+    isDeleted: false,
+    isActive: true,
+  })
+    .populate({
+      path: "user",
+      select: "name photo",
+    })
+    .populate({
+      path: "specialization",
+      select: "name image description",
+    })
+    .populate({
+      path: "reviews",
+      select: "rating review user createdAt",
+    });
+
+  if (!doctor) {
+    return next(new AppError("No doctor found with that ID", 404));
+  }
+
+  const userLang = req.query.lang || "en";
+
+  const localizedDoctor = localizeDoctorData(doctor, userLang);
+
+  res.status(200).json({
+    status: "success",
+    data: { doctor: localizedDoctor },
+  });
+});

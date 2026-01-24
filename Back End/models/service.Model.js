@@ -14,6 +14,11 @@ const serviceSchema = new mongoose.Schema(
       type: String,
       default: "default-service.jpg",
     },
+    fees: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
     isActive: {
       type: Boolean,
       default: true,
