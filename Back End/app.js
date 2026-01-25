@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const globalErrorHandler = require("./controllers/error.Controller");
 const notFound = require("./middlewares/notFound.middleware");
@@ -14,6 +15,7 @@ if (process.env.NODE_ENV !== "production") {
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
 
 // Global Limiter
 const limiter = rateLimit({
@@ -33,6 +35,7 @@ app.use("/api/services", require("./routes/service.Routes"));
 app.use("/api/branches", require("./routes/branch.Routes"));
 app.use("/api/faqs", require("./routes/faq.Routes"));
 app.use("/api/reviews", require("./routes/review.Routes"));
+app.use("/api/appointments", require("./routes/appointment.Routes"));
 app.use("/api/chat", chatRouter);
 
 app.use(notFound);

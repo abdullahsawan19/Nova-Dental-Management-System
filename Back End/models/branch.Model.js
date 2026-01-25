@@ -13,9 +13,23 @@ const branchSchema = new mongoose.Schema(
     locationUrl: { type: String, required: true },
     phones: { type: [String], required: true },
     email: { type: String, trim: true, lowercase: true },
+
+    openTime: {
+      type: String,
+      required: [true, "Open time is required (e.g., 09:00)"],
+    },
+    closeTime: {
+      type: String,
+      required: [true, "Close time is required (e.g., 21:00)"],
+    },
     workingHours: {
       en: { type: String },
       ar: { type: String },
+    },
+    workingDays: {
+      type: [Number],
+      default: [0, 1, 2, 3, 4],
+      required: true,
     },
     isActive: {
       type: Boolean,

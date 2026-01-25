@@ -9,7 +9,7 @@ exports.authenticate = async (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decode = jwt.verify(token, process.env.JWT_KEY);
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decode.id).select("-password");
     req.user = user;
     next();

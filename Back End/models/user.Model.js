@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+    unique: true,
     minlength: 3,
     maxlength: 50,
   },
@@ -20,6 +21,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+    select: false,
     //   validate: {
     //     validator: function (value) {
     //       return validator.isStrongPassword(value, {
@@ -67,7 +69,7 @@ const userSchema = new mongoose.Schema({
   },
   isActive: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   isDeleted: {
     type: Boolean,
