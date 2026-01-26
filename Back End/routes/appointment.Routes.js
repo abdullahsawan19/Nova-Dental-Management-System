@@ -16,7 +16,6 @@ router.get("/available-slots", appointmentController.getAvailableSlots);
 // ========================
 // 2. PATIENT ROUTES
 // ========================
-router.post("/", authorize("patient"), appointmentController.createAppointment);
 router.get(
   "/my-appointments",
   authorize("patient"),
@@ -31,6 +30,11 @@ router.patch(
   "/cancel/:id",
   authorize("patient"),
   appointmentController.cancelAppointment,
+);
+router.post(
+  "/checkout-session",
+  authorize("patient"),
+  appointmentController.getCheckoutSession,
 );
 
 // ========================

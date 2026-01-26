@@ -5,10 +5,9 @@ const Service = require("../models/service.Model");
 const APIFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-
-// ============================================================
-// 1. Helper Functions
-// ============================================================
+const sendEmail = require("../utils/email");
+const User = require("../models/user.Model");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const getStartOfDay = (dateString) => {
   const date = new Date(dateString);
@@ -51,18 +50,12 @@ const formatTime12H = (time24) => {
   return `${strH}:${minutes} ${suffix}`;
 };
 
-// ============================================================
-// 2. Public & Booking Controllers
-// ============================================================
-
-// 1️⃣ Get Working Days
 exports.getWorkingDays = catchAsync(async (req, res, next) => {
   const days = await getNextWorkingDays();
   const formattedDays = days.map((d) => d.toISOString().split("T")[0]);
   res.status(200).json({ status: "success", data: { days: formattedDays } });
 });
 
-// 2️⃣ Get Available Slots (Fixed Variable Names)
 exports.getAvailableSlots = catchAsync(async (req, res, next) => {
   const { date, doctorId } = req.query;
   if (!date || !doctorId)
@@ -128,21 +121,17 @@ exports.getAvailableSlots = catchAsync(async (req, res, next) => {
   });
 });
 
-// 3 Create Appointment
-exports.createAppointment = catchAsync(async (req, res, next) => {
-  const patientId = req.user.id;
-
-  const { doctor, service, date, timeSlot, price } = req.body;
+exports.getCheckoutSession = catchAsync(async (req, res, next) => {
+  const { doctor, service, date, timeSlot } = req.body;
 
   const selectedDate = getStartOfDay(date);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
   if (selectedDate < today) {
     return next(new AppError("Cannot book appointments in the past!", 400));
   }
 
-  const doctorDoc = await Doctor.findById(doctor);
+  const doctorDoc = await Doctor.findById(doctor).populate("user");
   if (!doctorDoc) return next(new AppError("Doctor not found", 404));
 
   const serviceDoc = await Service.findById(service);
@@ -152,13 +141,8 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
     return next(new AppError("This doctor does not perform this service", 400));
   }
 
-  if (price !== serviceDoc.fees) {
-    return next(new AppError("Price mismatch. Please refresh.", 400));
-  }
-
   const endOfDay = new Date(selectedDate);
   endOfDay.setHours(23, 59, 59, 999);
-
   const existingBooking = await Appointment.findOne({
     doctor: doctor,
     date: { $gte: selectedDate, $lte: endOfDay },
@@ -167,47 +151,230 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
   });
 
   if (existingBooking) {
-    return next(new AppError("Slot already booked! Please refresh.", 400));
+    return next(
+      new AppError("Slot already booked! Please choose another time.", 400),
+    );
   }
 
-  const newAppointment = await Appointment.create({
-    patient: patientId,
-    doctor,
-    service,
-    date: selectedDate,
-    timeSlot,
-    price,
-    status: "confirmed",
+  const realPrice = serviceDoc.fees;
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    mode: "payment",
+    success_url: `${process.env.ALLOWED_ORIGINS}/payment-success`,
+    cancel_url: `${process.env.ALLOWED_ORIGINS}/branch`,
+    customer_email: req.user.email,
+    client_reference_id: req.params.id,
+
+    line_items: [
+      {
+        price_data: {
+          currency: "egp",
+          product_data: {
+            name: `${serviceDoc.name} Session`,
+            description: `Doctor: ${doctorDoc.user.name} | Date: ${date} | Time: ${timeSlot}`,
+          },
+          unit_amount: realPrice * 100,
+        },
+        quantity: 1,
+      },
+    ],
+
+    metadata: {
+      patientId: req.user.id,
+      doctorId: doctor,
+      serviceId: service,
+      date: date,
+      timeSlot: timeSlot,
+      price: realPrice,
+    },
   });
-
-  res
-    .status(201)
-    .json({ status: "success", data: { appointment: newAppointment } });
-});
-
-// ============================================================
-// 3. Patient Actions
-// ============================================================
-
-// 4️⃣ Cancel Appointment
-exports.cancelAppointment = catchAsync(async (req, res, next) => {
-  const appointment = await Appointment.findOneAndUpdate(
-    { _id: req.params.id, patient: req.user.id },
-    { status: "cancelled" },
-    { new: true },
-  );
-
-  if (!appointment)
-    return next(new AppError("No appointment found or not authorized", 404));
 
   res.status(200).json({
     status: "success",
-    message: "Appointment cancelled",
-    data: { appointment },
+    sessionUrl: session.url,
   });
 });
 
-// 5️⃣ Update Appointment
+const createBookingCheckout = async (session) => {
+  const { doctorId, serviceId, date, timeSlot, price, patientId } =
+    session.metadata;
+
+  await Appointment.create({
+    patient: patientId,
+    doctor: doctorId,
+    service: serviceId,
+    date: date,
+    timeSlot: timeSlot,
+    price: price,
+    status: "confirmed",
+    paymentIntentId: session.payment_intent,
+  });
+
+  const patient = await User.findById(patientId);
+  if (patient) {
+    const message = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>Payment Receipt</title>
+  <style>
+    /* Reset Styles */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; }
+    img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    table { border-collapse: collapse !important; }
+    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; }
+
+    /* Custom Styles */
+    .email-container {
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .header { background-color: #2c3e50; padding: 30px 20px; text-align: center; }
+    .header h1 { color: #ffffff; margin: 0; font-size: 24px; font-weight: 500; letter-spacing: 1px; }
+    .success-icon { font-size: 40px; margin-bottom: 10px; display: block; }
+    
+    .content { padding: 30px 25px; color: #333333; }
+    .greeting { font-size: 18px; margin-bottom: 20px; color: #2c3e50; }
+    
+    .receipt-box { 
+      background-color: #f8f9fa; 
+      border: 1px solid #e9ecef; 
+      border-radius: 8px; 
+      padding: 20px; 
+      margin: 25px 0; 
+    }
+    
+    .receipt-row td { padding: 10px 0; border-bottom: 1px solid #eee; }
+    .label { color: #7f8c8d; font-size: 14px; width: 40%; }
+    .value { font-weight: 600; color: #2c3e50; font-size: 14px; text-align: right; width: 60%; }
+    
+    .total-label { padding: 15px 0 5px; font-size: 16px; font-weight: bold; color: #2c3e50; }
+    .total-value { padding: 15px 0 5px; text-align: right; font-size: 22px; font-weight: bold; color: #27ae60; }
+    
+    .footer { background-color: #f4f7f6; padding: 20px; text-align: center; font-size: 12px; color: #95a5a6; border-top: 1px solid #eee; }
+
+    /* Mobile Responsive Styles */
+    @media screen and (max-width: 600px) {
+      .email-container { width: 100% !important; margin: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+      .content { padding: 20px !important; }
+      .header h1 { font-size: 20px !important; }
+      .receipt-box { padding: 15px !important; }
+      .label { font-size: 13px !important; }
+      .value { font-size: 13px !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center" style="background-color: #f4f7f6; padding: 20px 0;">
+        
+        <div class="email-container">
+          
+          <div class="header">
+            <span class="success-icon">✅</span>
+            <h1>Payment Successful</h1>
+            <p style="color: #bdc3c7; margin: 5px 0 0; font-size: 14px;">Your appointment is confirmed</p>
+          </div>
+
+          <div class="content">
+            <p class="greeting">Hi <strong>${patient.name}</strong>,</p>
+            <p style="line-height: 1.6; color: #555;">
+              Thank you for choosing our clinic. We have successfully received your payment. Below is your official receipt and appointment details.
+            </p>
+
+            <div class="receipt-box">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr class="receipt-row">
+                  <td class="label">Service</td>
+                  <td class="value">Dental Consultation</td>
+                </tr>
+                <tr class="receipt-row">
+                  <td class="label">Date</td>
+                  <td class="value">${new Date(date).toDateString()}</td>
+                </tr>
+                <tr class="receipt-row">
+                  <td class="label">Time</td>
+                  <td class="value">${timeSlot}</td>
+                </tr>
+                <tr class="receipt-row">
+                  <td class="label">Reference ID</td>
+                  <td class="value" style="font-size: 12px; word-break: break-all;">${session.payment_intent}</td>
+                </tr>
+                <tr>
+                  <td class="total-label">Amount Paid</td>
+                  <td class="total-value">${price} EGP</td>
+                </tr>
+              </table>
+            </div>
+
+            <div style="text-align: center;">
+              <p style="color: #7f8c8d; font-size: 13px; margin-top: 20px;">
+                Please arrive <strong>10 minutes early</strong> before your scheduled time.
+              </p>
+            </div>
+          </div>
+
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} Dental Clinic System. All rights reserved.</p>
+            <p>Need help? Contact us at <a href="mailto:support@clinic.com" style="color: #2c3e50; text-decoration: none;">support@clinic.com</a></p>
+          </div>
+
+        </div>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
+`;
+    try {
+      await sendEmail({
+        email: patient.email,
+        subject: "Payment Receipt - Appointment Confirmed",
+        message,
+      });
+    } catch (err) {
+      console.log("Email sending failed:", err);
+    }
+  }
+};
+
+exports.webhookCheckout = catchAsync(async (req, res, next) => {
+  const signature = req.headers["stripe-signature"];
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET,
+    );
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    await createBookingCheckout(session);
+  }
+
+  res.status(200).json({ received: true });
+});
+
 exports.updateAppointment = catchAsync(async (req, res, next) => {
   const { date, timeSlot } = req.body;
   const appointmentId = req.params.id;
@@ -219,7 +386,17 @@ exports.updateAppointment = catchAsync(async (req, res, next) => {
 
   if (!appointment) return next(new AppError("Appointment not found", 404));
 
+  if (
+    appointment.status === "cancelled" ||
+    appointment.status === "completed"
+  ) {
+    return next(
+      new AppError("Cannot update cancelled or completed appointments", 400),
+    );
+  }
+
   const updates = {};
+  let emailMessage = "";
 
   if (date || timeSlot) {
     const newDate = date ? getStartOfDay(date) : appointment.date;
@@ -234,7 +411,6 @@ exports.updateAppointment = catchAsync(async (req, res, next) => {
     const branch = await Branch.findOne({ isActive: true });
     const startHour = parseInt(branch.openTime.split(":")[0]);
     const endHour = parseInt(branch.closeTime.split(":")[0]);
-
     const validSlots = [];
     for (let i = startHour; i < endHour; i++) {
       const startObj = i < 10 ? `0${i}:00` : `${i}:00`;
@@ -244,10 +420,7 @@ exports.updateAppointment = catchAsync(async (req, res, next) => {
 
     if (!validSlots.includes(newSlot)) {
       return next(
-        new AppError(
-          "Invalid time slot provided or outside working hours.",
-          400,
-        ),
+        new AppError("Invalid time slot or outside working hours.", 400),
       );
     }
 
@@ -278,14 +451,71 @@ exports.updateAppointment = catchAsync(async (req, res, next) => {
     appointmentId,
     updates,
     { new: true },
-  );
+  ).populate("service", "name");
+
+  try {
+    const message = `
+      <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+        <h2 style="color: #e67e22;">Appointment Rescheduled </h2>
+        <p>Hello <strong>${req.user.name}</strong>,</p>
+        <p>Your appointment has been successfully updated.</p>
+        <p><strong>New Date:</strong> ${new Date(updatedAppointment.date).toDateString()}</p>
+        <p><strong>New Time:</strong> ${updatedAppointment.timeSlot}</p>
+        <p style="color: #7f8c8d; font-size: 13px; margin-top: 20px;">
+                Please arrive <strong>10 minutes early</strong> before your scheduled time.
+        </p></div>
+    `;
+
+    await sendEmail({
+      email: req.user.email,
+      subject: "Appointment Rescheduled - Dental Clinic",
+      message: message,
+    });
+  } catch (err) {
+    console.log("Reschedule email failed:", err);
+  }
 
   res
     .status(200)
     .json({ status: "success", data: { appointment: updatedAppointment } });
 });
 
-// 6 Get Patient Appointments
+exports.cancelAppointment = catchAsync(async (req, res, next) => {
+  const appointment = await Appointment.findOneAndUpdate(
+    { _id: req.params.id, patient: req.user.id },
+    { status: "cancelled" },
+    { new: true },
+  );
+
+  if (!appointment)
+    return next(new AppError("No appointment found or not authorized", 404));
+
+  try {
+    const message = `
+      <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+        <h2 style="color: #c0392b;">Appointment Cancelled ❌</h2>
+        <p>Hello <strong>${req.user.name}</strong>,</p>
+        <p>Your appointment scheduled for <strong>${new Date(appointment.date).toDateString()}</strong> at <strong>${appointment.timeSlot}</strong> has been cancelled.</p>
+        <p>If this was a mistake, please book a new appointment.</p>
+      </div>
+    `;
+
+    await sendEmail({
+      email: req.user.email,
+      subject: "Appointment Cancelled",
+      message: message,
+    });
+  } catch (err) {
+    console.log("Cancel email failed:", err);
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Appointment cancelled",
+    data: { appointment },
+  });
+});
+
 exports.getPatientAppointments = catchAsync(async (req, res, next) => {
   const appointments = await Appointment.find({
     patient: req.user.id,
@@ -306,11 +536,6 @@ exports.getPatientAppointments = catchAsync(async (req, res, next) => {
   });
 });
 
-// ============================================================
-// 4. Doctor & Admin Views
-// ============================================================
-
-// 7 Get Doctor Appointments (Confirmed Only)
 exports.getDoctorAppointments = catchAsync(async (req, res, next) => {
   const doctorDoc = await Doctor.findOne({ user: req.user.id });
   if (!doctorDoc) return next(new AppError("Doctor profile not found", 404));
@@ -329,7 +554,6 @@ exports.getDoctorAppointments = catchAsync(async (req, res, next) => {
   });
 });
 
-// 8 Get All Appointments
 exports.getAllAppointments = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(Appointment.find(), req.query)
     .filter()
@@ -354,7 +578,6 @@ exports.getAllAppointments = catchAsync(async (req, res, next) => {
   });
 });
 
-// 9 Admin: Get All Confirmed Appointments (Active Worklist)
 exports.getAdminConfirmedAppointments = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(
     Appointment.find({ status: "confirmed" }),
@@ -383,7 +606,6 @@ exports.getAdminConfirmedAppointments = catchAsync(async (req, res, next) => {
   });
 });
 
-// 10 Admin: Change Appointment Status (Cancel or Complete)
 exports.adminUpdateStatus = catchAsync(async (req, res, next) => {
   const { status } = req.body;
 
@@ -393,14 +615,56 @@ exports.adminUpdateStatus = catchAsync(async (req, res, next) => {
     );
   }
 
-  const appointment = await Appointment.findByIdAndUpdate(
-    req.params.id,
-    { status: status },
-    { new: true, runValidators: true },
+  const appointment = await Appointment.findById(req.params.id).populate(
+    "patient",
   );
 
   if (!appointment) {
     return next(new AppError("No appointment found with that ID", 404));
+  }
+
+  if (appointment.status === "cancelled") {
+    return next(new AppError("Cannot modify a cancelled appointment.", 400));
+  }
+
+  appointment.status = status;
+  await appointment.save();
+
+  if (appointment.patient) {
+    try {
+      let subject = "";
+      let message = "";
+
+      if (status === "cancelled") {
+        subject = "Appointment Cancelled by Admin";
+        message = `
+          <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+            <h2 style="color: #c0392b;">Appointment Cancelled ❌</h2>
+            <p>Hello <strong>${appointment.patient.name}</strong>,</p>
+            <p>We regret to inform you that your appointment scheduled for <strong>${new Date(appointment.date).toDateString()}</strong> at <strong>${appointment.timeSlot}</strong> has been cancelled by the administration.</p>
+            <p>Please contact us for more details.</p>
+          </div>
+        `;
+      } else if (status === "completed") {
+        subject = "Visit Completed - Thank You";
+        message = `
+          <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+            <h2 style="color: #27ae60;">Visit Completed ✅</h2>
+            <p>Hello <strong>${appointment.patient.name}</strong>,</p>
+            <p>Your appointment has been marked as completed.</p>
+            <p>Thank you for choosing our clinic!</p>
+          </div>
+        `;
+      }
+
+      await sendEmail({
+        email: appointment.patient.email,
+        subject: subject,
+        message: message,
+      });
+    } catch (err) {
+      console.log("Admin email failed:", err);
+    }
   }
 
   res.status(200).json({
@@ -409,7 +673,7 @@ exports.adminUpdateStatus = catchAsync(async (req, res, next) => {
     data: { appointment },
   });
 });
-// 11 Doctor: Mark Appointment as Completed
+
 exports.doctorUpdateStatus = catchAsync(async (req, res, next) => {
   const { status } = req.body;
 
@@ -430,7 +694,7 @@ exports.doctorUpdateStatus = catchAsync(async (req, res, next) => {
     },
     { status: status },
     { new: true, runValidators: true },
-  );
+  ).populate("patient");
 
   if (!appointment) {
     return next(
@@ -439,6 +703,28 @@ exports.doctorUpdateStatus = catchAsync(async (req, res, next) => {
         404,
       ),
     );
+  }
+
+  if (appointment.patient) {
+    try {
+      const message = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+          <h2 style="color: #27ae60;">Visit Completed ✅</h2>
+          <p>Hello <strong>${appointment.patient.name}</strong>,</p>
+          <p>Thank you for visiting us today. We hope you had a great experience.</p>
+          <p>We wish you a speedy recovery!</p>
+          <p style="margin-top: 20px; color: #7f8c8d; font-size: 12px;">Dental Clinic Team</p>
+        </div>
+      `;
+
+      await sendEmail({
+        email: appointment.patient.email,
+        subject: "Visit Completed - Thank You",
+        message,
+      });
+    } catch (err) {
+      console.log("Doctor completion email failed:", err);
+    }
   }
 
   res.status(200).json({

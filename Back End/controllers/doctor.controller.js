@@ -37,8 +37,8 @@ const localizeDoctorData = (doc, lang) => {
 
 exports.getAllDoctors = catchAsync(async (req, res, next) => {
   let filter = { isDeleted: false, isActive: true };
-  if (req.query.specialization) {
-    filter.specialization = req.query.specialization;
+  if (req.query.specialization || req.query.service) {
+    filter.specialization = req.query.specialization || req.query.service;
   }
 
   const features = new APIFeatures(
