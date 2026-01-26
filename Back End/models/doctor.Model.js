@@ -9,7 +9,7 @@ const doctorSchema = new mongoose.Schema(
     },
     photo: {
       type: String,
-      default: "default.jpg",
+      default: "Doctor.jfif",
     },
 
     specialization: {

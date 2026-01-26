@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const path = require("path");
 const rateLimit = require("express-rate-limit");
 const globalErrorHandler = require("./controllers/error.Controller");
 const notFound = require("./middlewares/notFound.middleware");
@@ -23,6 +24,7 @@ if (process.env.NODE_ENV !== "production") {
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public")));
 
 // Global Limiter
 const limiter = rateLimit({
