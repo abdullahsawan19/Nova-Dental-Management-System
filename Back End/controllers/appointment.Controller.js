@@ -127,36 +127,50 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   const selectedDate = getStartOfDay(date);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
   if (selectedDate < today) {
     return next(new AppError("Cannot book appointments in the past!", 400));
   }
 
   const doctorDoc = await Doctor.findById(doctor).populate("user");
-  if (!doctorDoc) return next(new AppError("Doctor not found", 404));
-
   const serviceDoc = await Service.findById(service);
-  if (!serviceDoc) return next(new AppError("Service not found", 404));
+
+  if (!doctorDoc || !serviceDoc) {
+    return next(new AppError("Doctor or Service not found", 404));
+  }
 
   if (!serviceDoc._id.equals(doctorDoc.specialization)) {
     return next(new AppError("This doctor does not perform this service", 400));
   }
 
-  const endOfDay = new Date(selectedDate);
-  endOfDay.setHours(23, 59, 59, 999);
-  const existingBooking = await Appointment.findOne({
-    doctor: doctor,
-    date: { $gte: selectedDate, $lte: endOfDay },
-    timeSlot: timeSlot,
-    status: { $ne: "cancelled" },
-  });
+ 
+  const realPrice = serviceDoc.fees;
+  let appointment;
 
-  if (existingBooking) {
-    return next(
-      new AppError("Slot already booked! Please choose another time.", 400),
-    );
+  try {
+    appointment = await Appointment.create({
+      doctor,
+      service,
+      date: selectedDate,
+      timeSlot,
+      price: realPrice,
+      patient: req.user.id,
+      status: "pending_payment", 
+    });
+  } catch (err) {
+    if (err.code === 11000) {
+      return next(
+        new AppError(
+          "This slot is already reserved. Please choose another.",
+          409
+        )
+      );
+    }
+    return next(err);
   }
 
-  const realPrice = serviceDoc.fees;
+  const userLang = req.user.preferredLanguage || "en";
+  const serviceName = serviceDoc.name[userLang] || serviceDoc.name["en"];
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
@@ -171,7 +185,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
         price_data: {
           currency: "egp",
           product_data: {
-            name: `${serviceDoc.name} Session`,
+            name: `${serviceName} Session`, 
             description: `Doctor: ${doctorDoc.user.name} | Date: ${date} | Time: ${timeSlot}`,
           },
           unit_amount: realPrice * 100,
@@ -179,14 +193,9 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
         quantity: 1,
       },
     ],
-
+    
     metadata: {
-      patientId: req.user.id,
-      doctorId: doctor,
-      serviceId: service,
-      date: date,
-      timeSlot: timeSlot,
-      price: realPrice,
+      appointmentId: appointment._id.toString(),
     },
   });
 
@@ -196,172 +205,99 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   });
 });
 
-const createBookingCheckout = async (session) => {
-  const { doctorId, serviceId, date, timeSlot, price, patientId } =
-    session.metadata;
+const confirmBookingCheckout = async (session) => {
+  const appointmentId = session.metadata.appointmentId;
 
-  await Appointment.create({
-    patient: patientId,
-    doctor: doctorId,
-    service: serviceId,
-    date: date,
-    timeSlot: timeSlot,
-    price: price,
-    status: "confirmed",
-    paymentIntentId: session.payment_intent,
-  });
+  const appointment = await Appointment.findByIdAndUpdate(
+    appointmentId,
+    { status: "confirmed", paymentIntentId: session.payment_intent },
+    { new: true }
+  )
+    .populate("patient")
+    .populate("service"); 
 
-  const patient = await User.findById(patientId);
+  if (!appointment) return;
+
+  const patient = appointment.patient;
+  
   if (patient) {
+    const lang = patient.preferredLanguage || "en";
+    const serviceName = appointment.service.name[lang] || appointment.service.name["en"];
+
     const message = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>Payment Receipt</title>
+  <meta charset="utf-8"> <title>Payment Receipt</title>
   <style>
-    /* Reset Styles */
-    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-    img { -ms-interpolation-mode: bicubic; }
-    img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
-    table { border-collapse: collapse !important; }
-    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; }
-
-    /* Custom Styles */
-    .email-container {
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
-      background-color: #ffffff;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
-    
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; }
+    .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; }
     .header { background-color: #2c3e50; padding: 30px 20px; text-align: center; }
-    .header h1 { color: #ffffff; margin: 0; font-size: 24px; font-weight: 500; letter-spacing: 1px; }
-    .success-icon { font-size: 40px; margin-bottom: 10px; display: block; }
-    
+    .header h1 { color: #ffffff; margin: 0; }
     .content { padding: 30px 25px; color: #333333; }
-    .greeting { font-size: 18px; margin-bottom: 20px; color: #2c3e50; }
-    
-    .receipt-box { 
-      background-color: #f8f9fa; 
-      border: 1px solid #e9ecef; 
-      border-radius: 8px; 
-      padding: 20px; 
-      margin: 25px 0; 
-    }
-    
+    .receipt-box { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; margin: 25px 0; }
     .receipt-row td { padding: 10px 0; border-bottom: 1px solid #eee; }
-    .label { color: #7f8c8d; font-size: 14px; width: 40%; }
-    .value { font-weight: 600; color: #2c3e50; font-size: 14px; text-align: right; width: 60%; }
-    
-    .total-label { padding: 15px 0 5px; font-size: 16px; font-weight: bold; color: #2c3e50; }
-    .total-value { padding: 15px 0 5px; text-align: right; font-size: 22px; font-weight: bold; color: #27ae60; }
-    
-    .footer { background-color: #f4f7f6; padding: 20px; text-align: center; font-size: 12px; color: #95a5a6; border-top: 1px solid #eee; }
-
-    /* Mobile Responsive Styles */
-    @media screen and (max-width: 600px) {
-      .email-container { width: 100% !important; margin: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
-      .content { padding: 20px !important; }
-      .header h1 { font-size: 20px !important; }
-      .receipt-box { padding: 15px !important; }
-      .label { font-size: 13px !important; }
-      .value { font-size: 13px !important; }
-    }
+    .label { color: #7f8c8d; width: 40%; }
+    .value { font-weight: 600; color: #2c3e50; text-align: right; width: 60%; }
+    .total-value { color: #27ae60; font-weight: bold; text-align: right; }
   </style>
 </head>
 <body>
-
-  <table border="0" cellpadding="0" cellspacing="0" width="100%">
-    <tr>
-      <td align="center" style="background-color: #f4f7f6; padding: 20px 0;">
-        
-        <div class="email-container">
-          
-          <div class="header">
-            <span class="success-icon">✅</span>
-            <h1>Payment Successful</h1>
-            <p style="color: #bdc3c7; margin: 5px 0 0; font-size: 14px;">Your appointment is confirmed</p>
-          </div>
-
-          <div class="content">
-            <p class="greeting">Hi <strong>${patient.name}</strong>,</p>
-            <p style="line-height: 1.6; color: #555;">
-              Thank you for choosing our clinic. We have successfully received your payment. Below is your official receipt and appointment details.
-            </p>
-
-            <div class="receipt-box">
-              <table style="width: 100%; border-collapse: collapse;">
-                <tr class="receipt-row">
-                  <td class="label">Service</td>
-                  <td class="value">Dental Consultation</td>
-                </tr>
-                <tr class="receipt-row">
-                  <td class="label">Date</td>
-                  <td class="value">${new Date(date).toDateString()}</td>
-                </tr>
-                <tr class="receipt-row">
-                  <td class="label">Time</td>
-                  <td class="value">${timeSlot}</td>
-                </tr>
-                <tr class="receipt-row">
-                  <td class="label">Reference ID</td>
-                  <td class="value" style="font-size: 12px; word-break: break-all;">${session.payment_intent}</td>
-                </tr>
-                <tr>
-                  <td class="total-label">Amount Paid</td>
-                  <td class="total-value">${price} EGP</td>
-                </tr>
-              </table>
-            </div>
-
-            <div style="text-align: center;">
-              <p style="color: #7f8c8d; font-size: 13px; margin-top: 20px;">
-                Please arrive <strong>10 minutes early</strong> before your scheduled time.
-              </p>
-            </div>
-          </div>
-
-          <div class="footer">
-            <p>&copy; ${new Date().getFullYear()} Dental Clinic System. All rights reserved.</p>
-            <p>Need help? Contact us at <a href="mailto:support@clinic.com" style="color: #2c3e50; text-decoration: none;">support@clinic.com</a></p>
-          </div>
-
-        </div>
-
-      </td>
-    </tr>
-  </table>
-
+  <div class="email-container">
+    <div class="header">
+      <h1>Payment Successful ✅</h1>
+    </div>
+    <div class="content">
+      <p>Hi <strong>${patient.name}</strong>,</p>
+      <p>Your appointment is confirmed.</p>
+      <div class="receipt-box">
+        <table style="width: 100%;">
+          <tr class="receipt-row">
+            <td class="label">Service</td>
+            <td class="value">${serviceName}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td class="label">Date</td>
+            <td class="value">${new Date(appointment.date).toDateString()}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td class="label">Time</td>
+            <td class="value">${appointment.timeSlot}</td>
+          </tr>
+          <tr class="receipt-row">
+             <td class="label">Amount</td>
+             <td class="total-value">${appointment.price} EGP</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
 `;
+
     try {
       await sendEmail({
         email: patient.email,
         subject: "Payment Receipt - Appointment Confirmed",
         message,
       });
+      console.log("✅ Email sent to:", patient.email);
     } catch (err) {
-      console.log("Email sending failed:", err);
+      console.error("❌ Email failed:", err);
     }
   }
 };
 
 exports.webhookCheckout = catchAsync(async (req, res, next) => {
   const signature = req.headers["stripe-signature"];
-
   let event;
+
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET,
+      process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -369,11 +305,12 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-    await createBookingCheckout(session);
+    await confirmBookingCheckout(session);
   }
 
   res.status(200).json({ received: true });
 });
+
 
 exports.updateAppointment = catchAsync(async (req, res, next) => {
   const { date, timeSlot } = req.body;

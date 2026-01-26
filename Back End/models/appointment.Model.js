@@ -43,7 +43,7 @@ appointmentSchema.index(
   { doctor: 1, date: 1, timeSlot: 1 },
   {
     unique: true,
-    partialFilterExpression: { status: { $ne: "cancelled" } },
+    partialFilterExpression: { status: { $gt: "cancelled" } },
   },
 );
 const Appointment = mongoose.model("Appointment", appointmentSchema);
