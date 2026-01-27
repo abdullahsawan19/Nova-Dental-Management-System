@@ -11,6 +11,13 @@ exports.authenticate = async (req, res, next) => {
   try {
     const decode = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decode.id).select("-password");
+    if (!user) {
+      return res
+        .status(401)
+        .json({
+          message: "The user belonging to this token no longer exists.",
+        });
+    }
     req.user = user;
     next();
   } catch (err) {

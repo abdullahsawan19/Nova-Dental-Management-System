@@ -3,6 +3,13 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const hpp = require("hpp");
+const cors = require("cors");
+const compression = require("compression");
+
 const globalErrorHandler = require("./controllers/error.Controller");
 const notFound = require("./middlewares/notFound.middleware");
 const chatRouter = require("./routes/chat.Routes");
@@ -10,23 +17,14 @@ const appointmentController = require("./controllers/appointment.Controller");
 
 const app = express();
 
-app.post(
-  "/webhook-checkout",
-  express.raw({ type: "application/json" }),
-  appointmentController.webhookCheckout,
-);
+// app.use(cors());
 
-// Logger (only in development)
+app.use(helmet());
+
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
-// Middleware
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
-
-// Global Limiter
 const limiter = rateLimit({
   max: 100,
   windowMs: 15 * 60 * 1000,
@@ -34,10 +32,38 @@ const limiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-
-// Routes creation
 app.use("/api", limiter);
 
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  appointmentController.webhookCheckout,
+);
+
+app.use(express.json({ limit: "10kb" }));
+app.use(cookieParser());
+
+app.use(mongoSanitize());
+
+app.use(xss());
+
+app.use(
+  hpp({
+    whitelist: [
+      "fees",
+      "ratingsQuantity",
+      "ratingsAverage",
+      "specialization",
+      "role",
+    ],
+  }),
+);
+
+app.use(compression());
+
+app.use(express.static(path.join(__dirname, "public")));
+
+// Routes
 app.use("/api/users", require("./routes/user.Routes"));
 app.use("/api/doctors", require("./routes/doctor.Routes"));
 app.use("/api/services", require("./routes/service.Routes"));
@@ -47,8 +73,8 @@ app.use("/api/reviews", require("./routes/review.Routes"));
 app.use("/api/appointments", require("./routes/appointment.Routes"));
 app.use("/api/chat", chatRouter);
 
+// 404 & Error Handling
 app.use(notFound);
-
 app.use(globalErrorHandler);
 
 module.exports = app;

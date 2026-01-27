@@ -2,6 +2,7 @@ const Branch = require("../models/branch.Model");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const redisClient = require("../utils/redisClient");
+const logAction = require("../utils/logger");
 
 const formatTime12H = (time24) => {
   if (!time24) return "";
@@ -50,7 +51,7 @@ exports.getActiveBranch = catchAsync(async (req, res, next) => {
     console.log("⚡ Branch served from Cache");
     return res.status(200).json({
       status: "success",
-      data: { branch: JSON.parse(cachedData) }, // رجعنا الداتا زي ما كانت
+      data: { branch: JSON.parse(cachedData) },
     });
   }
 
@@ -93,6 +94,13 @@ exports.createBranch = catchAsync(async (req, res, next) => {
 
   const newBranch = await Branch.create(req.body);
 
+  if (req.user) {
+    await logAction("CREATE_BRANCH", req.user._id, "Branch", newBranch._id, {
+      branchName: newBranch.name,
+      isActive: newBranch.isActive,
+    });
+  }
+
   res.status(201).json({
     status: "success",
     data: { branch: newBranch },
@@ -111,6 +119,12 @@ exports.updateBranch = catchAsync(async (req, res, next) => {
 
   if (!branch) return next(new AppError("Branch not found", 404));
 
+  if (req.user) {
+    await logAction("UPDATE_BRANCH", req.user._id, "Branch", branch._id, {
+      updates: req.body,
+    });
+  }
+
   res.status(200).json({
     status: "success",
     data: { branch },
@@ -128,6 +142,13 @@ exports.deleteBranch = catchAsync(async (req, res, next) => {
   );
 
   if (!branch) return next(new AppError("Branch not found", 404));
+
+  if (req.user) {
+    await logAction("DELETE_BRANCH", req.user._id, "Branch", branch._id, {
+      type: "Soft Delete",
+      branchName: branch.name,
+    });
+  }
 
   res.status(204).json({
     status: "success",
