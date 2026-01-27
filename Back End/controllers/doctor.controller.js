@@ -2,6 +2,7 @@ const Doctor = require("../models/doctor.Model");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
+const redisClient = require("../utils/redisClient");
 
 // === Helper Function ===
 const localizeDoctorData = (doc, lang) => {
@@ -36,6 +37,22 @@ const localizeDoctorData = (doc, lang) => {
 // === Controllers ===
 
 exports.getAllDoctors = catchAsync(async (req, res, next) => {
+  let userLang = req.query.lang;
+  if (!userLang && req.user && req.user.preferredLanguage) {
+    userLang = req.user.preferredLanguage;
+  }
+  if (!userLang) userLang = "en";
+
+  const queryParams = JSON.stringify(req.query);
+  const cacheKey = `doctors:${queryParams}:${userLang}`;
+
+  const cachedData = await redisClient.get(cacheKey);
+
+  if (cachedData) {
+    console.log("⚡ Using Cached Data");
+    return res.status(200).json(JSON.parse(cachedData));
+  }
+
   let filter = { isDeleted: false, isActive: true };
   if (req.query.specialization || req.query.service) {
     filter.specialization = req.query.specialization || req.query.service;
@@ -65,16 +82,6 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
     (doc) => doc.specialization !== null,
   );
 
-  let userLang = req.query.lang;
-
-  if (!userLang && req.user && req.user.preferredLanguage) {
-    userLang = req.user.preferredLanguage;
-  }
-
-  if (!userLang) {
-    userLang = "en";
-  }
-
   const localizedDoctors = activeSpecializationDoctors.map((doc) =>
     localizeDoctorData(doc, userLang),
   );
@@ -83,7 +90,7 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
   const limit = req.query.limit * 1 || 6;
   const totalDocs = await Doctor.countDocuments(filter);
 
-  res.status(200).json({
+  const responseData = {
     status: "success",
     metadata: {
       currentPage: page,
@@ -93,7 +100,11 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
     },
     results: localizedDoctors.length,
     data: { doctors: localizedDoctors },
-  });
+  };
+
+  await redisClient.set(cacheKey, JSON.stringify(responseData), { EX: 300 });
+
+  res.status(200).json(responseData);
 });
 
 // 1. Get Current Doctor Profile

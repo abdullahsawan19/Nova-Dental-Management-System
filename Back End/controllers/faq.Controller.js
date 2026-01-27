@@ -2,6 +2,7 @@ const FAQ = require("../models/faq.Model");
 const APIFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const redisClient = require("../utils/redisClient");
 
 // --- Helper Function ---
 const localizeFAQ = (faq, lang) => {
@@ -14,8 +15,21 @@ const localizeFAQ = (faq, lang) => {
 // --- Controller Functions ---
 
 exports.getPublicFaqs = catchAsync(async (req, res, next) => {
-  const filter = { isActive: true, isDeleted: false };
+  // -------------------------------------------------------
+  // 1️⃣ خطوة الكاش: مفتاح ديناميكي ذكي
+  // -------------------------------------------------------
+  // بنعمل مفتاح فريد يعتمد على كل الـ Query Params (صفحة، لغة، بحث، الخ)
+  // عشان لو يوزر بحث عن كلمة، مياخدش كاش بتاع يوزر تاني بيصفح الصفحة الأولى
+  const cacheKey = `faqs:public:${JSON.stringify(req.query)}`;
 
+  const cachedData = await redisClient.get(cacheKey);
+
+  if (cachedData) {
+    console.log("⚡ FAQs served from Cache");
+    return res.status(200).json(JSON.parse(cachedData));
+  }
+
+  const filter = { isActive: true, isDeleted: false };
   const queryObj = { ...req.query };
   delete queryObj.lang;
 
@@ -37,7 +51,7 @@ exports.getPublicFaqs = catchAsync(async (req, res, next) => {
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 15;
 
-  res.status(200).json({
+  const responseData = {
     status: "success",
     metadata: {
       currentPage: page,
@@ -47,7 +61,11 @@ exports.getPublicFaqs = catchAsync(async (req, res, next) => {
     },
     results: localizedFaqs.length,
     data: { faqs: localizedFaqs },
-  });
+  };
+
+  await redisClient.set(cacheKey, JSON.stringify(responseData), { EX: 3600 });
+
+  res.status(200).json(responseData);
 });
 
 exports.getAdminFaqs = catchAsync(async (req, res, next) => {

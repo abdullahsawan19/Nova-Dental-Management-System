@@ -1,6 +1,7 @@
 const Branch = require("../models/branch.Model");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const redisClient = require("../utils/redisClient");
 
 const formatTime12H = (time24) => {
   if (!time24) return "";
@@ -34,23 +35,38 @@ const localizeBranch = (branch, lang) => {
 // 1. PUBLIC ROUTES
 // ==============================
 
-// (Active Branch)
 exports.getActiveBranch = catchAsync(async (req, res, next) => {
-  const branch = await Branch.findOne({ isActive: true, isDeleted: false });
-
-  if (!branch) {
-    return res.status(200).json({ status: "success", data: { branch: null } });
-  }
-
   let userLang = req.query.lang;
   if (!userLang && req.user && req.user.preferredLanguage) {
     userLang = req.user.preferredLanguage;
   }
   userLang = userLang || "en";
 
+  const cacheKey = `branch:active:${userLang}`;
+
+  const cachedData = await redisClient.get(cacheKey);
+
+  if (cachedData) {
+    console.log("⚡ Branch served from Cache");
+    return res.status(200).json({
+      status: "success",
+      data: { branch: JSON.parse(cachedData) }, // رجعنا الداتا زي ما كانت
+    });
+  }
+
+  const branch = await Branch.findOne({ isActive: true, isDeleted: false });
+
+  if (!branch) {
+    return res.status(200).json({ status: "success", data: { branch: null } });
+  }
+
+  const localizedBranch = localizeBranch(branch, userLang);
+
+  await redisClient.set(cacheKey, JSON.stringify(localizedBranch), { EX: 600 });
+
   res.status(200).json({
     status: "success",
-    data: { branch: localizeBranch(branch, userLang) },
+    data: { branch: localizedBranch },
   });
 });
 
