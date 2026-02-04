@@ -7,17 +7,13 @@ const upload = require("../config/multer.Config");
 const router = express.Router();
 
 router.get("/", doctorController.getAllDoctors);
-router.get(
-  "/me",
-  authenticate,
-  authorize("doctor"),
-  doctorController.getDoctorProfile,
-);
 
 router.get("/:id", doctorController.getDoctorById);
 
 router.use(authenticate);
 router.use(authorize("doctor"));
+
+router.get("/me", doctorController.getDoctorProfile);
 
 router.patch(
   "/me",
