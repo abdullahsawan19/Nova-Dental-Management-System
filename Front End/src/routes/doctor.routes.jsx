@@ -1,13 +1,13 @@
 const doctorRoutes = [
   {
     index: true,
-    element: <DoctorAppointment />,
-    loader: "#",
+    // element: <DoctorAppointment />,
+    // loader: "#",
   },
   {
     path: "my-profile",
-    element: <DoctorProfile />,
-    loader: "#",
+    // element: <DoctorProfile />,
+    // loader: "#",
   },
 ];
 

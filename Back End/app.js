@@ -49,21 +49,21 @@ app.post(
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
 
-app.use(xss());
+// app.use(xss());
 
-app.use(
-  hpp({
-    whitelist: [
-      "fees",
-      "ratingsQuantity",
-      "ratingsAverage",
-      "specialization",
-      "role",
-    ],
-  }),
-);
+// app.use(
+//   hpp({
+//     whitelist: [
+//       "fees",
+//       "ratingsQuantity",
+//       "ratingsAverage",
+//       "specialization",
+//       "role",
+//     ],
+//   }),
+// );
 
 app.use(compression());
 

@@ -1,19 +1,23 @@
 const patientRoutes = [
   {
     path: "/appointment",
-    element: <Appointment />,
-    loader: "#",
+    // element: <Appointment />,
+    // loader: "#",
   },
-  { path: "/my-appointments", element: <MyAppointment />, loader: "#" },
+  {
+    path: "/my-appointments",
+    // element: <MyAppointment />,
+    //  loader: "#"
+  },
   {
     path: "/profile",
-    element: <Profile />,
-    loader: "#",
+    // element: <Profile />,
+    // loader: "#",
   },
   {
     path: "/add-review",
-    element: <Reviews />,
-    loader: "#",
+    // element: <Reviews />,
+    // loader: "#",
   },
 ];
 

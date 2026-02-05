@@ -59,7 +59,6 @@ exports.createDoctor = catchAsync(async (req, res, next) => {
 
 // 3. Get Me
 exports.getMe = catchAsync(async (req, res, next) => {
-  // req.user جاية من الـ authenticate middleware
   res.status(200).json({
     status: "success",
     data: { user: req.user },
@@ -72,7 +71,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     return next(new AppError("This route is not for password updates.", 400));
   }
 
-  // فلترة الحقول الممنوعة
   const forbiddenFields = ["role", "isActive", "isDeleted", "refreshToken"];
   forbiddenFields.forEach((el) => delete req.body[el]);
 

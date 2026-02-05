@@ -69,4 +69,40 @@ exports.login = catchAsync(async (req, res, next) => {
   await createSendToken(user, 200, res);
 });
 
+exports.refreshToken = catchAsync(async (req, res, next) => {
+  const cookieRefreshToken = req.cookies.jwt;
+
+  if (!cookieRefreshToken) {
+    return next(
+      new AppError("No refresh token present! Please log in again.", 401),
+    );
+  }
+
+  const decoded = jwt.verify(
+    cookieRefreshToken,
+    process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+  );
+
+  const currentUser = await User.findById(decoded.id);
+
+  if (!currentUser) {
+    return next(
+      new AppError("The user belonging to this token no longer exists.", 401),
+    );
+  }
+
+  if (currentUser.refreshToken !== cookieRefreshToken) {
+    return next(
+      new AppError("Invalid Refresh Token. Please login again.", 403),
+    );
+  }
+
+  const newAccessToken = signToken(currentUser._id);
+
+  res.status(200).json({
+    status: "success",
+    accessToken: newAccessToken,
+  });
+});
+
 exports.createSendToken = createSendToken;
