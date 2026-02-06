@@ -2,11 +2,12 @@ import Login from "../features/auth/Login";
 import Signup from "../features/auth/Signup";
 import { loginAction } from "../features/auth/Login.actions";
 import { loginLoader } from "../features/auth/login.Loader";
+import Home from "../Home";
 
 const publicRoutes = [
   {
     index: true,
-    element: <h1>Home</h1>,
+    element: <Home />,
   },
   {
     path: "/doctors",

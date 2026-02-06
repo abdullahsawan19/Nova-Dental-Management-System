@@ -23,14 +23,17 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    console.log("❌ Error Status:", error.response?.status); // 👈 جاسوس 1
+    if (
+      originalRequest.url.includes("/login") ||
+      originalRequest.url.includes("/refresh-token")
+    ) {
+      return Promise.reject(error);
+    }
     if (error.response?.status === 401 && !originalRequest._retry) {
-      console.log("🔄 Starting Refresh Process..."); // 👈 جاسوس 2
       originalRequest._retry = true;
 
       try {
         const res = await axiosInstance.get("/users/refresh-token");
-        console.log("✅ Refresh Success! New Token:", res.data.accessToken); // 👈 جاسوس 3
         const newAccessToken = res.data.accessToken;
 
         localStorage.setItem("accessToken", newAccessToken);
@@ -39,7 +42,6 @@ axiosInstance.interceptors.response.use(
 
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        console.error("💀 Refresh Failed:", refreshError); // 👈 جاسوس 4
         console.error("Refresh token expired or invalid", refreshError);
         localStorage.removeItem("accessToken");
         window.location.href = "/login";

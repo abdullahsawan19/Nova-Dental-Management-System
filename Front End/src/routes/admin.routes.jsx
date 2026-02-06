@@ -1,44 +1,52 @@
+import { Navigate } from "react-router-dom";
+import Appointments from "../Appointments";
+import DashboardLayout from "../layouts/DashboardLayout";
 const adminRoutes = [
   {
-    index: true,
-    path: "appointments",
-    // element: <Appointments />,
-    // loader: "#",
-  },
-  {
-    path: "users",
-    // element: <Users />,
-    // loader: "#",
-  },
-  {
-    path: "doctors",
-    // element: <Doctors />,
-    // loader: "#",
-  },
-  {
-    path: "branch",
-    // element: <Branch />,
-    // loader: "#",
-  },
-  {
-    path: "faq",
-    // element: <Faq />,
-    // loader: "#",
-  },
-  {
-    path: "chat",
-    // element: <Chat />,
-    // loader: "#",
-  },
-  {
-    path: "reviews",
-    // element: <Reviews />,
-    // loader: "#",
-  },
-  {
-    path: "services",
-    // element: <Services />,
-    // loader: "#",
+    element: <DashboardLayout />,
+
+    children: [
+      {
+        path: "dashboard",
+        element: <Navigate to="appointments" replace />,
+      },
+      {
+        path: "dashboard/appointments",
+        element: <Appointments />,
+      },
+      {
+        path: "users",
+        // element: <Users />,
+      },
+      {
+        path: "doctors",
+        // element: <Doctors />,
+      },
+      {
+        path: "branch",
+        // element: <Branch />,
+      },
+      {
+        path: "faq",
+        // element: <Faq />,
+        // loader: "#",
+      },
+      {
+        path: "chat",
+        // element: <Chat />,
+        // loader: "#",
+      },
+      {
+        path: "reviews",
+        // element: <Reviews />,
+        // loader: "#",
+      },
+      {
+        path: "services",
+        // element: <Services />,
+        // loader: "#",
+      },
+    ],
   },
 ];
 

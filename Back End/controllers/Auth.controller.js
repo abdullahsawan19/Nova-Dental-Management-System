@@ -83,7 +83,7 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
     process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
   );
 
-  const currentUser = await User.findById(decoded.id);
+  const currentUser = await User.findById(decoded.id).select("+refreshToken");
 
   if (!currentUser) {
     return next(

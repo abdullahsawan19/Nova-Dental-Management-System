@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const ProtectedRoute = () => {
-  const { token } = useSelector((state) => state.auth); // bring token from store
+  const { token } = useSelector((state) => state.auth);
   const location = useLocation();
 
   if (!token) {
