@@ -16,8 +16,15 @@ const authService = {
     return response.data;
   },
   logout: async () => {
-    localStorage.removeItem("accessToken");
-    window.location.href = "/login";
+    try {
+      await axiosInstance.post("/users/logout");
+      localStorage.removeItem("accessToken");
+      window.location.href = "/login";
+    } catch (err) {
+      console.error("Logout failed", err);
+      localStorage.removeItem("accessToken");
+      window.location.href = "/login";
+    }
   },
   getMe: async () => {
     const response = await axiosInstance.get("/users/me");

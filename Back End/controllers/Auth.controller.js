@@ -69,6 +69,15 @@ exports.login = catchAsync(async (req, res, next) => {
   await createSendToken(user, 200, res);
 });
 
+exports.logout = async (req, res) => {
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  await User.findByIdAndUpdate(req.user.id, { refreshToken: null });
+  res.status(200).json({ status: "success" });
+};
+
 exports.refreshToken = catchAsync(async (req, res, next) => {
   const cookieRefreshToken = req.cookies.jwt;
 

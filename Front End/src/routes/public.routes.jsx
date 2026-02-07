@@ -2,6 +2,8 @@ import Login from "../features/auth/Login";
 import Signup from "../features/auth/Signup";
 import { loginAction } from "../features/auth/Login.actions";
 import { loginLoader } from "../features/auth/login.Loader";
+import { signUpLoader } from "../features/auth/SignUp.Loader.js";
+import { signUpAction } from "../features/auth/Signup.actions.js";
 import Home from "../Home";
 
 const publicRoutes = [
@@ -48,7 +50,8 @@ const publicRoutes = [
   {
     path: "/signup",
     element: <Signup />,
-    // loader: "#",
+    loader: signUpLoader,
+    action: signUpAction,
   },
   {
     path: "/unauthorized",

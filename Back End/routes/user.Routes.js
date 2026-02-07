@@ -12,19 +12,22 @@ router.post("/signup", userController.createUser("patient"));
 // 2. Login (Public)
 router.post("/login", authController.login);
 
-// 3. Refresh-token (Public)
+// 3. Logout (Public)
+router.get("/logout", authController.logout);
+
+// 4. Refresh-token (Public)
 router.get("/refresh-token", authController.refreshToken);
 // --- PROTECTED ROUTES ---
 router.use(authenticate);
 
-// 4. User Profile
+// 5. User Profile
 router.get("/me", userController.getMe);
 router.patch("/me", userController.updateMe);
 
 // --- ADMIN ROUTES ---
 router.use(authorize("admin"));
 
-// 5. User Management
+// 6. User Management
 router.get("/", userController.getAllUsers);
 router.post("/doctor", userController.createDoctor);
 router.patch("/deactivate/:id", userController.deactivateUser);
