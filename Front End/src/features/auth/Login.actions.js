@@ -7,16 +7,17 @@ export const loginAction = async ({ request }) => {
   const data = Object.fromEntries(formData);
 
   try {
-    const result = await store.dispatch(loginUser(data)).unwrap();
+    await store.dispatch(loginUser(data)).unwrap();
+    const role = store.getState().auth.user?.role;
 
-    const role = result.data?.user?.role;
+    console.log(role);
 
     if (role === "admin") {
-      return redirect("/admin/dashboard/appointments");
+      return redirect("/admin");
     }
 
     if (role === "doctor") {
-      return redirect("/doctor/dashboard/appointments");
+      return redirect("/doctor");
     }
 
     return redirect("/");

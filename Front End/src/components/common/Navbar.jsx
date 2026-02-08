@@ -6,7 +6,6 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const handleLogout = () => {
     dispatch(logoutUser());
-    console.log("Logout");
   };
   const selector = useSelector((state) => state.auth);
   const token = selector.token;

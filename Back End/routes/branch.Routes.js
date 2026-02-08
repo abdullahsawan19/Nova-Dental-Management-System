@@ -6,13 +6,13 @@ const { authorize } = require("../middlewares/role.middleware");
 const router = express.Router();
 
 // --- PUBLIC ---
-router.get("/active", branchController.getActiveBranch);
+router.get("/", branchController.getActiveBranch);
 
 // --- ADMIN ONLY ---
 router.use(authenticate);
 router.use(authorize("admin"));
 
-router.get("/", branchController.getAllBranches);
+router.get("/all", branchController.getAllBranches);
 
 router.post("/", branchController.createBranch);
 router.patch("/:id", branchController.updateBranch);

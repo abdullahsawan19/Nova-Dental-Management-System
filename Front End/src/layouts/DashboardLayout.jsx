@@ -1,18 +1,28 @@
-import React from "react";
-import Navbar from "../components/layout/Navbar";
 import { Outlet } from "react-router-dom";
-import Footer from "../components/layout/Footer";
+import { Box, CssBaseline, Toolbar } from "@mui/material";
+import AdminSidebar from "../features/admin/Pages/AdminSidebar";
+
+const drawerWidth = 240;
 
 const DashboardLayout = () => {
   return (
-    <div>
-      {" "}
-      <Navbar />
-      <main className="min-h-screen">
+    <Box sx={{ display: "flex", bgcolor: "#1b0c0c" }}>
+      <CssBaseline />
+      <AdminSidebar drawerWidth={drawerWidth} />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          color: "#fff",
+          bgcolor: "#1b0c0c",
+          minHeight: "100vh",
+        }}
+      >
         <Outlet />
-      </main>
-      <Footer />
-    </div>
+      </Box>
+    </Box>
   );
 };
 

@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
-import Error from "../components/Error";
+import Error from "../components/common/Error";
 
 import ProtectedRoute from "./guards/ProtectedRoute";
 import RoleGuard from "./guards/RoleGuard";

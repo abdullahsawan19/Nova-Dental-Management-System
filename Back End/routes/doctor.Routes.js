@@ -8,17 +8,21 @@ const router = express.Router();
 
 router.get("/", doctorController.getAllDoctors);
 
-router.get("/:id", doctorController.getDoctorById);
-
-router.use(authenticate);
-router.use(authorize("doctor"));
-
-router.get("/me", doctorController.getDoctorProfile);
+router.get(
+  "/me",
+  authenticate,
+  authorize("doctor"),
+  doctorController.getDoctorProfile,
+);
 
 router.patch(
   "/me",
+  authenticate,
+  authorize("doctor"),
   upload.single("photo"),
   doctorController.updateDoctorProfile,
 );
+
+router.get("/:id", doctorController.getDoctorById);
 
 module.exports = router;

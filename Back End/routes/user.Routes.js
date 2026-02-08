@@ -13,7 +13,7 @@ router.post("/signup", userController.createUser("patient"));
 router.post("/login", authController.login);
 
 // 3. Logout (Public)
-router.get("/logout", authController.logout);
+router.post("/logout", authController.logout);
 
 // 4. Refresh-token (Public)
 router.get("/refresh-token", authController.refreshToken);

@@ -1,50 +1,38 @@
-import { Navigate } from "react-router-dom";
-import Appointments from "../Appointments";
 import DashboardLayout from "../layouts/DashboardLayout";
+import AdminDashboard from "../features/admin/Pages/AdminDashboard";
+
 const adminRoutes = [
   {
     element: <DashboardLayout />,
 
     children: [
       {
-        path: "dashboard",
-        element: <Navigate to="appointments" replace />,
+        index: true,
+        element: <AdminDashboard />,
       },
       {
-        path: "dashboard/appointments",
-        element: <Appointments />,
+        path: "appointments",
+        element: <div>Appointments Page</div>,
+      },
+      {
+        path: "branches",
+        element: <div>Branches Page</div>,
       },
       {
         path: "users",
-        // element: <Users />,
+        element: <div>Users Page</div>,
       },
       {
         path: "doctors",
-        // element: <Doctors />,
-      },
-      {
-        path: "branch",
-        // element: <Branch />,
-      },
-      {
-        path: "faq",
-        // element: <Faq />,
-        // loader: "#",
-      },
-      {
-        path: "chat",
-        // element: <Chat />,
-        // loader: "#",
-      },
-      {
-        path: "reviews",
-        // element: <Reviews />,
-        // loader: "#",
+        element: <div>Doctors Page</div>,
       },
       {
         path: "services",
-        // element: <Services />,
-        // loader: "#",
+        element: <div>Services Page</div>,
+      },
+      {
+        path: "reviews",
+        element: <div>Reviews Page</div>,
       },
     ],
   },

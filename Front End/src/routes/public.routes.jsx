@@ -1,5 +1,5 @@
-import Login from "../features/auth/Login";
-import Signup from "../features/auth/Signup";
+import Login from "../features/auth/LoginForm.jsx";
+import Signup from "../features/auth/SignupForm.jsx";
 import { loginAction } from "../features/auth/Login.actions";
 import { loginLoader } from "../features/auth/login.Loader";
 import { signUpLoader } from "../features/auth/SignUp.Loader.js";
@@ -10,6 +10,18 @@ const publicRoutes = [
   {
     index: true,
     element: <Home />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+    action: loginAction,
+    loader: loginLoader,
+  },
+  {
+    path: "/signup",
+    element: <Signup />,
+    loader: signUpLoader,
+    action: signUpAction,
   },
   {
     path: "/doctors",
@@ -41,18 +53,7 @@ const publicRoutes = [
     // element: <Reviews />,
     // loader: "#",
   },
-  {
-    path: "/login",
-    element: <Login />,
-    action: loginAction,
-    loader: loginLoader,
-  },
-  {
-    path: "/signup",
-    element: <Signup />,
-    loader: signUpLoader,
-    action: signUpAction,
-  },
+
   {
     path: "/unauthorized",
     // element: <Unauthorized />,

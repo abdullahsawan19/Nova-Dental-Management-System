@@ -2,8 +2,8 @@ const Branch = require("../models/branch.Model");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const redisClient = require("../utils/redisClient");
-const logAction = require("../utils/logger");
 
+// === Helper ===
 const formatTime12H = (time24) => {
   if (!time24) return "";
   const [hours, minutes] = time24.split(":");
@@ -15,7 +15,14 @@ const formatTime12H = (time24) => {
   return `${h}:${minutes} ${suffix}`;
 };
 
-// === Helper ===
+const clearBranchCache = async () => {
+  const keys = await redisClient.keys("branch:active:*");
+  if (keys.length > 0) {
+    await redisClient.del(keys);
+    console.log("🧹 Redis Cache Cleared for Branches");
+  }
+};
+
 const localizeBranch = (branch, lang) => {
   const obj = branch.toObject ? branch.toObject() : branch;
 
@@ -94,13 +101,7 @@ exports.createBranch = catchAsync(async (req, res, next) => {
 
   const newBranch = await Branch.create(req.body);
 
-  if (req.user) {
-    await logAction("CREATE_BRANCH", req.user._id, "Branch", newBranch._id, {
-      branchName: newBranch.name,
-      isActive: newBranch.isActive,
-    });
-  }
-
+  await clearBranchCache();
   res.status(201).json({
     status: "success",
     data: { branch: newBranch },
@@ -108,48 +109,62 @@ exports.createBranch = catchAsync(async (req, res, next) => {
 });
 
 exports.updateBranch = catchAsync(async (req, res, next) => {
+  const currentBranch = await Branch.findById(req.params.id);
+  if (!currentBranch) return next(new AppError("Branch not found", 404));
+
+  if (req.body.isActive === false && currentBranch.isActive === true) {
+    return next(
+      new AppError(
+        "You cannot deactivate the only active branch. Please activate another branch first.",
+        400,
+      ),
+    );
+  }
+
   if (req.body.isActive === true) {
-    await Branch.updateMany({}, { isActive: false });
+    await Branch.updateMany(
+      { _id: { $ne: req.params.id } },
+      { isActive: false },
+    );
   }
 
-  const branch = await Branch.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const updatedBranch = await Branch.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
 
-  if (!branch) return next(new AppError("Branch not found", 404));
-
-  if (req.user) {
-    await logAction("UPDATE_BRANCH", req.user._id, "Branch", branch._id, {
-      updates: req.body,
-    });
-  }
-
+  await clearBranchCache();
   res.status(200).json({
     status: "success",
-    data: { branch },
+    data: { branch: updatedBranch },
   });
 });
 
+// ==============================
+// DELETE BRANCH
+// ==============================
 exports.deleteBranch = catchAsync(async (req, res, next) => {
-  const branch = await Branch.findByIdAndUpdate(
-    req.params.id,
-    {
-      isDeleted: true,
-      isActive: false,
-    },
-    { new: true },
-  );
+  const branch = await Branch.findById(req.params.id);
 
   if (!branch) return next(new AppError("Branch not found", 404));
 
-  if (req.user) {
-    await logAction("DELETE_BRANCH", req.user._id, "Branch", branch._id, {
-      type: "Soft Delete",
-      branchName: branch.name,
-    });
+  if (branch.isActive) {
+    return next(
+      new AppError(
+        "You cannot delete the active branch. Set another branch as active first.",
+        400,
+      ),
+    );
   }
 
+  branch.isDeleted = true;
+  await branch.save();
+
+  await clearBranchCache();
   res.status(204).json({
     status: "success",
     data: null,

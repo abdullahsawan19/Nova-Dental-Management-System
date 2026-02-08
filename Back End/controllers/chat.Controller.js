@@ -10,7 +10,7 @@ const AppError = require("../utils/appError");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 exports.chatWithAI = catchAsync(async (req, res, next) => {
-  const { message } = req.body;
+  const { message, history } = req.body;
 
   if (!message || message.trim() === "") {
     return next(new AppError("Please provide a message", 400));
@@ -21,11 +21,8 @@ exports.chatWithAI = catchAsync(async (req, res, next) => {
       .select("specialization experienceYears rating bio")
       .populate("user", "name")
       .populate("specialization", "name fees"),
-
     Service.find({ isActive: true }).select("name fees description duration"),
-
     Faq.find({ isActive: true, isDeleted: false }).select("question answer"),
-
     Branch.find({ isActive: true }).select(
       "openTime closeTime workingDays phones locationUrl",
     ),
@@ -76,33 +73,28 @@ exports.chatWithAI = catchAsync(async (req, res, next) => {
     Current Date & Time in Cairo: ${currentDateTime}
 
     [REAL-TIME DATABASE]:
-    
-    1. DOCTORS (Linked to Services & Prices):
-    ${JSON.stringify(doctorsContext)}
-
-    2. SERVICES LIST:
-    ${JSON.stringify(servicesContext)}
-
-    3. FAQs (Known Answers):
-    ${JSON.stringify(faqsContext)}
-
-    4. CLINIC INFO:
-    - Hours: ${clinicInfo.open} to ${clinicInfo.close}
-    - Phones: ${clinicInfo.phones}
-    - Booking: ONLY via website/app.
+    1. DOCTORS: ${JSON.stringify(doctorsContext)}
+    2. SERVICES: ${JSON.stringify(servicesContext)}
+    3. FAQs: ${JSON.stringify(faqsContext)}
+    4. CLINIC INFO: Hours: ${clinicInfo.open} to ${clinicInfo.close}, Phones: ${clinicInfo.phones}
 
     [RULES]:
-    1. **Dynamic Language:** If user speaks Arabic, reply in Arabic. If English, reply in English.
-    2. **Prices:** If asked about price, look at the SERVICE price linked to the doctor.
-    3. **Availability:** If user asks "Are you open?", compare Current Time with Clinic Hours.
-    4. **Medical Guard:** Do NOT diagnose. If pain -> Suggest booking immediately.
-    5. **Smart Search:** If user asks "Do you have a doctor for kids?", look for "Pediatric" or "Children" in specialization names.
+    1. Reply in the user's language (Arabic/English).
+    2. Use provided prices only.
+    3. Compare time for availability.
+    4. Do NOT diagnose.
   `;
 
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-  const result = await model.generateContent(
-    `${systemPrompt}\n\nUSER: "${message}"\nAI:`,
-  );
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    systemInstruction: systemPrompt,
+  });
+
+  const chat = model.startChat({
+    history: history || [],
+  });
+
+  const result = await chat.sendMessage(message);
   const reply = result.response.text();
 
   res.status(200).json({
