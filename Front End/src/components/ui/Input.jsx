@@ -1,3 +1,4 @@
+import { TextField } from "@mui/material";
 const Input = ({
   label,
   type = "text",
@@ -6,17 +7,19 @@ const Input = ({
   onChange,
   name,
   className,
+  ...props
 }) => {
   return (
     <div>
       {label && <label>{label}</label>}
-      <input
+      <TextField
         type={type}
         name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
         className={className}
+        {...props}
       />
     </div>
   );

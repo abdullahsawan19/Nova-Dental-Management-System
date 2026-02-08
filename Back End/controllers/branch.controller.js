@@ -19,7 +19,7 @@ const clearBranchCache = async () => {
   const keys = await redisClient.keys("branch:active:*");
   if (keys.length > 0) {
     await redisClient.del(keys);
-    console.log("🧹 Redis Cache Cleared for Branches");
+    console.log("Redis Cache Cleared for Branches");
   }
 };
 
@@ -85,12 +85,10 @@ exports.getActiveBranch = catchAsync(async (req, res, next) => {
 exports.getAllBranches = catchAsync(async (req, res, next) => {
   const branches = await Branch.find({ isDeleted: false });
 
-  const formattedBranches = branches.map((b) => localizeBranch(b, "en"));
-
   res.status(200).json({
     status: "success",
     results: branches.length,
-    data: { branches: formattedBranches },
+    data: { branches: branches },
   });
 });
 
