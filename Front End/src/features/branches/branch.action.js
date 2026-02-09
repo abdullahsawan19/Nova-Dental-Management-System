@@ -22,9 +22,56 @@ export const branchAction = async ({ request }) => {
     };
 
     try {
-      const result = await store.dispatch(createBranch(newBranchData)).unwrap();
+      await store.dispatch(createBranch(newBranchData)).unwrap();
       return { success: true, message: "Branch added successfully!" };
     } catch (error) {
+      return { error: error };
+    }
+  }
+
+  if (intent === "update") {
+    const id = formData.get("id");
+    const updates = {};
+    const rawData = Object.fromEntries(formData);
+
+    if (rawData.nameAr || rawData.nameEn) {
+      updates.name = {};
+      if (rawData.nameAr) updates.name.ar = rawData.nameAr;
+      if (rawData.nameEn) updates.name.en = rawData.nameEn;
+    }
+
+    if (rawData.addressAr || rawData.addressEn) {
+      updates.address = {};
+      if (rawData.addressAr) updates.address.ar = rawData.addressAr;
+      if (rawData.addressEn) updates.address.en = rawData.addressEn;
+    }
+
+    if (rawData.locationUrl) updates.locationUrl = rawData.locationUrl;
+    if (rawData.email) updates.email = rawData.email;
+    if (rawData.openTime) updates.openTime = rawData.openTime;
+    if (rawData.closeTime) updates.closeTime = rawData.closeTime;
+
+    if (formData.has("phones")) {
+      const phones = formData.getAll("phones").filter((p) => p.trim() !== "");
+      updates.phones = phones;
+    } else if (rawData.nameAr) {
+      updates.phones = [];
+    }
+
+    if (rawData.nameAr) {
+      const workingDays = formData.getAll("workingDays").map(Number);
+      updates.workingDays = workingDays;
+    }
+
+    if (formData.has("isActive")) {
+      updates.isActive = formData.get("isActive") === "true";
+    }
+
+    try {
+      await store.dispatch(updateBranch({ id, data: updates })).unwrap();
+      return { success: true, message: "Branch updated successfully!" };
+    } catch (error) {
+      console.error("Update failed:", error);
       return { error: error };
     }
   }

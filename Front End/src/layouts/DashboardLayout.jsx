@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
-import { Box, CssBaseline, Toolbar } from "@mui/material";
+import { Box, CssBaseline } from "@mui/material";
 import AdminSidebar from "../features/admin/Pages/AdminSidebar";
+import GlobalSpinner from "../components/ui/GlobalSpinner";
 
 const drawerWidth = 240;
 
@@ -8,7 +9,11 @@ const DashboardLayout = () => {
   return (
     <Box sx={{ display: "flex", bgcolor: "#1b0c0c" }}>
       <CssBaseline />
+
+      <GlobalSpinner />
+
       <AdminSidebar drawerWidth={drawerWidth} />
+
       <Box
         component="main"
         sx={{

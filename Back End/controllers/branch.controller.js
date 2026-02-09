@@ -1,7 +1,6 @@
 const Branch = require("../models/branch.Model");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const redisClient = require("../utils/redisClient");
 
 // === Helper ===
 const formatTime12H = (time24) => {
@@ -13,14 +12,6 @@ const formatTime12H = (time24) => {
   h = h % 12 || 12;
 
   return `${h}:${minutes} ${suffix}`;
-};
-
-const clearBranchCache = async () => {
-  const keys = await redisClient.keys("branch:active:*");
-  if (keys.length > 0) {
-    await redisClient.del(keys);
-    console.log("Redis Cache Cleared for Branches");
-  }
 };
 
 const localizeBranch = (branch, lang) => {
@@ -50,18 +41,6 @@ exports.getActiveBranch = catchAsync(async (req, res, next) => {
   }
   userLang = userLang || "en";
 
-  const cacheKey = `branch:active:${userLang}`;
-
-  const cachedData = await redisClient.get(cacheKey);
-
-  if (cachedData) {
-    console.log("⚡ Branch served from Cache");
-    return res.status(200).json({
-      status: "success",
-      data: { branch: JSON.parse(cachedData) },
-    });
-  }
-
   const branch = await Branch.findOne({ isActive: true, isDeleted: false });
 
   if (!branch) {
@@ -69,8 +48,6 @@ exports.getActiveBranch = catchAsync(async (req, res, next) => {
   }
 
   const localizedBranch = localizeBranch(branch, userLang);
-
-  await redisClient.set(cacheKey, JSON.stringify(localizedBranch), { EX: 600 });
 
   res.status(200).json({
     status: "success",
@@ -99,7 +76,6 @@ exports.createBranch = catchAsync(async (req, res, next) => {
 
   const newBranch = await Branch.create(req.body);
 
-  await clearBranchCache();
   res.status(201).json({
     status: "success",
     data: { branch: newBranch },
@@ -135,7 +111,6 @@ exports.updateBranch = catchAsync(async (req, res, next) => {
     },
   );
 
-  await clearBranchCache();
   res.status(200).json({
     status: "success",
     data: { branch: updatedBranch },
@@ -162,7 +137,6 @@ exports.deleteBranch = catchAsync(async (req, res, next) => {
   branch.isDeleted = true;
   await branch.save();
 
-  await clearBranchCache();
   res.status(204).json({
     status: "success",
     data: null,
