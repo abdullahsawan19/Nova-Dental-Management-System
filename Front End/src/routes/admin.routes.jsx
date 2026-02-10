@@ -1,7 +1,7 @@
 import DashboardLayout from "../layouts/DashboardLayout";
 import AdminDashboard from "../features/admin/Pages/AdminDashboard";
 import MangeBranches from "../pages/admin/MangeBranches";
-import branchesLoader from "../features/branches/branchesLoader";
+import { branchesLoader } from "../features/branches/branchesLoader";
 import { branchAction } from "../features/branches/branch.action";
 
 const adminRoutes = [

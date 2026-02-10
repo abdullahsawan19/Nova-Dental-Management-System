@@ -64,6 +64,7 @@ export const removeBranch = createAsyncThunk(
 
 const initialState = {
   branches: [],
+  activeBranch: null,
   isLoading: false,
   error: null,
 };
@@ -84,6 +85,20 @@ const branchSlice = createSlice({
         state.branches = action.payload.data.branches;
       })
       .addCase(getAllBranches.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      // ================= GET Active Branch =================
+      .addCase(getBranch.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getBranch.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.activeBranch = action.payload.data.branch;
+      })
+      .addCase(getBranch.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })

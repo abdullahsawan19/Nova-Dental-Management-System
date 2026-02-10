@@ -1,9 +1,11 @@
 import Login from "../features/auth/LoginForm.jsx";
 import Signup from "../features/auth/SignupForm.jsx";
+import BranchModule from "../features/branches/BranchModule.jsx";
 import { loginAction } from "../features/auth/Login.actions";
 import { loginLoader } from "../features/auth/login.Loader";
 import { signUpLoader } from "../features/auth/SignUp.Loader.js";
 import { signUpAction } from "../features/auth/Signup.actions.js";
+import { activeBranchLoader } from "../features/branches/branchesLoader.js";
 import Home from "../Home";
 
 const publicRoutes = [
@@ -35,8 +37,8 @@ const publicRoutes = [
   },
   {
     path: "/branch",
-    // element: <Branch />,
-    // loader: "#",
+    element: <BranchModule />,
+    loader: activeBranchLoader,
   },
   {
     path: "/faq",

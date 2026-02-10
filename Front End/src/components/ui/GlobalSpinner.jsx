@@ -12,8 +12,7 @@ const GlobalSpinner = () => {
 
   const isFetching = fetchers.some((fetcher) => fetcher.state !== "idle");
 
-  const isLoading = isNavigating || isFetching;
-
+  const isLoading = isNavigating || isFetching || isReduxLoading;
   return (
     <Backdrop
       sx={{
@@ -31,7 +30,7 @@ const GlobalSpinner = () => {
       <Box sx={{ mt: 2 }}>
         <Typography variant="h6" component="div" sx={{ fontWeight: "bold" }}>
           {isReduxLoading || navigation.state === "submitting"
-            ? "Saving changes..."
+            ? "Loading..."
             : isFetching
               ? "Processing..."
               : "Loading..."}
