@@ -6,7 +6,8 @@ import { loginLoader } from "../features/auth/login.Loader";
 import { signUpLoader } from "../features/auth/SignUp.Loader.js";
 import { signUpAction } from "../features/auth/Signup.actions.js";
 import { activeBranchLoader } from "../features/branches/branchesLoader.js";
-import Home from "../Home";
+import Home from "../pages/Genral/Home.jsx";
+import Unauthorized from "../pages/Genral/Unauthorized.jsx";
 
 const publicRoutes = [
   {
@@ -58,7 +59,7 @@ const publicRoutes = [
 
   {
     path: "/unauthorized",
-    // element: <Unauthorized />,
+    element: <Unauthorized />,
     // loader: "#",
   },
 ];

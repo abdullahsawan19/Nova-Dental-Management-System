@@ -1,13 +1,21 @@
+import { updateMeAction } from "../features/users/userAction";
+import { meLoader } from "../features/users/userLoader";
+import UpdatePatientData from "../pages/Genral/UpdatePatientData";
+
 const patientRoutes = [
   {
-    path: "/appointment",
-    // element: <Appointment />,
-    // loader: "#",
+    path: "profile/update",
+    element: <UpdatePatientData />,
+    loader: meLoader,
+    action: updateMeAction,
   },
   {
-    path: "/my-appointments",
-    // element: <MyAppointment />,
-    //  loader: "#"
+    path: "appointment",
+    element: <div>Appointment Page</div>,
+  },
+  {
+    path: "my-appointments",
+    element: <div>My Appointments</div>,
   },
   {
     path: "/profile",
