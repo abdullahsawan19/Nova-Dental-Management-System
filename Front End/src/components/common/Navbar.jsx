@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useFetcher } from "react-router-dom";
 import { logoutUser } from "../../features/auth/authSlice";
-import Button from "../ui/Button";
+
 import {
   IconButton,
   Tooltip,
@@ -18,7 +18,10 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  Button,
 } from "@mui/material";
+
+import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -26,7 +29,7 @@ import UpdatePatientData from "../../pages/Genral/UpdatePatientData";
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const fetcher = useFetcher(); // الـ fetcher المسؤول عن سحب بيانات البروفايل
+  const fetcher = useFetcher();
   const [openProfile, setOpenProfile] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -35,16 +38,11 @@ const Navbar = () => {
   const handleOpen = () => {
     fetcher.load("/profile/update");
     setOpenProfile(true);
+    setMobileOpen(false);
   };
 
   const handleClose = () => setOpenProfile(false);
-
-  useEffect(() => {
-    if (fetcher.data?.success && fetcher.state === "idle") {
-      const timer = setTimeout(() => setOpenProfile(false), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [fetcher.data, fetcher.state]);
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   const navLinks = [
     { title: "Services", path: "/services" },
@@ -66,16 +64,21 @@ const Navbar = () => {
           boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
         }}
       >
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Toolbar
+          sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
             <IconButton
               color="inherit"
-              onClick={() => setMobileOpen(true)}
+              onClick={handleDrawerToggle}
               sx={{ mr: 1, display: { md: "none" } }}
             >
-              <MenuIcon />
+              <MenuIcon sx={{ color: "#1976d2" }} />
             </IconButton>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}
+            >
               <Link to="/" style={{ textDecoration: "none", color: "#1976d2" }}>
                 ClinicPro
               </Link>
@@ -85,10 +88,10 @@ const Navbar = () => {
           <Box
             sx={{
               display: { xs: "none", md: "flex" },
-              gap: 3,
-              position: "absolute",
-              left: "50%",
-              transform: "translateX(-50%)",
+              gap: { md: 1.5, lg: 3 },
+              justifyContent: "center",
+              flexGrow: 1,
+              px: 2,
             }}
           >
             {navLinks.map((link) => (
@@ -99,6 +102,8 @@ const Navbar = () => {
                   textDecoration: "none",
                   color: "#555",
                   fontWeight: "500",
+                  fontSize: "0.9rem",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {link.title}
@@ -106,34 +111,62 @@ const Navbar = () => {
             ))}
           </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: { xs: 0.5, sm: 1 },
+              flexShrink: 0,
+            }}
+          >
             {token ? (
               <>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: "600",
+                    display: "block",
+                    color: "#333",
+                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  }}
+                >
+                  {user?.name}
+                </Typography>
+
                 <Tooltip title="Profile Settings">
                   <IconButton onClick={handleOpen} sx={{ color: "#1976d2" }}>
                     <AccountCircleIcon fontSize="medium" />
                   </IconButton>
                 </Tooltip>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: "600",
-                    display: { xs: "none", sm: "block" },
-                  }}
-                >
-                  {user?.name}
-                </Typography>
+
                 <Button
                   onClick={() => dispatch(logoutUser())}
-                  variant="outlined"
-                  size="small"
+                  variant="text"
+                  startIcon={<LogoutIcon />}
+                  sx={{
+                    color: "#d32f2f",
+                    fontWeight: "bold",
+                    textTransform: "none",
+                    borderRadius: "8px",
+                    whiteSpace: "nowrap",
+                    px: 1,
+                    "&:hover": {
+                      bgcolor: "#d32f2f",
+                      color: "#fff",
+                      "& .MuiButton-startIcon": { color: "#fff" },
+                    },
+                  }}
                 >
                   Logout
                 </Button>
               </>
             ) : (
               <Link to="/login" style={{ textDecoration: "none" }}>
-                <Button variant="outlined" size="small">
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ bgcolor: "#1976d2" }}
+                >
                   Login
                 </Button>
               </Link>
@@ -141,6 +174,43 @@ const Navbar = () => {
           </Box>
         </Toolbar>
       </AppBar>
+
+      <Drawer
+        anchor="left"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        sx={{ "& .MuiDrawer-paper": { width: 240 } }}
+      >
+        <Box sx={{ textAlign: "center", p: 2 }}>
+          <Typography
+            variant="h6"
+            sx={{ my: 2, fontWeight: "bold", color: "#1976d2" }}
+          >
+            ClinicPro
+          </Typography>
+          <Divider />
+          <List>
+            {navLinks.map((link) => (
+              <ListItem key={link.title} disablePadding>
+                <ListItemText>
+                  <Link
+                    to={link.path}
+                    style={{
+                      textDecoration: "none",
+                      color: "#555",
+                      display: "block",
+                      padding: "12px",
+                    }}
+                    onClick={handleDrawerToggle}
+                  >
+                    {link.title}
+                  </Link>
+                </ListItemText>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
 
       <Dialog open={openProfile} onClose={handleClose} maxWidth="xs" fullWidth>
         <DialogTitle
