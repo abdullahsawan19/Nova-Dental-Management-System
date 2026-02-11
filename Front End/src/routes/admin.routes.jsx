@@ -6,6 +6,9 @@ import { branchAction } from "../features/branches/branch.action";
 import ManageDoctors from "../pages/admin/MangeDoctors";
 import { doctorsLoader } from "../features/doctors/doctorsLoader";
 import { doctorAction } from "../features/doctors/doctorAction";
+import ManageUsers from "../pages/admin/MangeUsers";
+import { usersLoader } from "../features/users/userLoader";
+import { manageUsersAction } from "../features/users/userAction";
 
 const adminRoutes = [
   {
@@ -28,7 +31,9 @@ const adminRoutes = [
       },
       {
         path: "users",
-        element: <div>Users Page</div>,
+        element: <ManageUsers />,
+        loader: usersLoader,
+        action: manageUsersAction,
       },
       {
         path: "doctors",

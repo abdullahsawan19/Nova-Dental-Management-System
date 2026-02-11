@@ -80,15 +80,28 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
 
+      // ============ Update Me  ============
+      .addCase(updateMe.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateMe.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentUser = action.payload;
+        state.error = null;
+      })
+      .addCase(updateMe.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
       // ============ Deactivate User ============
       .addCase(deactivateUser.fulfilled, (state, action) => {
         state.isLoading = false;
-
         const updatedUser = action.payload.data?.user || action.payload;
 
         const index = state.users.findIndex((u) => u._id === updatedUser._id);
         if (index !== -1) {
-          state.users[index].isActive = false;
+          state.users[index].isActive = updatedUser.isActive;
         }
       })
 
@@ -100,9 +113,6 @@ const userSlice = createSlice({
 
       // ============ Get Me (Profile) ============
       .addCase(getMe.fulfilled, (state, action) => {
-        state.currentUser = action.payload;
-      })
-      .addCase(updateMe.fulfilled, (state, action) => {
         state.currentUser = action.payload;
       });
   },

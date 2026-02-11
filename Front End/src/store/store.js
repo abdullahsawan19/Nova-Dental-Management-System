@@ -8,7 +8,7 @@ export const store = configureStore({
   reducer: {
     auth: authSlice,
     branches: branchSlice,
-    users: userSlice,
+    user: userSlice,
     doctor: doctorSlice,
   },
 });

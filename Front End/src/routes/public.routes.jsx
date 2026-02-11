@@ -1,6 +1,6 @@
 import Login from "../features/auth/LoginForm.jsx";
 import Signup from "../features/auth/SignupForm.jsx";
-import BranchModule from "../features/branches/BranchModule.jsx";
+import BranchModule from "../pages/Genral/BranchModule.jsx";
 import { loginAction } from "../features/auth/Login.actions";
 import { loginLoader } from "../features/auth/login.Loader";
 import { signUpLoader } from "../features/auth/SignUp.Loader.js";

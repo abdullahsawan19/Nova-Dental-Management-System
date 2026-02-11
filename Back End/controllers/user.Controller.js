@@ -1,5 +1,5 @@
 const User = require("../models/user.Model.js");
-const Doctor = require("../models/doctor.Model.js"); 
+const Doctor = require("../models/doctor.Model.js");
 const catchAsync = require("../utils/catchAsync.js");
 const AppError = require("../utils/appError.js");
 const APIFeatures = require("../utils/apiFeatures.js");
@@ -46,7 +46,7 @@ exports.createDoctor = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     phone: req.body.phone,
     role: "doctor",
-    isActive: true, =
+    isActive: true,
   });
 
   await Doctor.create({
@@ -89,7 +89,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
 // 5. Get All Users
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const filter = { role: { $ne: "admin" } };
+  const filter = { role: "patient", isDeleted: false };
   const features = new APIFeatures(User.find(filter), req.query)
     .filter()
     .sort()
