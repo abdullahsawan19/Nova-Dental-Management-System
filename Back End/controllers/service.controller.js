@@ -4,16 +4,13 @@ const AppError = require("../utils/appError");
 
 const localizeService = (service, lang) => {
   const srvObj = service.toObject ? service.toObject() : service;
-
   srvObj.name = srvObj.name[lang] || srvObj.name["en"];
   srvObj.description = srvObj.description[lang] || srvObj.description["en"];
-
   return srvObj;
 };
 
-// Public Route
-exports.getAllServices = catchAsync(async (req, res, next) => {
-  const services = await Service.find({ isActive: true });
+exports.getAllServicesPublic = catchAsync(async (req, res, next) => {
+  const services = await Service.find({ isActive: true }).sort({ fees: 1 });
 
   let userLang = req.query.lang;
   if (!userLang && req.user && req.user.preferredLanguage) {
@@ -32,24 +29,36 @@ exports.getAllServices = catchAsync(async (req, res, next) => {
   });
 });
 
-// Public Route
-exports.getService = catchAsync(async (req, res, next) => {
-  const service = await Service.findById(req.params.id);
-  if (!service) return next(new AppError("Service not found", 404));
-
-  let userLang = req.query.lang || "en";
+exports.getAllServicesAdmin = catchAsync(async (req, res, next) => {
+  const services = await Service.find().sort({ createdAt: -1 });
 
   res.status(200).json({
     status: "success",
-    data: { service: localizeService(service, userLang) },
+    results: services.length,
+    data: { services }, // هترجع { name: {en:..., ar:...}, ... }
   });
 });
 
-//(ADMIN ONLY)
+// (ADMIN ONLY) Create Service
 exports.createService = catchAsync(async (req, res, next) => {
-  if (req.file) req.body.image = req.file.filename;
+  let imageName = "Teeth.jfif";
+  if (req.file) imageName = req.file.filename;
 
-  const newService = await Service.create(req.body);
+  const serviceData = {
+    name: {
+      en: req.body.nameEn,
+      ar: req.body.nameAr,
+    },
+    description: {
+      en: req.body.descEn,
+      ar: req.body.descAr,
+    },
+    fees: req.body.fees,
+    image: imageName,
+    isActive: true,
+  };
+
+  const newService = await Service.create(serviceData);
 
   res.status(201).json({
     status: "success",
@@ -57,24 +66,24 @@ exports.createService = catchAsync(async (req, res, next) => {
   });
 });
 
-// (ADMIN ONLY)
 exports.updateService = catchAsync(async (req, res, next) => {
-  const updateData = { ...req.body };
-
+  const updateData = {};
   if (req.file) updateData.image = req.file.filename;
+  if (req.body.fees) updateData.fees = req.body.fees;
+  if (req.body.isActive !== undefined) updateData.isActive = req.body.isActive;
 
-  if (updateData.name) {
-    if (updateData.name.en) updateData["name.en"] = updateData.name.en;
-    if (updateData.name.ar) updateData["name.ar"] = updateData.name.ar;
-    delete updateData.name;
+  if (req.body.nameEn || req.body.nameAr) {
+    updateData.name = {
+      en: req.body.nameEn,
+      ar: req.body.nameAr,
+    };
   }
 
-  if (updateData.description) {
-    if (updateData.description.en)
-      updateData["description.en"] = updateData.description.en;
-    if (updateData.description.ar)
-      updateData["description.ar"] = updateData.description.ar;
-    delete updateData.description;
+  if (req.body.descEn || req.body.descAr) {
+    updateData.description = {
+      en: req.body.descEn,
+      ar: req.body.descAr,
+    };
   }
 
   const service = await Service.findByIdAndUpdate(req.params.id, updateData, {
@@ -84,8 +93,5 @@ exports.updateService = catchAsync(async (req, res, next) => {
 
   if (!service) return next(new AppError("No service found with that ID", 404));
 
-  res.status(200).json({
-    status: "success",
-    data: { service },
-  });
+  res.status(200).json({ status: "success", data: { service } });
 });

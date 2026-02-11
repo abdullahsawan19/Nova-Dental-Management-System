@@ -3,6 +3,7 @@ import authSlice from "../features/auth/authSlice";
 import branchSlice from "../features/branches/branchSlice";
 import userSlice from "../features/users/userSlice";
 import doctorSlice from "../features/doctors/doctorSlice";
+import serviceSlice from "../features/services/serviceSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     branches: branchSlice,
     user: userSlice,
     doctor: doctorSlice,
+    services: serviceSlice,
   },
 });

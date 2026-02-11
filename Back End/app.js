@@ -23,9 +23,16 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
     secure: false,
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   }),
 );
-app.use(helmet());
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginEmbedderPolicy: false,
+  }),
+);
 
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
@@ -68,6 +75,7 @@ app.use(cookieParser());
 app.use(compression());
 
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 app.use("/api/users", require("./routes/user.Routes"));

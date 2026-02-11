@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useFetcher } from "react-router-dom"; 
+import { useFetcher } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -12,10 +12,9 @@ import {
 } from "@mui/material";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import PersonIcon from "@mui/icons-material/Person";
 
 const ManageUsers = () => {
-  const fetcher = useFetcher(); 
+  const fetcher = useFetcher();
   const { users, isLoading } = useSelector((state) => state.user);
 
   const handleToggleActive = (userId) => {
@@ -33,22 +32,6 @@ const ManageUsers = () => {
 
   const columns = [
     {
-      field: "photo",
-      headerName: "User",
-      width: 70,
-      renderCell: (params) => (
-        <Avatar
-          src={params.row.photo}
-          alt={params.row.name}
-          sx={{ width: 35, height: 35, bgcolor: "#e0e0e0" }}
-        >
-          <PersonIcon />
-        </Avatar>
-      ),
-      sortable: false,
-      filterable: false,
-    },
-    {
       field: "name",
       headerName: "Full Name",
       flex: 1,
@@ -65,6 +48,8 @@ const ManageUsers = () => {
       headerName: "Phone",
       flex: 1,
       minWidth: 130,
+      sortable: false,
+      filterable: false,
     },
     {
       field: "role",
@@ -76,13 +61,7 @@ const ManageUsers = () => {
           <Chip
             label={role?.toUpperCase()}
             size="small"
-            color={
-              role === "admin"
-                ? "secondary"
-                : role === "doctor"
-                  ? "primary"
-                  : "default"
-            }
+            color={"primary"}
             variant="outlined"
             sx={{ fontWeight: "600" }}
           />
@@ -122,7 +101,7 @@ const ManageUsers = () => {
                   checked={!!isActive}
                   size="small"
                   color="success"
-                  disabled={fetcher.state !== "idle"} 
+                  disabled={fetcher.state !== "idle"}
                 />
               </Tooltip>
             }
@@ -170,7 +149,7 @@ const ManageUsers = () => {
           rows={users || []}
           columns={columns}
           getRowId={(row) => row._id}
-          loading={isLoading || fetcher.state !== "idle"} 
+          loading={isLoading || fetcher.state !== "idle"}
           slots={{ toolbar: GridToolbar }}
           disableRowSelectionOnClick
           initialState={{

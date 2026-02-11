@@ -9,6 +9,9 @@ import { doctorAction } from "../features/doctors/doctorAction";
 import ManageUsers from "../pages/admin/MangeUsers";
 import { usersLoader } from "../features/users/userLoader";
 import { manageUsersAction } from "../features/users/userAction";
+import ServicesTable from "../pages/admin/MangeServices";
+import { adminServicesLoader } from "../features/services/servicesLoader";
+import { serviceAction } from "../features/services/serviceAction";
 
 const adminRoutes = [
   {
@@ -43,7 +46,9 @@ const adminRoutes = [
       },
       {
         path: "services",
-        element: <div>Services Page</div>,
+        element: <ServicesTable />,
+        loader: adminServicesLoader,
+        action: serviceAction,
       },
       {
         path: "reviews",

@@ -7,7 +7,8 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const ext = file.mimetype.split("/")[1];
-    const uniqueName = `user-${req.user.id}-${Date.now()}.${ext}`;
+    const userId = req.user ? req.user.id : "admin";
+    const uniqueName = `service-${userId}-${Date.now()}.${ext}`;
     cb(null, uniqueName);
   },
 });

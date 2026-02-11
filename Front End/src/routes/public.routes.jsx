@@ -8,6 +8,8 @@ import { signUpAction } from "../features/auth/Signup.actions.js";
 import { activeBranchLoader } from "../features/branches/branchesLoader.js";
 import Home from "../pages/Genral/Home.jsx";
 import Unauthorized from "../pages/Genral/Unauthorized.jsx";
+import PublicServices from "../pages/Genral/PublicServices.jsx";
+import { publicServicesLoader } from "../features/services/servicesLoader.js";
 
 const publicRoutes = [
   {
@@ -33,8 +35,8 @@ const publicRoutes = [
   },
   {
     path: "/services",
-    // element: <Services />,
-    // loader: "#",
+    element: <PublicServices />,
+    loader: publicServicesLoader,
   },
   {
     path: "/branch",
