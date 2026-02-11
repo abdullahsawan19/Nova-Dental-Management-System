@@ -49,6 +49,19 @@ export const updateServiceDetails = createAsyncThunk(
   },
 );
 
+// 5. Get By Id
+export const fetchServiceById = createAsyncThunk(
+  "services/fetchById",
+  async ({ id, lang }, thunkAPI) => {
+    try {
+      return await serviceServices.getServiceById(id, { lang });
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 const serviceSlice = createSlice({
   name: "services",
   initialState: {
@@ -61,6 +74,9 @@ const serviceSlice = createSlice({
     resetServiceState: (state) => {
       state.error = null;
       state.successMessage = null;
+    },
+    clearCurrentService: (state) => {
+      state.currentService = null;
     },
   },
   extraReducers: (builder) => {
@@ -103,9 +119,21 @@ const serviceSlice = createSlice({
           state.services[index] = updatedService;
         }
         state.successMessage = "Service updated successfully!";
+      })
+      .addCase(fetchServiceById.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchServiceById.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentService = action.payload.data.service;
+      })
+      .addCase(fetchServiceById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { resetServiceState } = serviceSlice.actions;
+export const { resetServiceState, clearCurrentService } = serviceSlice.actions;
 export default serviceSlice.reducer;

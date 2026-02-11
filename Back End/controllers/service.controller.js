@@ -35,7 +35,25 @@ exports.getAllServicesAdmin = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     results: services.length,
-    data: { services }, // هترجع { name: {en:..., ar:...}, ... }
+    data: { services },
+  });
+});
+
+exports.getService = catchAsync(async (req, res, next) => {
+  const service = await Service.findById(req.params.id);
+  if (!service) return next(new AppError("Service not found", 404));
+
+  let userLang = req.query.lang;
+  if (!userLang && req.user && req.user.preferredLanguage) {
+    userLang = req.user.preferredLanguage;
+  }
+  userLang = userLang || "en";
+
+  const localizedService = localizeService(service, userLang);
+
+  res.status(200).json({
+    status: "success",
+    data: { service: localizedService },
   });
 });
 

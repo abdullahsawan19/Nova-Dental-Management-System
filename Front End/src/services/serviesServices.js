@@ -24,6 +24,10 @@ const serviceServices = {
     });
     return response.data;
   },
+  getServiceById: async (id, params = {}) => {
+    const response = await axiosInstance.get(`/services/${id}`, { params });
+    return response.data;
+  },
 };
 
 export default serviceServices;

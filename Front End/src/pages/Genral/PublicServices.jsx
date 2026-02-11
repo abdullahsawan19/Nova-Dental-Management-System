@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom"; // للتنقل
 import {
   Grid,
   Card,
@@ -8,41 +9,105 @@ import {
   Typography,
   CardActions,
   Button,
+  Box,
+  IconButton,
 } from "@mui/material";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const PublicServices = () => {
   const { services } = useSelector((state) => state.services);
+  const navigate = useNavigate();
+
+  // State للتحكم في بداية العرض
+  const [startIndex, setStartIndex] = useState(0);
+  const cardsToShow = 3; // عدد الكروت الظاهرة
+
+  const handleNext = () => {
+    if (startIndex + cardsToShow < services.length) {
+      setStartIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (startIndex > 0) {
+      setStartIndex((prev) => prev - 1);
+    }
+  };
+
+  // الجزء اللي هيتعرض بناءً على الـ Index
+  const visibleServices = services.slice(startIndex, startIndex + cardsToShow);
 
   return (
-    <Grid container spacing={3} sx={{ p: 3 }}>
-      {services.map((service) => (
-        <Grid item xs={12} sm={6} md={4} key={service._id}>
-          <Card>
-            <CardMedia
-              component="img"
-              height="140"
-              image={`${import.meta.env.VITE_API_URL}/uploads/${service.image}`}
-              alt={service.name}
-            />
-            <CardContent>
-              {/* هنا الاسم جاي string جاهز حسب لغة اليوزر */}
-              <Typography gutterBottom variant="h5" component="div">
-                {service.name}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {service.description}
-              </Typography>
-              <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
-                {service.fees} EGP
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small">Book Now</Button>
-            </CardActions>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+    <Box sx={{ position: "relative", p: 3 }}>
+      {/* زرار الشمال */}
+      <IconButton
+        onClick={handlePrev}
+        disabled={startIndex === 0}
+        sx={{
+          position: "absolute",
+          left: 0,
+          top: "50%",
+          zIndex: 2,
+          bgcolor: "rgba(255,255,255,0.7)",
+        }}
+      >
+        <ArrowBackIosNewIcon />
+      </IconButton>
+
+      <Grid container spacing={3} justifyContent="center">
+        {visibleServices.map((service) => (
+          <Grid item xs={12} sm={6} md={4} key={service._id}>
+            <Card
+              sx={{ cursor: "pointer", height: "100%" }}
+              // لما يدوس على الكارت يروح للتفاصيل
+              onClick={() => navigate(`/services/${service._id}`)}
+            >
+              <CardMedia
+                component="img"
+                height="200"
+                image={`${import.meta.env.VITE_API_URL}/uploads/${service.image}`}
+                alt={service.name}
+              />
+              <CardContent>
+                <Typography
+                  gutterBottom
+                  variant="h5"
+                  component="div"
+                  fontWeight="bold"
+                >
+                  {service.name}
+                </Typography>
+                {/* تم إخفاء الوصف هنا عشان الزحمة، هيظهر في التفاصيل */}
+                <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
+                  {service.fees} EGP
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button size="small" variant="contained" fullWidth>
+                  View Details
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* زرار اليمين */}
+      <IconButton
+        onClick={handleNext}
+        disabled={startIndex + cardsToShow >= services.length}
+        sx={{
+          position: "absolute",
+          right: 0,
+          top: "50%",
+          zIndex: 2,
+          bgcolor: "rgba(255,255,255,0.7)",
+        }}
+      >
+        <ArrowForwardIosIcon />
+      </IconButton>
+    </Box>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useFetcher } from "react-router-dom";
+import { Link, useFetcher, NavLink } from "react-router-dom";
 import { logoutUser } from "../../features/auth/authSlice";
 
 import {
@@ -95,19 +95,19 @@ const Navbar = () => {
             }}
           >
             {navLinks.map((link) => (
-              <Link
+              <NavLink
                 key={link.title}
                 to={link.path}
-                style={{
+                style={({ isActive }) => ({
                   textDecoration: "none",
-                  color: "#555",
-                  fontWeight: "500",
+                  color: isActive ? "#1976d2" : "#555",
+                  fontWeight: isActive ? "700" : "500",
                   fontSize: "0.9rem",
                   whiteSpace: "nowrap",
-                }}
+                })}
               >
                 {link.title}
-              </Link>
+              </NavLink>
             ))}
           </Box>
 

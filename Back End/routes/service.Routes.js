@@ -8,7 +8,7 @@ const router = express.Router();
 
 // --- PUBLIC ROUTES ---
 router.get("/", serviceController.getAllServicesPublic);
-// router.get("/:id", serviceController.getService);
+router.get("/:id", serviceController.getService);
 
 // --- PROTECTED ROUTES (ADMIN ONLY) ---
 router.use(authenticate);

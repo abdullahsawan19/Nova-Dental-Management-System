@@ -9,7 +9,11 @@ import { activeBranchLoader } from "../features/branches/branchesLoader.js";
 import Home from "../pages/Genral/Home.jsx";
 import Unauthorized from "../pages/Genral/Unauthorized.jsx";
 import PublicServices from "../pages/Genral/PublicServices.jsx";
-import { publicServicesLoader } from "../features/services/servicesLoader.js";
+import {
+  publicServicesLoader,
+  serviceDetailsLoader,
+} from "../features/services/servicesLoader.js";
+import ServiceDetails from "../pages/Genral/ServiceDetails.jsx";
 
 const publicRoutes = [
   {
@@ -37,6 +41,11 @@ const publicRoutes = [
     path: "/services",
     element: <PublicServices />,
     loader: publicServicesLoader,
+  },
+  {
+    path: "services/:id",
+    element: <ServiceDetails />,
+    loader: serviceDetailsLoader,
   },
   {
     path: "/branch",
