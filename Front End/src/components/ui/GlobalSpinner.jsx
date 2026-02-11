@@ -6,34 +6,41 @@ const GlobalSpinner = () => {
   const navigation = useNavigation();
   const fetchers = useFetchers();
 
-  const isReduxLoading = useSelector((state) => state.branches.isLoading);
+  const branchLoading = useSelector((state) => state.branches?.isLoading);
+  const doctorLoading = useSelector((state) => state.doctor?.isLoading);
+  const userLoading = useSelector((state) => state.user?.isLoading);
 
   const isNavigating = navigation.state !== "idle";
 
   const isFetching = fetchers.some((fetcher) => fetcher.state !== "idle");
 
-  const isLoading = isNavigating || isFetching || isReduxLoading;
+  const isLoading =
+    isNavigating || isFetching || branchLoading || doctorLoading || userLoading;
+
+  if (!isLoading) return null;
+
   return (
     <Backdrop
       sx={{
         color: "#fff",
-        zIndex: 9999,
+        zIndex: (theme) => theme.zIndex.drawer + 999,
         display: "flex",
         flexDirection: "column",
         gap: 2,
-        backgroundColor: "rgba(0, 0, 0, 0.7)",
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
+        backdropFilter: "blur(3px)",
       }}
-      open={isLoading}
+      open={true}
     >
       <CircularProgress color="inherit" size={60} thickness={4} />
 
       <Box sx={{ mt: 2 }}>
-        <Typography variant="h6" component="div" sx={{ fontWeight: "bold" }}>
-          {isReduxLoading || navigation.state === "submitting"
-            ? "Loading..."
-            : isFetching
-              ? "Processing..."
-              : "Loading..."}
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ fontWeight: "bold", letterSpacing: 1 }}
+        >
+          {isNavigating || isFetching ? "Processing..." : "Loading Data..."}
         </Typography>
       </Box>
     </Backdrop>

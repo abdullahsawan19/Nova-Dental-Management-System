@@ -3,6 +3,9 @@ import AdminDashboard from "../features/admin/Pages/AdminDashboard";
 import MangeBranches from "../pages/admin/MangeBranches";
 import { branchesLoader } from "../features/branches/branchesLoader";
 import { branchAction } from "../features/branches/branch.action";
+import ManageDoctors from "../pages/admin/MangeDoctors";
+import { doctorsLoader } from "../features/doctors/doctorsLoader";
+import { doctorAction } from "../features/doctors/doctorAction";
 
 const adminRoutes = [
   {
@@ -29,7 +32,9 @@ const adminRoutes = [
       },
       {
         path: "doctors",
-        element: <div>Doctors Page</div>,
+        element: <ManageDoctors />,
+        loader: doctorsLoader,
+        action: doctorAction,
       },
       {
         path: "services",

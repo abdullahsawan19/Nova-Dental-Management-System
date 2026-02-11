@@ -15,22 +15,18 @@ const doctorSchema = new mongoose.Schema(
     specialization: {
       type: mongoose.Schema.ObjectId,
       ref: "Service",
-      required: true,
     },
     experienceYears: {
       type: Number,
-      required: true,
     },
     education: {
       en: {
         type: String,
         trim: true,
-        required: [true, "Education in English is required"],
       },
       ar: {
         type: String,
         trim: true,
-        required: [true, "Education in Arabic is required"],
       },
     },
     bio: {

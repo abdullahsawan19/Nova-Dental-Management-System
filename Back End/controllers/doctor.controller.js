@@ -2,7 +2,6 @@ const Doctor = require("../models/doctor.Model");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
-const redisClient = require("../utils/redisClient");
 
 // === Helper Function ===
 const localizeDoctorData = (doc, lang) => {
@@ -11,7 +10,6 @@ const localizeDoctorData = (doc, lang) => {
   if (docObj.specialization && typeof docObj.specialization === "object") {
     const specName =
       docObj.specialization.name[lang] || docObj.specialization.name["en"];
-
     docObj.specializationData = {
       id: docObj.specialization._id,
       name: specName,
@@ -20,16 +18,12 @@ const localizeDoctorData = (doc, lang) => {
         docObj.specialization.description[lang] ||
         docObj.specialization.description["en"],
     };
-
     docObj.specialization = specName;
   }
-
-  if (docObj.bio && docObj.bio[lang]) {
+  if (docObj.bio && docObj.bio[lang])
     docObj.bio = docObj.bio[lang] || docObj.bio["en"];
-  }
-  if (docObj.education && docObj.education[lang]) {
+  if (docObj.education && docObj.education[lang])
     docObj.education = docObj.education[lang] || docObj.education["en"];
-  }
 
   return docObj;
 };
@@ -43,17 +37,8 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
   }
   if (!userLang) userLang = "en";
 
-  const queryParams = JSON.stringify(req.query);
-  const cacheKey = `doctors:${queryParams}:${userLang}`;
+  let filter = { isDeleted: false };
 
-  const cachedData = await redisClient.get(cacheKey);
-
-  if (cachedData) {
-    console.log("⚡ Using Cached Data");
-    return res.status(200).json(JSON.parse(cachedData));
-  }
-
-  let filter = { isDeleted: false, isActive: true };
   if (req.query.specialization || req.query.service) {
     filter.specialization = req.query.specialization || req.query.service;
   }
@@ -62,12 +47,11 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
     Doctor.find(filter)
       .populate({
         path: "user",
-        select: "name preferredLanguage",
+        select: "name email phone preferredLanguage isActive",
       })
       .populate({
         path: "specialization",
         select: "name image description",
-        match: { isActive: true },
       }),
     req.query,
   )
@@ -78,11 +62,9 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
 
   const doctors = await features.query;
 
-  const activeSpecializationDoctors = doctors.filter(
-    (doc) => doc.specialization !== null,
-  );
+  const validDoctors = doctors.filter((doc) => doc.user !== null);
 
-  const localizedDoctors = activeSpecializationDoctors.map((doc) =>
+  const localizedDoctors = validDoctors.map((doc) =>
     localizeDoctorData(doc, userLang),
   );
 
@@ -90,7 +72,7 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
   const limit = req.query.limit * 1 || 6;
   const totalDocs = await Doctor.countDocuments(filter);
 
-  const responseData = {
+  res.status(200).json({
     status: "success",
     metadata: {
       currentPage: page,
@@ -100,95 +82,53 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
     },
     results: localizedDoctors.length,
     data: { doctors: localizedDoctors },
-  };
-
-  await redisClient.set(cacheKey, JSON.stringify(responseData), { EX: 300 });
-
-  res.status(200).json(responseData);
-});
-
-// 1. Get Current Doctor Profile
-exports.getDoctorProfile = catchAsync(async (req, res, next) => {
-  const doctor = await Doctor.findOne({ user: req.user.id })
-    .populate({
-      path: "user",
-      select: "name phone",
-    })
-    .populate({
-      path: "specialization",
-      select: "name image",
-    });
-
-  if (!doctor) {
-    return next(new AppError("You haven't completed your profile yet.", 404));
-  }
-
-  const userLang = req.user.preferredLanguage || "en";
-
-  const localizedDoctor = localizeDoctorData(doctor, userLang);
-
-  res.status(200).json({
-    status: "success",
-    data: { doctor: localizedDoctor },
   });
 });
 
-// 2. Create or Update Profile
+// 1. Get Profile
+exports.getDoctorProfile = catchAsync(async (req, res, next) => {
+  const doctor = await Doctor.findOne({ user: req.user.id })
+    .populate({ path: "user", select: "name phone" })
+    .populate({ path: "specialization", select: "name image" });
+
+  if (!doctor) return next(new AppError("Profile incomplete.", 404));
+  const userLang = req.user.preferredLanguage || "en";
+  res.status(200).json({
+    status: "success",
+    data: { doctor: localizeDoctorData(doctor, userLang) },
+  });
+});
+
+// 2. Update Profile
 exports.updateDoctorProfile = catchAsync(async (req, res, next) => {
   const doctorData = { ...req.body };
-
-  if (req.file) {
-    doctorData.photo = req.file.filename;
-  }
+  if (req.file) doctorData.photo = req.file.filename;
 
   const doctor = await Doctor.findOneAndUpdate(
     { user: req.user.id },
     doctorData,
-    {
-      new: true,
-      upsert: true,
-      runValidators: true,
-      setDefaultsOnInsert: true,
-    },
+    { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true },
   );
-
-  res.status(200).json({
-    status: "success",
-    message: "Profile updated successfully",
-    data: { doctor },
-  });
+  res
+    .status(200)
+    .json({ status: "success", message: "Profile updated", data: { doctor } });
 });
 
-// 3. Get Specific Doctor by ID (Public)
+// 3. Get By ID
 exports.getDoctorById = catchAsync(async (req, res, next) => {
   const doctor = await Doctor.findOne({
     _id: req.params.id,
     isDeleted: false,
     isActive: true,
   })
-    .populate({
-      path: "user",
-      select: "name photo",
-    })
-    .populate({
-      path: "specialization",
-      select: "name image description",
-    })
-    .populate({
-      path: "reviews",
-      select: "rating review user createdAt",
-    });
+    .populate({ path: "user", select: "name photo" })
+    .populate({ path: "specialization", select: "name image description" })
+    .populate({ path: "reviews", select: "rating review user createdAt" });
 
-  if (!doctor) {
-    return next(new AppError("No doctor found with that ID", 404));
-  }
-
+  if (!doctor) return next(new AppError("No doctor found", 404));
   const userLang = req.query.lang || "en";
-
-  const localizedDoctor = localizeDoctorData(doctor, userLang);
-
   res.status(200).json({
     status: "success",
-    data: { doctor: localizedDoctor },
+    data: { doctor: localizeDoctorData(doctor, userLang) },
   });
 });

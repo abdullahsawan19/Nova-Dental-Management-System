@@ -1,25 +1,26 @@
 const User = require("../models/user.Model.js");
+const Doctor = require("../models/doctor.Model.js"); 
 const catchAsync = require("../utils/catchAsync.js");
 const AppError = require("../utils/appError.js");
 const APIFeatures = require("../utils/apiFeatures.js");
 const { createSendToken } = require("./Auth.controller.js");
 
-// 1. Create User
+// 1. Create User (Standard Signup)
+
 exports.createUser = (role) => {
   return catchAsync(async (req, res, next) => {
     const { name, email, password, passwordConfirm, preferredLanguage, phone } =
       req.body;
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    if (existingUser)
       return next(new AppError("User with this email already exists", 400));
-    }
+
     const existingPhone = await User.findOne({ phone });
-    if (existingPhone) {
+    if (existingPhone)
       return next(
         new AppError("User with this phone number already exists", 400),
       );
-    }
 
     const user = await User.create({
       name,
@@ -36,33 +37,39 @@ exports.createUser = (role) => {
   });
 };
 
-// 2. Create Doctor (Admin Only)///
+// 2. Create Doctor (Admin Only)
 exports.createDoctor = catchAsync(async (req, res, next) => {
-  const doctor = await User.create({
+  const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     phone: req.body.phone,
     role: "doctor",
-    isActive: true,
+    isActive: true, =
   });
 
-  doctor.password = undefined;
+  await Doctor.create({
+    user: newUser._id,
+    education: {
+      en: "Pending update...",
+      ar: "في انتظار التحديث...",
+    },
+  });
+
+  newUser.password = undefined;
 
   res.status(201).json({
     status: "success",
-    message: "Doctor created successfully",
-    data: { user: doctor },
+    message:
+      "Doctor account created! They can now log in and complete their profile.",
+    data: { user: newUser },
   });
 });
 
 // 3. Get Me
 exports.getMe = catchAsync(async (req, res, next) => {
-  res.status(200).json({
-    status: "success",
-    data: { user: req.user },
-  });
+  res.status(200).json({ status: "success", data: { user: req.user } });
 });
 
 // 4. Update Me
@@ -70,7 +77,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
     return next(new AppError("This route is not for password updates.", 400));
   }
-
   const forbiddenFields = ["role", "isActive", "isDeleted", "refreshToken"];
   forbiddenFields.forEach((el) => delete req.body[el]);
 
@@ -78,14 +84,10 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
-
-  res.status(200).json({
-    status: "success",
-    data: { user: updatedUser },
-  });
+  res.status(200).json({ status: "success", data: { user: updatedUser } });
 });
 
-// 5. Get All Users (With API Features)
+// 5. Get All Users
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const filter = { role: { $ne: "admin" } };
   const features = new APIFeatures(User.find(filter), req.query)
@@ -94,44 +96,42 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
     .limitFields()
     .paginate()
     .search(["name", "email"]);
-  const users = await features.query;
 
+  const users = await features.query;
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 50;
 
   res.status(200).json({
     status: "success",
-    metadata: {
-      currentPage: page,
-      limit: limit,
-    },
+    metadata: { currentPage: page, limit: limit },
     results: users.length,
     data: { users },
   });
 });
 
-// 7. Deactivate User
+// 6. Deactivate User (Toggle)
 exports.deactivateUser = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    { isActive: false },
-    { new: true },
-  );
-
+  const user = await User.findById(req.params.id);
   if (!user) return next(new AppError("No user found with that ID", 404));
+
+  user.isActive = !user.isActive;
+  await user.save({ validateBeforeSave: false });
 
   res.status(200).json({
     status: "success",
-    message: "User deactivated successfully",
+    message: user.isActive
+      ? "User activated successfully"
+      : "User deactivated successfully",
     data: { user },
   });
 });
 
-// 8. Delete User
+// 7. Delete User
 exports.deleteUser = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndUpdate(req.params.id, { isDeleted: true });
-
+  const user = await User.findByIdAndUpdate(req.params.id, {
+    isDeleted: true,
+    isActive: false,
+  });
   if (!user) return next(new AppError("No user found with that ID", 404));
-
   res.status(204).json({ status: "success", data: null });
 });

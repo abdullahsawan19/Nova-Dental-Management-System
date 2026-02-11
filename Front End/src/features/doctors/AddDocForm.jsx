@@ -1,51 +1,120 @@
-import { Form, useActionData, useFetcher } from "react-router-dom";
-import Input from "../../components/ui/Input";
-import Button from "../../components/ui/Button";
+import { useEffect } from "react";
+import { useFetcher } from "react-router-dom";
+import {
+  Alert,
+  CircularProgress,
+  Box,
+  Grid,
+  TextField,
+  Button,
+} from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
 
-export default function AddDocForm() {
-  //   const actionData = fetcher.data;
-
-  const error = useActionData();
+export default function AddDocForm({ onSuccess }) {
   const fetcher = useFetcher();
   const isSubmitting = fetcher.state === "submitting";
+  const actionData = fetcher.data;
+
+  useEffect(() => {
+    if (actionData?.success && fetcher.state === "idle") {
+      if (onSuccess) onSuccess();
+    }
+  }, [actionData, fetcher.state, onSuccess]);
 
   return (
-    <>
-      <Form method="post" className="form" replace>
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm mb-4">
-            {typeof error === "string" ? error : "Signup failed"}
-          </div>
-        )}
-        <Input label="Name" type="text" name="name" placeholder="Your Name" />
-        <Input
-          label="Email"
-          type="email"
-          name="email"
-          placeholder="name@gmail.com"
-        />{" "}
-        <Input
-          label="Password"
-          type="password"
-          name="password"
-          placeholder="********"
-        />
-        <Input
-          label="Confirm Password"
-          type="password"
-          name="passwordConfirm"
-          placeholder="********"
-        />
-        <Input
-          label="Phone Number"
-          type="text"
-          name="phone"
-          placeholder="Your Phone Number"
-        />
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Adding..." : "Add Doctor"}
-        </Button>{" "}
-      </Form>
-    </>
+    <fetcher.Form method="post" noValidate>
+      <input type="hidden" name="intent" value="create" />
+
+      {actionData?.error && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+          {actionData.error.message ||
+            actionData.error.response?.data?.message ||
+            "Failed to add doctor"}
+        </Alert>
+      )}
+
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={12}>
+          <TextField
+            label="Full Name"
+            name="name"
+            placeholder="e.g. Dr. Abdullah Mohamed"
+            fullWidth
+            required
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            label="Email Address"
+            type="email"
+            name="email"
+            placeholder="doctor@clinic.com"
+            fullWidth
+            required
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            label="Phone Number"
+            name="phone"
+            placeholder="01xxxxxxxxx"
+            fullWidth
+            required
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            label="Password"
+            type="password"
+            name="password"
+            fullWidth
+            required
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            label="Confirm Password"
+            type="password"
+            name="passwordConfirm"
+            fullWidth
+            required
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+      </Grid>
+
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          variant="contained"
+          color="primary"
+          startIcon={!isSubmitting && <SaveIcon />}
+          sx={{ px: 4, py: 1, fontWeight: "bold", borderRadius: 2 }}
+        >
+          {isSubmitting ? (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <CircularProgress size={20} color="inherit" />
+              Creating...
+            </Box>
+          ) : (
+            "Create Doctor"
+          )}
+        </Button>
+      </Box>
+    </fetcher.Form>
   );
 }

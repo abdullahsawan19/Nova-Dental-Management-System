@@ -9,6 +9,6 @@ export const store = configureStore({
     auth: authSlice,
     branches: branchSlice,
     users: userSlice,
-    doctors: doctorSlice,
+    doctor: doctorSlice,
   },
 });

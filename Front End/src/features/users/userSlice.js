@@ -54,14 +54,57 @@ export const deleteUser = createAsyncThunk(
   },
 );
 
-const initialState = {};
-
+const initialState = {
+  users: [],
+  currentUser: null,
+  isLoading: false,
+  error: null,
+};
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducer: {},
   extraReducers: (builder) => {
-    builder;
+    builder
+      // ============ Get All Users ============
+      .addCase(getAllUsers.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getAllUsers.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.users = action.payload.data.users || action.payload;
+      })
+      .addCase(getAllUsers.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      // ============ Deactivate User ============
+      .addCase(deactivateUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+
+        const updatedUser = action.payload.data?.user || action.payload;
+
+        const index = state.users.findIndex((u) => u._id === updatedUser._id);
+        if (index !== -1) {
+          state.users[index].isActive = false;
+        }
+      })
+
+      // ============ Delete User ============
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.users = state.users.filter((user) => user._id !== action.payload);
+      })
+
+      // ============ Get Me (Profile) ============
+      .addCase(getMe.fulfilled, (state, action) => {
+        state.currentUser = action.payload;
+      })
+      .addCase(updateMe.fulfilled, (state, action) => {
+        state.currentUser = action.payload;
+      });
   },
 });
 
