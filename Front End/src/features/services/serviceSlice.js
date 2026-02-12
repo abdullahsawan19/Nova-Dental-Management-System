@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import serviceServices from "../../services/serviesServices";
 
+// 1.fetchServices
 export const fetchServices = createAsyncThunk(
   "services/fetchAll",
   async ({ params, isAdmin } = {}, thunkAPI) => {
@@ -123,6 +124,7 @@ const serviceSlice = createSlice({
       .addCase(fetchServiceById.pending, (state) => {
         state.isLoading = true;
         state.error = null;
+        state.currentService = null;
       })
       .addCase(fetchServiceById.fulfilled, (state, action) => {
         state.isLoading = false;

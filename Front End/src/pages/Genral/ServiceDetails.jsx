@@ -1,20 +1,12 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { clearCurrentService } from "../../features/services/serviceSlice";
+import React from "react"; 
+import { useSelector } from "react-redux"; 
 import { Box, Typography, Button, Container, Paper, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const ServiceDetails = () => {
   const { currentService, isLoading } = useSelector((state) => state.services);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // تنظيف الـ State لما نخرج من الصفحة عشان لما ندخل خدمة تانية متبقاش القديمة ظاهرة
-  useEffect(() => {
-    return () => {
-      dispatch(clearCurrentService());
-    };
-  }, [dispatch]);
 
   if (isLoading || !currentService) {
     return (
@@ -32,7 +24,6 @@ const ServiceDetails = () => {
 
       <Paper elevation={3} sx={{ p: 4, borderRadius: 4 }}>
         <Grid container spacing={4}>
-          {/* الصورة */}
           <Grid item xs={12} md={6}>
             <Box
               component="img"
@@ -47,7 +38,6 @@ const ServiceDetails = () => {
             />
           </Grid>
 
-          {/* البيانات */}
           <Grid
             item
             xs={12}
@@ -64,7 +54,6 @@ const ServiceDetails = () => {
             >
               {currentService.name}
             </Typography>
-
             <Typography
               variant="h5"
               color="text.secondary"
@@ -73,7 +62,6 @@ const ServiceDetails = () => {
             >
               Fees: {currentService.fees} EGP
             </Typography>
-
             <Typography
               variant="body1"
               paragraph
@@ -81,14 +69,13 @@ const ServiceDetails = () => {
             >
               {currentService.description}
             </Typography>
-
-            <Button
+            {/* <Button
               variant="contained"
               size="large"
               sx={{ mt: 2, width: "fit-content" }}
             >
               Book Appointment Now
-            </Button>
+            </Button> */}
           </Grid>
         </Grid>
       </Paper>

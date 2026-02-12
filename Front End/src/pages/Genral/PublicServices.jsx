@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom"; // للتنقل
+import { useNavigate } from "react-router-dom"; 
 import {
   Grid,
   Card,
@@ -19,9 +19,8 @@ const PublicServices = () => {
   const { services } = useSelector((state) => state.services);
   const navigate = useNavigate();
 
-  // State للتحكم في بداية العرض
   const [startIndex, setStartIndex] = useState(0);
-  const cardsToShow = 3; // عدد الكروت الظاهرة
+  const cardsToShow = 3; 
 
   const handleNext = () => {
     if (startIndex + cardsToShow < services.length) {
@@ -35,12 +34,10 @@ const PublicServices = () => {
     }
   };
 
-  // الجزء اللي هيتعرض بناءً على الـ Index
   const visibleServices = services.slice(startIndex, startIndex + cardsToShow);
 
   return (
     <Box sx={{ position: "relative", p: 3 }}>
-      {/* زرار الشمال */}
       <IconButton
         onClick={handlePrev}
         disabled={startIndex === 0}
@@ -60,7 +57,6 @@ const PublicServices = () => {
           <Grid item xs={12} sm={6} md={4} key={service._id}>
             <Card
               sx={{ cursor: "pointer", height: "100%" }}
-              // لما يدوس على الكارت يروح للتفاصيل
               onClick={() => navigate(`/services/${service._id}`)}
             >
               <CardMedia
@@ -78,7 +74,6 @@ const PublicServices = () => {
                 >
                   {service.name}
                 </Typography>
-                {/* تم إخفاء الوصف هنا عشان الزحمة، هيظهر في التفاصيل */}
                 <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
                   {service.fees} EGP
                 </Typography>
@@ -93,7 +88,6 @@ const PublicServices = () => {
         ))}
       </Grid>
 
-      {/* زرار اليمين */}
       <IconButton
         onClick={handleNext}
         disabled={startIndex + cardsToShow >= services.length}

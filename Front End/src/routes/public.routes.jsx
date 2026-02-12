@@ -14,11 +14,13 @@ import {
   serviceDetailsLoader,
 } from "../features/services/servicesLoader.js";
 import ServiceDetails from "../pages/Genral/ServiceDetails.jsx";
+import { homeLoader } from "../features/Home/homeLoader.js";
 
 const publicRoutes = [
   {
     index: true,
     element: <Home />,
+    loader: homeLoader,
   },
   {
     path: "/login",
