@@ -4,6 +4,7 @@ import branchSlice from "../features/branches/branchSlice";
 import userSlice from "../features/users/userSlice";
 import doctorSlice from "../features/doctors/doctorSlice";
 import serviceSlice from "../features/services/serviceSlice";
+import reviewSlice from "../features/reviews/reviewSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     user: userSlice,
     doctor: doctorSlice,
     services: serviceSlice,
+    reviews: reviewSlice,
   },
 });

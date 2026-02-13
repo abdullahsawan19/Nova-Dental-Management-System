@@ -121,9 +121,8 @@ exports.getDoctorById = catchAsync(async (req, res, next) => {
     isDeleted: false,
     isActive: true,
   })
-    .populate({ path: "user", select: "name photo" })
-    .populate({ path: "specialization", select: "name image description" })
-    .populate({ path: "reviews", select: "rating review user createdAt" });
+    .populate({ path: "user", select: "name email phone" })
+    .populate({ path: "specialization", select: "name image description" });
 
   if (!doctor) return next(new AppError("No doctor found", 404));
   const userLang = req.query.lang || "en";

@@ -12,14 +12,13 @@ import {
   IconButton,
   useMediaQuery,
   useTheme,
-  Tooltip,
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-const PublicServices = () => {
-  const { services } = useSelector((state) => state.services || {});
-  const safeServices = Array.isArray(services) ? services : [];
+const PublicDoctors = () => {
+  const { doctors } = useSelector((state) => state.doctor || {});
+  const safeDoctors = Array.isArray(doctors) ? doctors : [];
 
   const navigate = useNavigate();
   const theme = useTheme();
@@ -30,29 +29,31 @@ const PublicServices = () => {
   const cardsToShow = isLarge ? 4 : isMedium ? 2 : 1;
   const [startIndex, setStartIndex] = useState(0);
 
-  const isSliderActive = safeServices.length > cardsToShow;
+  const isSliderActive = safeDoctors.length > cardsToShow;
 
   useEffect(() => {
-    if (startIndex >= safeServices.length && safeServices.length > 0) {
+    if (startIndex >= safeDoctors.length && safeDoctors.length > 0) {
       setStartIndex(0);
     }
-  }, [safeServices.length, startIndex]);
+  }, [safeDoctors.length, startIndex]);
 
   const handleNext = () => {
-    setStartIndex((prev) => (prev + 1) % safeServices.length);
+    setStartIndex((prev) => (prev + 1) % safeDoctors.length);
   };
 
   const handlePrev = () => {
     setStartIndex(
-      (prev) => (prev - 1 + safeServices.length) % safeServices.length,
+      (prev) => (prev - 1 + safeDoctors.length) % safeDoctors.length,
     );
   };
 
-  const visibleServices = isSliderActive
+  const visibleDoctors = isSliderActive
     ? Array.from({ length: cardsToShow }).map(
-        (_, i) => safeServices[(startIndex + i) % safeServices.length],
+        (_, i) => safeDoctors[(startIndex + i) % safeDoctors.length],
       )
-    : safeServices;
+    : safeDoctors;
+
+  if (safeDoctors.length === 0) return null;
 
   return (
     <Box sx={{ position: "relative", px: { xs: 2, md: 6 }, py: 4 }}>
@@ -64,7 +65,7 @@ const PublicServices = () => {
           gutterBottom
           color="text.primary"
         >
-          Our Professional Services
+          Our Doctors
         </Typography>
         <Box
           sx={{
@@ -101,13 +102,13 @@ const PublicServices = () => {
           justifyContent="center"
           sx={{ transition: "all 0.5s ease" }}
         >
-          {visibleServices.map((service, index) => (
+          {visibleDoctors.map((doc, index) => (
             <Grid
               item
               xs={12}
               sm={6}
               lg={3}
-              key={`${service._id}-${index}`}
+              key={`${doc._id}-${index}`}
               sx={{ display: "flex", justifyContent: "center" }}
             >
               <Card
@@ -127,12 +128,11 @@ const PublicServices = () => {
                     boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
                   },
                 }}
-                onClick={() => navigate(`/services/${service._id}`)}
               >
                 <Box
                   sx={{
                     position: "relative",
-                    height: "220px",
+                    height: "250px",
                     width: "100%",
                     flexShrink: 0,
                   }}
@@ -140,26 +140,13 @@ const PublicServices = () => {
                   <CardMedia
                     component="img"
                     sx={{ height: "100%", width: "100%", objectFit: "cover" }}
-                    image={`${import.meta.env.VITE_API_URL}/uploads/${service.image}`}
-                    alt={service.name}
+                    image={
+                      doc.user?.photo
+                        ? `${import.meta.env.VITE_API_URL}/img/users/${doc.user.photo}`
+                        : "/default-doctor.jpg"
+                    }
+                    alt={doc.user?.name}
                   />
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: 10,
-                      right: 10,
-                      bgcolor: "rgba(255,255,255,0.95)",
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 2,
-                      fontWeight: "bold",
-                      color: "primary.main",
-                      fontSize: "0.85rem",
-                      boxShadow: 1,
-                    }}
-                  >
-                    {service.fees} EGP
-                  </Box>
                 </Box>
 
                 <CardContent
@@ -169,58 +156,30 @@ const PublicServices = () => {
                     flexDirection: "column",
                     p: 2,
                     pb: 2,
+                    textAlign: "center",
                   }}
                 >
-                  <Box
-                    sx={{
-                      height: "55px",
-                      mb: 1,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      overflow: "hidden",
-                    }}
+                  <Typography
+                    variant="h6"
+                    fontWeight="700"
+                    sx={{ mb: 0.5, lineHeight: 1.2 }}
                   >
-                    <Tooltip title={service.name} placement="top">
-                      <Typography
-                        variant="h6"
-                        fontWeight="700"
-                        sx={{
-                          textAlign: "center",
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          lineHeight: "1.2",
-                          fontSize: "1.1rem",
-                        }}
-                      >
-                        {service.name}
-                      </Typography>
-                    </Tooltip>
-                  </Box>
-
-                  <Box sx={{ height: "45px", overflow: "hidden", mb: 1 }}>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{
-                        textAlign: "center",
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        lineHeight: "1.4",
-                      }}
-                    >
-                      {service.description ||
-                        "Top-tier dental care services available."}
-                    </Typography>
-                  </Box>
+                    Dr. {doc.user?.name}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="primary"
+                    fontWeight="bold"
+                    sx={{ mb: 1 }}
+                  >
+                    {doc.specialization || "General Dentist"}
+                  </Typography>
 
                   <Box sx={{ mt: "auto", width: "100%" }}>
                     <Button
                       variant="outlined"
                       fullWidth
+                      onClick={() => navigate(`/doctors/${doc._id}`)}
                       sx={{
                         height: "40px",
                         borderRadius: 2,
@@ -264,4 +223,4 @@ const PublicServices = () => {
   );
 };
 
-export default PublicServices;
+export default PublicDoctors;

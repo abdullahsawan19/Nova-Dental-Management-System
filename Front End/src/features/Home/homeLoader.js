@@ -1,6 +1,7 @@
 import { store } from "../../store/store";
 import { fetchServices } from "../../features/services/serviceSlice";
-// import { fetchDoctors } from "../../features/doctors/doctorSlice";
+import { fetchReviews } from "../../features/reviews/reviewSlice";
+import { getAllDoctors } from "../../features/doctors/doctorSlice";
 
 export const homeLoader = async ({ request }) => {
   const url = new URL(request.url);
@@ -8,25 +9,24 @@ export const homeLoader = async ({ request }) => {
 
   const state = store.getState();
 
-  const promises = [];
-
-  
   if (state.services.services.length === 0) {
-    promises.push(
-      store.dispatch(fetchServices({ params: { lang }, isAdmin: false })),
-    );
+    await store.dispatch(fetchServices({ params: { lang }, isAdmin: false }));
+  } else {
+    store.dispatch(fetchServices({ params: { lang }, isAdmin: false }));
   }
 
-
-  if (state.doctors.doctors.length === 0) {
-    promises.push(
-      store.dispatch(fetchDoctors({ params: { lang } }))
+  if (state.reviews.reviews.length === 0) {
+    await store.dispatch(
+      fetchReviews({ limit: 10, sort: "-rating,-createdAt" }),
     );
+  } else {
+    store.dispatch(fetchReviews({ limit: 20 }));
   }
-  */
 
-  if (promises.length > 0) {
-    await Promise.all(promises);
+  if (state.doctor.doctors.length === 0) {
+    await store.dispatch(getAllDoctors({ params: { lang } }));
+  } else {
+    store.dispatch(getAllDoctors({ params: { lang } }));
   }
 
   return null;

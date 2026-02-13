@@ -15,6 +15,7 @@ export const createDoctor = createAsyncThunk(
     }
   },
 );
+
 export const getAllDoctors = createAsyncThunk(
   "doctor/all",
   async (_, thunkAPI) => {
@@ -26,6 +27,7 @@ export const getAllDoctors = createAsyncThunk(
     }
   },
 );
+
 export const getDoctorById = createAsyncThunk(
   "doctor/data",
   async (id, thunkAPI) => {
@@ -37,6 +39,7 @@ export const getDoctorById = createAsyncThunk(
     }
   },
 );
+
 export const getDoctorProfile = createAsyncThunk(
   "doctor/mydata",
   async (_, thunkAPI) => {
@@ -48,6 +51,7 @@ export const getDoctorProfile = createAsyncThunk(
     }
   },
 );
+
 export const updateDoctorProfile = createAsyncThunk(
   "doctor/update",
   async (formData, thunkAPI) => {

@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useFetcher, NavLink } from "react-router-dom";
+import {
+  Link,
+  useFetcher,
+  NavLink,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { logoutUser } from "../../features/auth/authSlice";
 
 import {
@@ -30,10 +36,59 @@ import UpdatePatientData from "../../pages/Genral/UpdatePatientData";
 const Navbar = () => {
   const dispatch = useDispatch();
   const fetcher = useFetcher();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [currentHash, setCurrentHash] = useState("");
   const [openProfile, setOpenProfile] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const { token, user } = useSelector((state) => state.auth || {});
+
+  useEffect(() => {
+    setCurrentHash(location.hash);
+  }, [location]);
+
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setCurrentHash("");
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      const sections = document.querySelectorAll("#services, #reviews");
+
+      const observerOptions = {
+        root: null,
+        rootMargin: "-20% 0px -40% 0px",
+        threshold: 0,
+      };
+
+      const observerCallback = (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const newHash = `#${entry.target.id}`;
+            setCurrentHash(newHash);
+            window.history.replaceState(null, "", newHash);
+          }
+        });
+      };
+
+      const observer = new IntersectionObserver(
+        observerCallback,
+        observerOptions,
+      );
+
+      sections.forEach((sec) => observer.observe(sec));
+
+      return () => {
+        sections.forEach((sec) => observer.unobserve(sec));
+        observer.disconnect();
+      };
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   const handleOpen = () => {
     fetcher.load("/profile/update");
@@ -45,14 +100,31 @@ const Navbar = () => {
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   const navLinks = [
-    { title: "Services", path: "/services" },
+    { title: "Services", path: "/#services" },
     { title: "Doctors", path: "/doctors" },
     { title: "Branches", path: "/branch" },
-    { title: "Reviews", path: "/reviews" },
+    { title: "Reviews", path: "/#reviews" },
     { title: "FAQ", path: "/faq" },
     { title: "About", path: "/about" },
     { title: "AI Chat", path: "/chat" },
   ];
+
+  const handleNavClick = (path) => {
+    if (mobileOpen) setMobileOpen(false);
+
+    if (path.includes("#")) {
+      const sectionId = path.split("#")[1];
+
+      if (location.pathname === "/") {
+        const elem = document.getElementById(sectionId);
+        if (elem) {
+          elem.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        navigate(path);
+      }
+    }
+  };
 
   return (
     <>
@@ -94,21 +166,41 @@ const Navbar = () => {
               px: 2,
             }}
           >
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.title}
-                to={link.path}
-                style={({ isActive }) => ({
-                  textDecoration: "none",
-                  color: isActive ? "#1976d2" : "#555",
-                  fontWeight: isActive ? "700" : "500",
-                  fontSize: "0.9rem",
-                  whiteSpace: "nowrap",
-                })}
-              >
-                {link.title}
-              </NavLink>
-            ))}
+            {navLinks.map((link) => {
+              const isLinkActive = (isActive) => {
+                if (link.path.includes("#")) {
+                  const targetHash = link.path.split("/")[1];
+                  return (
+                    location.pathname === "/" && currentHash === targetHash
+                  );
+                }
+                return isActive;
+              };
+
+              return (
+                <NavLink
+                  key={link.title}
+                  to={link.path}
+                  onClick={(e) => {
+                    if (link.path.includes("#") && location.pathname === "/") {
+                      e.preventDefault();
+                    }
+                    handleNavClick(link.path);
+                  }}
+                  style={({ isActive }) => ({
+                    textDecoration: "none",
+                    color: isLinkActive(isActive) ? "#1976d2" : "#555",
+                    fontWeight: isLinkActive(isActive) ? "700" : "500",
+                    fontSize: "0.9rem",
+                    whiteSpace: "nowrap",
+                    cursor: "pointer",
+                    transition: "color 0.3s ease",
+                  })}
+                >
+                  {link.title}
+                </NavLink>
+              );
+            })}
           </Box>
 
           <Box
@@ -190,24 +282,46 @@ const Navbar = () => {
           </Typography>
           <Divider />
           <List>
-            {navLinks.map((link) => (
-              <ListItem key={link.title} disablePadding>
-                <ListItemText>
-                  <Link
-                    to={link.path}
-                    style={{
-                      textDecoration: "none",
-                      color: "#555",
-                      display: "block",
-                      padding: "12px",
-                    }}
-                    onClick={handleDrawerToggle}
-                  >
-                    {link.title}
-                  </Link>
-                </ListItemText>
-              </ListItem>
-            ))}
+            {navLinks.map((link) => {
+              const isLinkActive = (isActive) => {
+                if (link.path.includes("#")) {
+                  const targetHash = link.path.split("/")[1];
+                  return (
+                    location.pathname === "/" && currentHash === targetHash
+                  );
+                }
+                return isActive;
+              };
+
+              return (
+                <ListItem key={link.title} disablePadding>
+                  <ListItemText>
+                    <NavLink
+                      to={link.path}
+                      style={({ isActive }) => ({
+                        textDecoration: "none",
+                        color: isLinkActive(isActive) ? "#1976d2" : "#555",
+                        fontWeight: isLinkActive(isActive) ? "700" : "500",
+                        display: "block",
+                        padding: "12px",
+                        transition: "color 0.3s ease",
+                      })}
+                      onClick={(e) => {
+                        if (
+                          link.path.includes("#") &&
+                          location.pathname === "/"
+                        ) {
+                          e.preventDefault();
+                        }
+                        handleNavClick(link.path);
+                      }}
+                    >
+                      {link.title}
+                    </NavLink>
+                  </ListItemText>
+                </ListItem>
+              );
+            })}
           </List>
         </Box>
       </Drawer>

@@ -12,6 +12,9 @@ import { manageUsersAction } from "../features/users/userAction";
 import ServicesTable from "../pages/admin/MangeServices";
 import { adminServicesLoader } from "../features/services/servicesLoader";
 import { serviceAction } from "../features/services/serviceAction";
+import { adminReviewsLoader } from "../features/reviews/reviewLoader";
+import { reviewAction } from "../features/reviews/reviewAction";
+import ManageReviews from "../pages/admin/ManageReviews";
 
 const adminRoutes = [
   {
@@ -52,7 +55,9 @@ const adminRoutes = [
       },
       {
         path: "reviews",
-        element: <div>Reviews Page</div>,
+        element: <ManageReviews />,
+        loader: adminReviewsLoader,
+        action: reviewAction,
       },
     ],
   },
