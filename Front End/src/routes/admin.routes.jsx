@@ -5,7 +5,7 @@ import { branchesLoader } from "../features/branches/branchesLoader";
 import { branchAction } from "../features/branches/branch.action";
 import ManageDoctors from "../pages/admin/MangeDoctors";
 import { doctorsLoader } from "../features/doctors/doctorsLoader";
-import { doctorAction } from "../features/doctors/doctorAction";
+import { doctorsAction } from "../features/doctors/doctorsAction";
 import ManageUsers from "../pages/admin/MangeUsers";
 import { usersLoader } from "../features/users/userLoader";
 import { manageUsersAction } from "../features/users/userAction";
@@ -15,15 +15,16 @@ import { serviceAction } from "../features/services/serviceAction";
 import { adminReviewsLoader } from "../features/reviews/reviewLoader";
 import { reviewAction } from "../features/reviews/reviewAction";
 import ManageReviews from "../pages/admin/ManageReviews";
+import { adminDashboardLoader } from "../features/admin/adminLoader.js";
 
 const adminRoutes = [
   {
     element: <DashboardLayout />,
-
     children: [
       {
         index: true,
         element: <AdminDashboard />,
+        loader: adminDashboardLoader,
       },
       {
         path: "appointments",
@@ -45,7 +46,7 @@ const adminRoutes = [
         path: "doctors",
         element: <ManageDoctors />,
         loader: doctorsLoader,
-        action: doctorAction,
+        action: doctorsAction,
       },
       {
         path: "services",

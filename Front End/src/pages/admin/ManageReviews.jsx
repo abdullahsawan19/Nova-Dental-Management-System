@@ -5,7 +5,6 @@ import {
   Box,
   Typography,
   Paper,
-  Avatar,
   Tooltip,
   Rating,
   IconButton,
@@ -30,25 +29,20 @@ const ManageReviews = () => {
       flex: 1.5,
       minWidth: 200,
       renderCell: (params) => (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Avatar
-            src={
-              params.row.user?.photo
-                ? `${import.meta.env.VITE_API_URL}/img/users/${params.row.user.photo}`
-                : null
-            }
-            alt={params.row.user?.name}
-          >
-            {params.row.user?.name?.charAt(0)}
-          </Avatar>
-          <Box>
-            <Typography variant="subtitle2" fontWeight="bold">
-              {params.row.user?.name || "Deleted User"}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {params.row.user?.email || "No Email"}
-            </Typography>
-          </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            height: "100%",
+          }}
+        >
+          <Typography variant="subtitle2" fontWeight="bold" lineHeight={1.2}>
+            {params.row.user?.name || "Deleted User"}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {params.row.user?.email || "No Email"}
+          </Typography>
         </Box>
       ),
     },
@@ -57,10 +51,20 @@ const ManageReviews = () => {
       headerName: "Doctor Name",
       flex: 1,
       minWidth: 150,
+
       renderCell: (params) => (
-        <Typography fontWeight="500" color="primary">
-          Dr. {params.value}
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            height: "100%",
+          }}
+        >
+          <Typography fontWeight="500" color="primary">
+            Dr. {params.value}
+          </Typography>
+        </Box>
       ),
     },
     {
@@ -77,11 +81,20 @@ const ManageReviews = () => {
       flex: 2,
       minWidth: 250,
       renderCell: (params) => (
-        <Tooltip title={params.value}>
-          <Typography noWrap variant="body2" sx={{ width: "100%" }}>
-            {params.value}
-          </Typography>
-        </Tooltip>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            height: "100%",
+          }}
+        >
+          <Tooltip title={params.value}>
+            <Typography noWrap variant="body2" sx={{ width: "100%" }}>
+              {params.value}
+            </Typography>
+          </Tooltip>
+        </Box>
       ),
     },
     {

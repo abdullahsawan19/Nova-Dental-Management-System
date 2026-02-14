@@ -40,7 +40,7 @@ const AdminSidebar = ({ drawerWidth }) => {
       path: "/admin/appointments",
       icon: <CalendarTodayIcon />,
     },
-    { label: "Manage Users", path: "/admin/users", icon: <PeopleIcon /> },
+    { label: "Manage Patients", path: "/admin/users", icon: <PeopleIcon /> },
     { label: "Doctors", path: "/admin/doctors", icon: <PersonIcon /> },
     { label: "Branches", path: "/admin/branches", icon: <StoreIcon /> },
     {

@@ -32,7 +32,10 @@ const DoctorsPage = () => {
     startIndex + itemsPerPage,
   );
   const totalPages = Math.ceil(safeDoctors.length / itemsPerPage);
-
+  console.log(
+    "Image URL:",
+    `${import.meta.env.VITE_API_URL}/uploads/${currentDoctors[0]?.photo}`,
+  );
   return (
     <Box sx={{ bgcolor: "#f9fafb", minHeight: "100vh", py: 6 }}>
       <Container maxWidth="lg">
@@ -97,11 +100,11 @@ const DoctorsPage = () => {
                     component="img"
                     sx={{ height: "100%", width: "100%", objectFit: "cover" }}
                     image={
-                      doc.user?.photo
-                        ? `${import.meta.env.VITE_API_URL}/img/users/${doc.user.photo}`
+                      doc.photo && doc.photo !== "Doctor.jfif"
+                        ? `${import.meta.env.VITE_API_URL}/uploads/${doc.photo}`
                         : "/default-doctor.jpg"
                     }
-                    alt={doc.user?.name}
+                    alt={doc.user?.name || "Doctor"}
                   />
                 </Box>
 

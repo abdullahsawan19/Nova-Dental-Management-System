@@ -1,15 +1,23 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/common/Navbar";
-import Footer from "../components/common/Footer";
+import { Box } from "@mui/material";
+import DoctorNav from "../features/Doctor/DoctorNav";
 
 const DocDashboard = () => {
   return (
-    <div>
-      <Navbar />
-      <h1>Doctor Dashboard</h1>
-      <Outlet />
-      <Footer />
-    </div>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        bgcolor: "#f4f6f8",
+      }}
+    >
+      <DoctorNav />
+
+      <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, md: 4 } }}>
+        <Outlet />
+      </Box>
+    </Box>
   );
 };
 

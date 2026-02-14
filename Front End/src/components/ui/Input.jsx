@@ -1,4 +1,5 @@
 import { TextField } from "@mui/material";
+
 const Input = ({
   label,
   type = "text",
@@ -7,6 +8,7 @@ const Input = ({
   onChange,
   name,
   className,
+  children,
   ...props
 }) => {
   return (
@@ -20,7 +22,9 @@ const Input = ({
         placeholder={placeholder}
         className={className}
         {...props}
-      />
+      >
+        {children}
+      </TextField>
     </div>
   );
 };

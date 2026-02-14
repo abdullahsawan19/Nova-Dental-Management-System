@@ -58,24 +58,66 @@ const PublicDoctors = () => {
   return (
     <Box sx={{ position: "relative", px: { xs: 2, md: 6 }, py: 4 }}>
       {/* Header */}
-      <Box sx={{ mb: 4, textAlign: "center" }}>
-        <Typography
-          variant="h4"
-          fontWeight="800"
-          gutterBottom
-          color="text.primary"
-        >
-          Our Doctors
-        </Typography>
+      {/* Header */}
+      <Box sx={{ mb: 6, display: "flex", justifyContent: "center" }}>
         <Box
+          onClick={() => navigate("/doctors")}
           sx={{
-            width: 60,
-            height: 4,
-            bgcolor: "primary.main",
-            mx: "auto",
-            borderRadius: 2,
+            textAlign: "center",
+            cursor: "pointer",
+            display: "inline-block",
+            p: 1,
+            "&:hover .title-text": { color: "primary.main" },
+            "&:hover .underline": { width: "100%" },
+            "&:hover .icon": { transform: "translateX(8px)" },
           }}
-        />
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 1,
+              mb: 1,
+            }}
+          >
+            <Typography
+              className="title-text"
+              variant="h4"
+              fontWeight="800"
+              color="text.primary"
+              sx={{ transition: "color 0.3s ease" }}
+            >
+              Our Doctors
+            </Typography>
+            <ArrowForwardIosIcon
+              className="icon"
+              sx={{
+                color: "primary.main",
+                fontSize: "1.5rem",
+                transition: "transform 0.3s ease",
+              }}
+            />
+          </Box>
+          <Box
+            className="underline"
+            sx={{
+              width: 60,
+              height: 4,
+              bgcolor: "primary.main",
+              mx: "auto",
+              borderRadius: 2,
+              transition: "width 0.3s ease",
+            }}
+          />
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ mt: 1, display: "block", fontWeight: 500 }}
+          >
+            View All
+          </Typography>
+        </Box>
       </Box>
 
       <Box sx={{ position: "relative", px: { xs: 0, md: 4 } }}>
@@ -141,11 +183,11 @@ const PublicDoctors = () => {
                     component="img"
                     sx={{ height: "100%", width: "100%", objectFit: "cover" }}
                     image={
-                      doc.user?.photo
-                        ? `${import.meta.env.VITE_API_URL}/img/users/${doc.user.photo}`
+                      doc.photo && doc.photo !== "Doctor.jfif"
+                        ? `${import.meta.env.VITE_API_URL}/uploads/${doc.photo}`
                         : "/default-doctor.jpg"
                     }
-                    alt={doc.user?.name}
+                    alt={doc.user?.name || "Doctor"}
                   />
                 </Box>
 

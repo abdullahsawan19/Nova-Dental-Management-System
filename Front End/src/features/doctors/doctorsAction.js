@@ -1,7 +1,7 @@
 import { store } from "../../store/store";
 import { createDoctor } from "./doctorSlice";
 
-export const doctorAction = async ({ request }) => {
+export const doctorsAction = async ({ request }) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
 

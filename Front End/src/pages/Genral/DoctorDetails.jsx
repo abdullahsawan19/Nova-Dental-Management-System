@@ -85,10 +85,11 @@ const DoctorDetails = () => {
                   component="img"
                   image={
                     photo && photo !== "Doctor.jfif"
-                      ? `${import.meta.env.VITE_API_URL}/img/users/${photo}`
+                      ? `${import.meta.env.VITE_API_URL}/uploads/${photo}`
                       : "/default-doctor.jpg"
                   }
                   sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  alt={user?.name || "Doctor"}
                 />
               </Card>
             </Grid>

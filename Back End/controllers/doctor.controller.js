@@ -6,25 +6,31 @@ const APIFeatures = require("../utils/apiFeatures");
 // === Helper Function ===
 const localizeDoctorData = (doc, lang) => {
   const docObj = doc.toObject ? doc.toObject() : doc;
-
-  if (docObj.specialization && typeof docObj.specialization === "object") {
+  if (
+    docObj.specialization &&
+    typeof docObj.specialization === "object" &&
+    docObj.specialization.name
+  ) {
     const specName =
       docObj.specialization.name[lang] || docObj.specialization.name["en"];
+
     docObj.specializationData = {
       id: docObj.specialization._id,
       name: specName,
       image: docObj.specialization.image,
-      description:
-        docObj.specialization.description[lang] ||
-        docObj.specialization.description["en"],
+      description: docObj.specialization.description
+        ? docObj.specialization.description[lang] ||
+          docObj.specialization.description["en"]
+        : "",
     };
     docObj.specialization = specName;
   }
-  if (docObj.bio && docObj.bio[lang])
+  if (docObj.bio && docObj.bio[lang]) {
     docObj.bio = docObj.bio[lang] || docObj.bio["en"];
-  if (docObj.education && docObj.education[lang])
+  }
+  if (docObj.education && docObj.education[lang]) {
     docObj.education = docObj.education[lang] || docObj.education["en"];
-
+  }
   return docObj;
 };
 
