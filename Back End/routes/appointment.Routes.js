@@ -5,13 +5,13 @@ const { authorize } = require("../middlewares/role.middleware");
 
 const router = express.Router();
 
-router.use(authenticate);
-
 // ========================
 // 1. PUBLIC ROUTES
 // ========================
 router.get("/working-days", appointmentController.getWorkingDays);
 router.get("/available-slots", appointmentController.getAvailableSlots);
+
+router.use(authenticate);
 
 // ========================
 // 2. PATIENT ROUTES

@@ -6,11 +6,11 @@ export const loginAction = async ({ request }) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
 
+  const redirectTo = formData.get("redirectTo") || "/";
+
   try {
     await store.dispatch(loginUser(data)).unwrap();
     const role = store.getState().auth.user?.role;
-
-    console.log(role);
 
     if (role === "admin") {
       return redirect("/admin");
@@ -20,7 +20,7 @@ export const loginAction = async ({ request }) => {
       return redirect("/doctor");
     }
 
-    return redirect("/");
+    return redirect(redirectTo);
   } catch (error) {
     return error;
   }

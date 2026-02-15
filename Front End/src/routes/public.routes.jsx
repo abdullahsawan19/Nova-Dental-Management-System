@@ -18,6 +18,9 @@ import {
   doctorsLoader,
 } from "../features/doctors/doctorsLoader.js";
 import DoctorDetails from "../pages/Genral/DoctorDetails.jsx";
+import Appointment from "../pages/Genral/appointment.jsx";
+import { appointmentLoader } from "../features/appointments/appointmentsLoader.js";
+import { appointmentAction } from "../features/appointments/appointmentsAction.js";
 
 const publicRoutes = [
   {
@@ -59,6 +62,12 @@ const publicRoutes = [
     element: <BranchModule />,
     loader: activeBranchLoader,
   },
+  {
+    path: "appointment",
+    element: <Appointment />,
+    loader: appointmentLoader,
+    action: appointmentAction,
+  },
 
   {
     path: "/faq",
@@ -70,12 +79,6 @@ const publicRoutes = [
     // element: <Chat />,
     // loader: "#",
   },
-  {
-    path: "/reviews",
-    // element: <Reviews />,
-    // loader: "#",
-  },
-
   {
     path: "/unauthorized",
     element: <Unauthorized />,

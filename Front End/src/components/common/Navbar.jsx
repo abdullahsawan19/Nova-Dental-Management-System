@@ -27,6 +27,7 @@ import {
   Button,
 } from "@mui/material";
 
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CloseIcon from "@mui/icons-material/Close";
@@ -103,6 +104,7 @@ const Navbar = () => {
     { title: "Services", path: "/#services" },
     { title: "Doctors", path: "/doctors" },
     { title: "Branches", path: "/branch" },
+    { title: "Book Appointment", path: "/appointment" },
     { title: "Reviews", path: "/#reviews" },
     { title: "FAQ", path: "/faq" },
     { title: "About", path: "/about" },
@@ -224,6 +226,17 @@ const Navbar = () => {
                 >
                   {user?.name}
                 </Typography>
+
+                {user?.role === "patient" && (
+                  <Tooltip title="My Appointments">
+                    <IconButton
+                      onClick={() => navigate("/my-appointments")}
+                      sx={{ color: "#1976d2" }}
+                    >
+                      <CalendarMonthIcon fontSize="medium" />
+                    </IconButton>
+                  </Tooltip>
+                )}
 
                 <Tooltip title="Profile Settings">
                   <IconButton onClick={handleOpen} sx={{ color: "#1976d2" }}>

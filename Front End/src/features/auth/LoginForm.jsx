@@ -1,14 +1,26 @@
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import { Form, Link, useActionData, useNavigation } from "react-router-dom";
+import {
+  Form,
+  Link,
+  useActionData,
+  useNavigation,
+  useSearchParams,
+} from "react-router-dom";
 
 const Login = () => {
   const error = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo") || "/";
+
   return (
     <>
       <Form method="post" className="form" replace>
+        <input type="hidden" name="redirectTo" value={redirectTo} />
+
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm mb-4">
             {typeof error === "string" ? error : "Login failed"}
@@ -36,7 +48,10 @@ const Login = () => {
 
       <p className="mt-4 text-center text-sm text-gray-600">
         Don't have an account?{" "}
-        <Link to="/signup" className="text-blue-600 hover:underline">
+        <Link
+          to={`/signup?redirectTo=${redirectTo}`}
+          className="text-blue-600 hover:underline"
+        >
           Sign up
         </Link>
       </p>

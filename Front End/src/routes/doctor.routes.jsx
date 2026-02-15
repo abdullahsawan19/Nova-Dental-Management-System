@@ -1,5 +1,5 @@
 import DocDashboard from "../layouts/DocDashboard";
-import DoctorAppointment from "../DoctorAppointment";
+// import DoctorAppointment from "../DoctorAppointment";
 import { Navigate } from "react-router-dom";
 
 import { doctorProfileLoader } from "../features/Doctor/doctorLoader";
@@ -17,7 +17,7 @@ const doctorRoutes = [
       },
       {
         path: "appointments",
-        element: <DoctorAppointment />,
+        // element: <DoctorAppointment />,
         // loader: appointmentsLoader,
       },
       {

@@ -10,9 +10,11 @@ const User = require("../models/user.Model");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const getStartOfDay = (dateString) => {
-  const date = new Date(dateString);
-  date.setHours(0, 0, 0, 0);
-  return date;
+  const cleanDate = dateString.split("T")[0];
+  const [year, month, day] = cleanDate.split("-");
+  return new Date(
+    Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 0, 0, 0),
+  );
 };
 
 const getNextWorkingDays = async () => {
@@ -42,7 +44,7 @@ const formatTime12H = (time24) => {
   const [hours, minutes] = time24.split(":");
   let h = parseInt(hours, 10);
 
-  const suffix = h >= 12 ? "PM" : "AM";
+  const suffix = h >= 12 && h < 24 ? "PM" : "AM";
 
   h = h % 12;
   h = h ? h : 12;
@@ -80,10 +82,19 @@ exports.getAvailableSlots = catchAsync(async (req, res, next) => {
   const startHour = parseInt(branch.openTime.split(":")[0]);
   const endHour = parseInt(branch.closeTime.split(":")[0]);
 
+  let effectiveEndHour = endHour;
+  if (endHour <= startHour) {
+    effectiveEndHour += 24;
+  }
+
   let allSlots = [];
-  for (let i = startHour; i < endHour; i++) {
-    const startObj = i < 10 ? `0${i}:00` : `${i}:00`;
-    const endObj = i + 1 < 10 ? `0${i + 1}:00` : `${i + 1}:00`;
+  for (let i = startHour; i < effectiveEndHour; i++) {
+    let currentStart = i % 24;
+    let currentEnd = (i + 1) % 24;
+
+    const startObj =
+      currentStart < 10 ? `0${currentStart}:00` : `${currentStart}:00`;
+    const endObj = currentEnd < 10 ? `0${currentEnd}:00` : `${currentEnd}:00`;
     allSlots.push(`${startObj} - ${endObj}`);
   }
 
@@ -91,7 +102,12 @@ exports.getAvailableSlots = catchAsync(async (req, res, next) => {
     const currentHour = new Date().getHours();
     allSlots = allSlots.filter((slot) => {
       const slotStartHour = parseInt(slot.split(":")[0]);
-      return slotStartHour > currentHour;
+      let adjustedSlotStart =
+        slotStartHour < startHour ? slotStartHour + 24 : slotStartHour;
+      let adjustedCurrentHour =
+        currentHour < startHour ? currentHour + 24 : currentHour;
+
+      return adjustedSlotStart > adjustedCurrentHour;
     });
   }
 
@@ -102,7 +118,7 @@ exports.getAvailableSlots = catchAsync(async (req, res, next) => {
 
   const startOfDay = getStartOfDay(date);
   const endOfDay = new Date(startOfDay);
-  endOfDay.setHours(23, 59, 59, 999);
+  endOfDay.setUTCHours(23, 59, 59, 999);
 
   const bookedAppointments = await Appointment.find({
     doctor: doctorId,
@@ -126,7 +142,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 
   const selectedDate = getStartOfDay(date);
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setUTCHours(0, 0, 0, 0);
 
   if (selectedDate < today) {
     return next(new AppError("Cannot book appointments in the past!", 400));
@@ -143,7 +159,6 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     return next(new AppError("This doctor does not perform this service", 400));
   }
 
- 
   const realPrice = serviceDoc.fees;
   let appointment;
 
@@ -155,15 +170,15 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
       timeSlot,
       price: realPrice,
       patient: req.user.id,
-      status: "pending_payment", 
+      status: "pending_payment",
     });
   } catch (err) {
     if (err.code === 11000) {
       return next(
         new AppError(
           "This slot is already reserved. Please choose another.",
-          409
-        )
+          409,
+        ),
       );
     }
     return next(err);
@@ -175,8 +190,8 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
-    success_url: `${process.env.ALLOWED_ORIGINS}/payment-success`,
-    cancel_url: `${process.env.ALLOWED_ORIGINS}/branch`,
+    success_url: `${process.env.ALLOWED_ORIGINS}/?payment=success`,
+    cancel_url: `${process.env.ALLOWED_ORIGINS}/appointment`,
     customer_email: req.user.email,
     client_reference_id: req.params.id,
 
@@ -185,7 +200,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
         price_data: {
           currency: "egp",
           product_data: {
-            name: `${serviceName} Session`, 
+            name: `${serviceName} Session`,
             description: `Doctor: ${doctorDoc.user.name} | Date: ${date} | Time: ${timeSlot}`,
           },
           unit_amount: realPrice * 100,
@@ -193,7 +208,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
         quantity: 1,
       },
     ],
-    
+
     metadata: {
       appointmentId: appointment._id.toString(),
     },
@@ -211,18 +226,19 @@ const confirmBookingCheckout = async (session) => {
   const appointment = await Appointment.findByIdAndUpdate(
     appointmentId,
     { status: "confirmed", paymentIntentId: session.payment_intent },
-    { new: true }
+    { new: true },
   )
     .populate("patient")
-    .populate("service"); 
+    .populate("service");
 
   if (!appointment) return;
 
   const patient = appointment.patient;
-  
+
   if (patient) {
     const lang = patient.preferredLanguage || "en";
-    const serviceName = appointment.service.name[lang] || appointment.service.name["en"];
+    const serviceName =
+      appointment.service.name[lang] || appointment.service.name["en"];
 
     const message = `
 <!DOCTYPE html>
@@ -297,7 +313,7 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
     event = stripe.webhooks.constructEvent(
       req.body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -310,7 +326,6 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
 
   res.status(200).json({ received: true });
 });
-
 
 exports.updateAppointment = catchAsync(async (req, res, next) => {
   const { date, timeSlot } = req.body;
@@ -362,7 +377,7 @@ exports.updateAppointment = catchAsync(async (req, res, next) => {
     }
 
     const endOfDay = new Date(newDate);
-    endOfDay.setHours(23, 59, 59, 999);
+    endOfDay.setUTCHours(23, 59, 59, 999);
 
     const isBooked = await Appointment.findOne({
       doctor: appointment.doctor,
