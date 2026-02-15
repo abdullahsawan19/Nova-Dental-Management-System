@@ -494,9 +494,10 @@ exports.getDoctorAppointments = catchAsync(async (req, res, next) => {
 
   const appointments = await Appointment.find({
     doctor: doctorDoc._id,
-    status: "confirmed",
+    status: { $ne: "cancelled" },
   })
     .populate("patient", "name phone email")
+    .populate("service", "name")
     .sort("date timeSlot");
 
   res.status(200).json({

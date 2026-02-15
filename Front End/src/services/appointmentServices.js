@@ -73,36 +73,3 @@ const appointmentServices = {
 };
 
 export default appointmentServices;
-
-// import { useSelector } from "react-redux";
-// import { useNavigate } from "react-router-dom";
-// import { useEffect } from "react";
-
-// const BookingPage = () => {
-//   const { isAuthenticated } = useSelector((state) => state.auth);
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     if (!isAuthenticated) {
-//       navigate("/login", { state: { from: "/booking" } });
-//     }
-//   }, [isAuthenticated, navigate]);
-
-//   if (!isAuthenticated) return null;
-
-//   return (
-//     <div>
-//     </div>
-//   );
-// };
-
-// const handleBook = async () => {
-//   try {
-//     const res = await appointmentServices.checkoutSession(data);
-//     if (res.sessionUrl) {
-//       window.location.href = res.sessionUrl;
-//     }
-//   } catch (err) {
-//     console.error(err);
-//   }
-// };

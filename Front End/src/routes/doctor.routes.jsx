@@ -1,24 +1,32 @@
 import DocDashboard from "../layouts/DocDashboard";
-// import DoctorAppointment from "../DoctorAppointment";
-import { Navigate } from "react-router-dom";
-
-import { doctorProfileLoader } from "../features/Doctor/doctorLoader";
-import { doctorProfileAction } from "../features/Doctor/doctorAction";
+import {
+  doctorAppointmentsLoader,
+  doctorProfileLoader,
+} from "../features/Doctor/doctorLoader";
+import {
+  doctorAppointmentsAction,
+  doctorProfileAction,
+} from "../features/Doctor/doctorAction";
+import DoctorAppointment from "../pages/Doctor/DoctorAppointment";
 
 const doctorRoutes = [
   {
+    path: "/doctor",
     element: <DocDashboard />,
     loader: doctorProfileLoader,
     id: "doctor-root",
     children: [
       {
         index: true,
-        element: <Navigate to="appointments" replace />,
+        element: <DoctorAppointment />,
+        loader: doctorAppointmentsLoader,
+        action: doctorAppointmentsAction,
       },
       {
         path: "appointments",
-        // element: <DoctorAppointment />,
-        // loader: appointmentsLoader,
+        element: <DoctorAppointment />,
+        loader: doctorAppointmentsLoader,
+        action: doctorAppointmentsAction,
       },
       {
         path: "my-profile",

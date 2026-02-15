@@ -1,13 +1,18 @@
 import { store } from "../../store/store";
 import { getAllUsers } from "../users/userSlice";
 import { getAllDoctors } from "../doctors/doctorSlice";
+import { fetchAllAppointments } from "../appointments/appointmentsSlice";
 
 export const adminDashboardLoader = async () => {
   try {
-    const [usersResponse, doctorsResponse] = await Promise.all([
-      store.dispatch(getAllUsers({ role: "patient" })).unwrap(),
-      store.dispatch(getAllDoctors()).unwrap(),
-    ]);
+    const today = new Date().toISOString().split("T")[0];
+
+    const [usersResponse, doctorsResponse, appointmentsResponse] =
+      await Promise.all([
+        store.dispatch(getAllUsers({ role: "patient" })).unwrap(),
+        store.dispatch(getAllDoctors()).unwrap(),
+        store.dispatch(fetchAllAppointments({ date: today })).unwrap(),
+      ]);
 
     const patientsCount =
       usersResponse?.metadata?.totalDocs ||
@@ -21,12 +26,21 @@ export const adminDashboardLoader = async () => {
       doctorsResponse?.data?.doctors?.length ||
       0;
 
-    console.log("Admin Stats Loaded:", { patientsCount, doctorsCount });
+    const appointmentsToday =
+      appointmentsResponse?.results ||
+      appointmentsResponse?.data?.appointments?.length ||
+      0;
+
+    console.log("Admin Stats Loaded:", {
+      patientsCount,
+      doctorsCount,
+      appointmentsToday,
+    });
 
     return {
       patientsCount,
       doctorsCount,
-      appointmentsToday: 0,
+      appointmentsToday,
     };
   } catch (error) {
     console.error("Failed to load admin stats", error);
