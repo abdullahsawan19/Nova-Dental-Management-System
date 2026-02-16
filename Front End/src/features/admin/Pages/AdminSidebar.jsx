@@ -17,6 +17,7 @@ import {
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
+import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import StoreIcon from "@mui/icons-material/Store";
@@ -49,8 +50,8 @@ const AdminSidebar = ({ drawerWidth }) => {
       icon: <MedicalServicesIcon />,
     },
     { label: "Reviews", path: "/admin/reviews", icon: <RateReviewIcon /> },
+    { label: "Faq", path: "/admin/faq", icon: <LiveHelpIcon /> },
   ];
-
   return (
     <Drawer
       variant="permanent"

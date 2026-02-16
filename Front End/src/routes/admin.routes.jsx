@@ -19,6 +19,9 @@ import { adminDashboardLoader } from "../features/admin/adminLoader.js";
 import ManageAppointments from "../pages/admin/ManageAppointments.jsx";
 import { adminAppointmentsLoader } from "../features/appointments/admin/adminAppointmentsLoader.js";
 import { adminAppointmentsAction } from "../features/appointments/admin/adminAppointmentsAction.js";
+import ManageFaq from "../pages/admin/ManageFaq.jsx";
+import { faqAction } from "../features/Faq/faqAction.js";
+import { adminFaqLoader } from "../features/Faq/faqLoader.js";
 
 const adminRoutes = [
   {
@@ -64,6 +67,12 @@ const adminRoutes = [
         element: <ManageReviews />,
         loader: adminReviewsLoader,
         action: reviewAction,
+      },
+      {
+        path: "faq",
+        element: <ManageFaq />,
+        loader: adminFaqLoader,
+        action: faqAction,
       },
     ],
   },

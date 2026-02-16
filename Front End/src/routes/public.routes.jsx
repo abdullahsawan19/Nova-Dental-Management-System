@@ -21,6 +21,8 @@ import DoctorDetails from "../pages/Genral/DoctorDetails.jsx";
 import Appointment from "../pages/Genral/appointment.jsx";
 import { appointmentLoader } from "../features/appointments/appointmentsLoader.js";
 import { appointmentAction } from "../features/appointments/appointmentsAction.js";
+import Faq from "../pages/Genral/Faq.jsx";
+import { publicFaqLoader } from "../features/Faq/faqLoader.js";
 
 const publicRoutes = [
   {
@@ -71,8 +73,8 @@ const publicRoutes = [
 
   {
     path: "/faq",
-    // element: <Faq />,
-    // loader: "#",
+    element: <Faq />,
+    loader: publicFaqLoader,
   },
   {
     path: "/chat",
