@@ -82,7 +82,6 @@ const publicRoutes = [
   {
     path: "/unauthorized",
     element: <Unauthorized />,
-    // loader: "#",
   },
 ];
 export default publicRoutes;

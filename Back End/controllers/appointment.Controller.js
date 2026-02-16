@@ -363,10 +363,21 @@ exports.updateAppointment = catchAsync(async (req, res, next) => {
     const branch = await Branch.findOne({ isActive: true });
     const startHour = parseInt(branch.openTime.split(":")[0]);
     const endHour = parseInt(branch.closeTime.split(":")[0]);
+
+    let effectiveEndHour = endHour;
+    if (endHour <= startHour) {
+      effectiveEndHour += 24;
+    }
+
     const validSlots = [];
-    for (let i = startHour; i < endHour; i++) {
-      const startObj = i < 10 ? `0${i}:00` : `${i}:00`;
-      const endObj = i + 1 < 10 ? `0${i + 1}:00` : `${i + 1}:00`;
+    for (let i = startHour; i < effectiveEndHour; i++) {
+      let currentStart = i % 24;
+      let currentEnd = (i + 1) % 24;
+
+      const startObj =
+        currentStart < 10 ? `0${currentStart}:00` : `${currentStart}:00`;
+      const endObj = currentEnd < 10 ? `0${currentEnd}:00` : `${currentEnd}:00`;
+
       validSlots.push(`${formatTime12H(startObj)} - ${formatTime12H(endObj)}`);
     }
 

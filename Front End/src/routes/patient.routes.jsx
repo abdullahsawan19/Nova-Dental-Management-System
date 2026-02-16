@@ -2,6 +2,8 @@ import { updateMeAction } from "../features/users/userAction";
 import { meLoader } from "../features/users/userLoader";
 import UpdatePatientData from "../pages/Genral/UpdatePatientData";
 import AppointmentsDeatils from "../pages/Genral/AppointmentsDeatils";
+import { myAppointmentsLoader } from "../features/appointments/appointmentsLoader";
+import { myAppointmentsAction } from "../features/appointments/appointmentsAction";
 
 const patientRoutes = [
   {
@@ -17,11 +19,8 @@ const patientRoutes = [
   {
     path: "my-appointments",
     element: <AppointmentsDeatils />,
-  },
-  {
-    path: "/add-review",
-    // element: <Reviews />,
-    // loader: "#",
+    loader: myAppointmentsLoader,
+    action: myAppointmentsAction,
   },
 ];
 
