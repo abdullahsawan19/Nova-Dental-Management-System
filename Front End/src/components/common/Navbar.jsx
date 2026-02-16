@@ -104,11 +104,10 @@ const Navbar = () => {
     { title: "Services", path: "/#services" },
     { title: "Doctors", path: "/doctors" },
     { title: "Branches", path: "/branch" },
-    { title: "Book Appointment", path: "/appointment" },
+    { title: "About", path: "/about" },
     { title: "Reviews", path: "/#reviews" },
     { title: "FAQ", path: "/faq" },
-    { title: "About", path: "/about" },
-    { title: "AI Chat", path: "/chat" },
+    { title: "Book Appointment", path: "/appointment" },
   ];
 
   const handleNavClick = (path) => {

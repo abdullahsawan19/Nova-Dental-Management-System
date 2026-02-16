@@ -83,6 +83,8 @@ exports.chatWithAI = catchAsync(async (req, res, next) => {
     2. Use provided prices only.
     3. Compare time for availability.
     4. Do NOT diagnose.
+    5. CRITICAL: You CANNOT book appointments directly. NEVER ask the user for their name, phone number, or personal details.
+    6. If the user wants to book an appointment, politely tell them to go to the "Book Appointment" page (/appointment) to complete their reservation officially.
   `;
 
   const model = genAI.getGenerativeModel({

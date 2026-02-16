@@ -23,6 +23,7 @@ import { appointmentLoader } from "../features/appointments/appointmentsLoader.j
 import { appointmentAction } from "../features/appointments/appointmentsAction.js";
 import Faq from "../pages/Genral/Faq.jsx";
 import { publicFaqLoader } from "../features/Faq/faqLoader.js";
+import About from "../pages/Genral/About.jsx";
 
 const publicRoutes = [
   {
@@ -77,9 +78,8 @@ const publicRoutes = [
     loader: publicFaqLoader,
   },
   {
-    path: "/chat",
-    // element: <Chat />,
-    // loader: "#",
+    path: "/about",
+    element: <About />,
   },
   {
     path: "/unauthorized",
