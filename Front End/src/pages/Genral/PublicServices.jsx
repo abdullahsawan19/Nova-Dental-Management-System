@@ -55,8 +55,14 @@ const PublicServices = () => {
     : safeServices;
 
   return (
-    <Box sx={{ position: "relative", px: { xs: 2, md: 6 }, py: 4 }}>
-      {/* Header */}
+    <Box
+      sx={{
+        position: "relative",
+        px: { xs: 2, md: 6 },
+        py: 4,
+        bgcolor: "background.default",
+      }}
+    >
       <Box sx={{ mb: 4, textAlign: "center" }}>
         <Typography
           variant="h4"
@@ -88,6 +94,7 @@ const PublicServices = () => {
             zIndex: 2,
             boxShadow: 3,
             bgcolor: "background.paper",
+            color: "text.primary",
             "&:hover": { bgcolor: "primary.main", color: "white" },
             display: isSliderActive ? "flex" : "none",
           }}
@@ -118,7 +125,7 @@ const PublicServices = () => {
                   flexDirection: "column",
                   borderRadius: 4,
                   overflow: "hidden",
-                  border: "1px solid",
+                  border: 1,
                   borderColor: "divider",
                   bgcolor: "background.paper",
                   transition: "transform 0.3s, box-shadow 0.3s",
@@ -135,6 +142,7 @@ const PublicServices = () => {
                     height: "220px",
                     width: "100%",
                     flexShrink: 0,
+                    bgcolor: "action.hover",
                   }}
                 >
                   <CardMedia
@@ -148,7 +156,7 @@ const PublicServices = () => {
                       position: "absolute",
                       top: 10,
                       right: 10,
-                      bgcolor: "rgba(255,255,255,0.95)",
+                      bgcolor: "background.paper",
                       px: 1.5,
                       py: 0.5,
                       borderRadius: 2,
@@ -185,6 +193,7 @@ const PublicServices = () => {
                       <Typography
                         variant="h6"
                         fontWeight="700"
+                        color="text.primary"
                         sx={{
                           textAlign: "center",
                           display: "-webkit-box",
@@ -253,6 +262,7 @@ const PublicServices = () => {
             zIndex: 2,
             boxShadow: 3,
             bgcolor: "background.paper",
+            color: "text.primary",
             "&:hover": { bgcolor: "primary.main", color: "white" },
             display: isSliderActive ? "flex" : "none",
           }}

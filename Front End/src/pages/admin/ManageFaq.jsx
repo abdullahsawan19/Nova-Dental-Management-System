@@ -121,11 +121,17 @@ const ManageFaq = () => {
   ];
 
   return (
-    <Box sx={{ p: 4, height: "100%", width: "100%", bgcolor: "#f9fafb" }}>
-      {/* Header & Add Button */}
+    <Box
+      sx={{
+        p: 4,
+        height: "100%",
+        width: "100%",
+        bgcolor: "background.default",
+      }}
+    >
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight="800" color="#1a1a1a">
+          <Typography variant="h5" fontWeight="800" color="text.primary">
             Manage FAQs
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -142,16 +148,17 @@ const ManageFaq = () => {
         </Button>
       </Box>
 
-      {/* DataGrid */}
       <Paper
         elevation={0}
         sx={{
           height: 600,
           width: "100%",
           borderRadius: 4,
-          border: "1px solid #e0e0e0",
+          border: 1,
+          borderColor: "divider",
           overflow: "hidden",
           boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
+          bgcolor: "background.paper",
         }}
       >
         <DataGrid
@@ -163,13 +170,26 @@ const ManageFaq = () => {
           disableRowSelectionOnClick
           sx={{
             border: "none",
+            color: "text.primary",
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#f4f6f8",
-              color: "#455a64",
+              backgroundColor: "action.hover",
+              color: "text.primary",
               fontWeight: "bold",
             },
+            "& .MuiDataGrid-cell": {
+              borderColor: "divider",
+            },
             "& .MuiDataGrid-row:hover": {
-              backgroundColor: "#f9fafb",
+              backgroundColor: "action.hover",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderColor: "divider",
+            },
+            "& .MuiTablePagination-root": {
+              color: "text.primary",
+            },
+            "& .MuiButtonBase-root": {
+              color: "text.primary",
             },
           }}
           initialState={{
@@ -179,24 +199,36 @@ const ManageFaq = () => {
         />
       </Paper>
 
-      {/* Add FAQ Modal */}
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: { bgcolor: "background.paper" },
+        }}
+      >
         <DialogTitle
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             pb: 1,
+            color: "text.primary",
           }}
         >
           <Typography variant="h6" fontWeight="bold">
             Add New FAQ
           </Typography>
-          <IconButton onClick={handleClose} size="small">
+          <IconButton
+            onClick={handleClose}
+            size="small"
+            sx={{ color: "text.primary" }}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={{ borderColor: "divider" }}>
           <FaqForm onSuccess={handleClose} />
         </DialogContent>
       </Dialog>

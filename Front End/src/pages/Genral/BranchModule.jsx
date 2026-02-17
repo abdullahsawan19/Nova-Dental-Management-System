@@ -53,6 +53,7 @@ const BranchModule = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        bgcolor: "background.default",
       }}
     >
       <Paper
@@ -62,10 +63,12 @@ const BranchModule = () => {
           maxWidth: 1200,
           borderRadius: 4,
           overflow: "hidden",
-          border: "1px solid #e0e0e0",
+          border: 1,
+          borderColor: "divider",
           display: "flex",
           flexDirection: { xs: "column", md: "row" },
           boxShadow: "0px 12px 24px -10px rgba(0,0,0,0.1)",
+          bgcolor: "background.paper",
         }}
       >
         <Box
@@ -73,7 +76,7 @@ const BranchModule = () => {
             flex: { xs: "none", md: 1.2 },
             height: { xs: 300, md: "auto" },
             position: "relative",
-            bgcolor: "#f0f2f5",
+            bgcolor: "background.default",
             minHeight: "400px",
           }}
         >
@@ -84,14 +87,14 @@ const BranchModule = () => {
             style={{ border: 0, minHeight: "100%", filter: "grayscale(20%)" }}
             loading="lazy"
             allowFullScreen
-            src={getEmbedUrl(activeBranch.locationUrl)}
+            src={getEmbedUrl(activeBranch?.locationUrl)}
           />
 
           <Button
             variant="contained"
             color="primary"
             startIcon={<MapIcon />}
-            href={activeBranch.locationUrl}
+            href={activeBranch?.locationUrl}
             target="_blank"
             sx={{
               position: "absolute",
@@ -110,13 +113,13 @@ const BranchModule = () => {
           </Button>
         </Box>
 
-        <Box sx={{ flex: 1, p: { xs: 3, md: 5 }, bgcolor: "#fff" }}>
+        <Box sx={{ flex: 1, p: { xs: 3, md: 5 }, bgcolor: "background.paper" }}>
           <Stack spacing={4}>
             <Box>
               <Typography
                 variant="h3"
                 fontWeight="800"
-                color="#1a1a1a"
+                color="text.primary"
                 gutterBottom
                 sx={{ fontSize: { xs: "1.8rem", md: "2.5rem" } }}
               >
@@ -143,14 +146,15 @@ const BranchModule = () => {
               <Typography
                 variant="h6"
                 fontWeight="700"
+                color="text.primary"
                 gutterBottom
                 sx={{ display: "flex", alignItems: "center", gap: 1 }}
               >
                 <AccessTimeIcon color="action" /> Working Hours
               </Typography>
-              <Box sx={{ pl: 4, borderLeft: "3px solid #eee", py: 1 }}>
+              <Box sx={{ pl: 4, borderLeft: 3, borderColor: "divider", py: 1 }}>
                 <Typography variant="h5" color="primary.main" fontWeight="bold">
-                  {activeBranch.openTime} - {activeBranch.closeTime}
+                  {activeBranch?.openTime} - {activeBranch?.closeTime}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -158,25 +162,31 @@ const BranchModule = () => {
                   sx={{ mt: 0.5 }}
                 >
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-                    .filter((_, i) => activeBranch.workingDays?.includes(i))
+                    .filter((_, i) => activeBranch?.workingDays?.includes(i))
                     .join(" • ")}
                 </Typography>
               </Box>
             </Box>
 
             <Box>
-              <Typography variant="h6" fontWeight="700" gutterBottom>
+              <Typography
+                variant="h6"
+                fontWeight="700"
+                color="text.primary"
+                gutterBottom
+              >
                 Contact Details
               </Typography>
               <Grid container spacing={2}>
-                {activeBranch.phones?.map((phone, index) => (
+                {activeBranch?.phones?.map((phone, index) => (
                   <Grid item xs={12} sm={6} key={index}>
                     <Paper
                       elevation={0}
                       sx={{
                         p: 1.5,
-                        bgcolor: "#f9fafb",
-                        border: "1px solid #eee",
+                        bgcolor: "background.default",
+                        border: 1,
+                        borderColor: "divider",
                         borderRadius: 3,
                         display: "flex",
                         alignItems: "center",
@@ -184,13 +194,13 @@ const BranchModule = () => {
                         transition: "0.2s",
                         "&:hover": {
                           borderColor: "primary.main",
-                          bgcolor: "#f0f7ff",
+                          bgcolor: "action.hover",
                         },
                       }}
                     >
                       <Box
                         sx={{
-                          bgcolor: "white",
+                          bgcolor: "background.paper",
                           p: 1,
                           borderRadius: "50%",
                           boxShadow: 1,
@@ -199,21 +209,22 @@ const BranchModule = () => {
                       >
                         <PhoneIcon color="primary" fontSize="small" />
                       </Box>
-                      <Typography fontWeight="600" color="#333">
+                      <Typography fontWeight="600" color="text.primary">
                         {phone}
                       </Typography>
                     </Paper>
                   </Grid>
                 ))}
 
-                {activeBranch.email && (
+                {activeBranch?.email && (
                   <Grid item xs={12}>
                     <Paper
                       elevation={0}
                       sx={{
                         p: 1.5,
-                        bgcolor: "#f9fafb",
-                        border: "1px solid #eee",
+                        bgcolor: "background.default",
+                        border: 1,
+                        borderColor: "divider",
                         borderRadius: 3,
                         display: "flex",
                         alignItems: "center",
@@ -221,13 +232,13 @@ const BranchModule = () => {
                         transition: "0.2s",
                         "&:hover": {
                           borderColor: "primary.main",
-                          bgcolor: "#f0f7ff",
+                          bgcolor: "action.hover",
                         },
                       }}
                     >
                       <Box
                         sx={{
-                          bgcolor: "white",
+                          bgcolor: "background.paper",
                           p: 1,
                           borderRadius: "50%",
                           boxShadow: 1,
@@ -236,7 +247,7 @@ const BranchModule = () => {
                       >
                         <EmailIcon color="primary" fontSize="small" />
                       </Box>
-                      <Typography fontWeight="600" color="#333">
+                      <Typography fontWeight="600" color="text.primary">
                         {activeBranch.email}
                       </Typography>
                     </Paper>

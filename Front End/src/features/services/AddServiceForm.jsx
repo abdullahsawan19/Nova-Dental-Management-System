@@ -53,8 +53,25 @@ const AddServiceForm = () => {
   };
 
   return (
-    <Paper sx={{ p: 4, maxWidth: 800, mx: "auto", mt: 4 }}>
-      <Typography variant="h5" gutterBottom fontWeight="bold">
+    <Paper
+      elevation={0}
+      sx={{
+        p: 4,
+        maxWidth: 800,
+        mx: "auto",
+        mt: 4,
+        bgcolor: "background.paper",
+        border: 1,
+        borderColor: "divider",
+        borderRadius: 4,
+      }}
+    >
+      <Typography
+        variant="h5"
+        gutterBottom
+        fontWeight="bold"
+        color="text.primary"
+      >
         Add New Service
       </Typography>
 
@@ -78,6 +95,10 @@ const AddServiceForm = () => {
               name="nameEn"
               onChange={handleChange}
               required
+              sx={{
+                "& .MuiOutlinedInput-root": { bgcolor: "background.default" },
+                "& .MuiInputLabel-root": { color: "text.secondary" },
+              }}
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -88,6 +109,10 @@ const AddServiceForm = () => {
               onChange={handleChange}
               dir="rtl"
               required
+              sx={{
+                "& .MuiOutlinedInput-root": { bgcolor: "background.default" },
+                "& .MuiInputLabel-root": { color: "text.secondary" },
+              }}
             />
           </Grid>
 
@@ -100,6 +125,10 @@ const AddServiceForm = () => {
               rows={3}
               onChange={handleChange}
               required
+              sx={{
+                "& .MuiOutlinedInput-root": { bgcolor: "background.default" },
+                "& .MuiInputLabel-root": { color: "text.secondary" },
+              }}
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -112,6 +141,10 @@ const AddServiceForm = () => {
               onChange={handleChange}
               dir="rtl"
               required
+              sx={{
+                "& .MuiOutlinedInput-root": { bgcolor: "background.default" },
+                "& .MuiInputLabel-root": { color: "text.secondary" },
+              }}
             />
           </Grid>
 
@@ -123,15 +156,38 @@ const AddServiceForm = () => {
               name="fees"
               onChange={handleChange}
               required
+              sx={{
+                "& .MuiOutlinedInput-root": { bgcolor: "background.default" },
+                "& .MuiInputLabel-root": { color: "text.secondary" },
+              }}
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Input
-              type="file"
-              disableUnderline
-              fullWidth
-              onChange={handleFileChange}
-            />
+            <Box
+              sx={{
+                p: 1.5,
+                border: 1,
+                borderColor: "divider",
+                borderRadius: 1,
+                bgcolor: "background.default",
+              }}
+            >
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+                mb={0.5}
+              >
+                Service Image
+              </Typography>
+              <Input
+                type="file"
+                disableUnderline
+                fullWidth
+                onChange={handleFileChange}
+                sx={{ color: "text.primary" }}
+              />
+            </Box>
           </Grid>
 
           <Grid item xs={12}>
@@ -141,8 +197,13 @@ const AddServiceForm = () => {
               fullWidth
               size="large"
               disabled={isLoading}
+              sx={{ mt: 2, py: 1.5, fontWeight: "bold", borderRadius: 2 }}
             >
-              {isLoading ? <CircularProgress size={24} /> : "Create Service"}
+              {isLoading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Create Service"
+              )}
             </Button>
           </Grid>
         </Grid>

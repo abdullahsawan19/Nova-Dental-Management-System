@@ -20,7 +20,14 @@ const FaqForm = ({ onSuccess }) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        mt: 1,
+        bgcolor: "background.paper",
+      }}
+    >
       <Stack spacing={2.5}>
         <TextField
           name="questionEn"
@@ -28,6 +35,10 @@ const FaqForm = ({ onSuccess }) => {
           required
           fullWidth
           variant="outlined"
+          sx={{
+            "& .MuiOutlinedInput-root": { bgcolor: "background.default" },
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+          }}
         />
         <TextField
           name="questionAr"
@@ -36,6 +47,10 @@ const FaqForm = ({ onSuccess }) => {
           fullWidth
           variant="outlined"
           dir="rtl"
+          sx={{
+            "& .MuiOutlinedInput-root": { bgcolor: "background.default" },
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+          }}
         />
         <TextField
           name="answerEn"
@@ -45,6 +60,10 @@ const FaqForm = ({ onSuccess }) => {
           multiline
           rows={3}
           variant="outlined"
+          sx={{
+            "& .MuiOutlinedInput-root": { bgcolor: "background.default" },
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+          }}
         />
         <TextField
           name="answerAr"
@@ -55,6 +74,10 @@ const FaqForm = ({ onSuccess }) => {
           rows={3}
           variant="outlined"
           dir="rtl"
+          sx={{
+            "& .MuiOutlinedInput-root": { bgcolor: "background.default" },
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+          }}
         />
 
         <Button
@@ -63,7 +86,13 @@ const FaqForm = ({ onSuccess }) => {
           color="primary"
           size="large"
           disabled={isSubmitting}
-          sx={{ mt: 2, borderRadius: 2, fontWeight: "bold" }}
+          sx={{
+            mt: 2,
+            borderRadius: 2,
+            fontWeight: "bold",
+            py: 1.5,
+            textTransform: "none",
+          }}
         >
           {isSubmitting ? (
             <CircularProgress size={24} color="inherit" />

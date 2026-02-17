@@ -12,6 +12,14 @@ import doctorRoutes from "./doctor.routes";
 import patientRoutes from "./patient.routes";
 import publicRoutes from "./public.routes";
 
+import { loginAction } from "../features/auth/Login.actions";
+import { loginLoader } from "../features/auth/login.Loader";
+import { signUpLoader } from "../features/auth/SignUp.Loader.js";
+import { signUpAction } from "../features/auth/Signup.actions.js";
+import AuthLayout from "../layouts/AuthLayout.jsx";
+import Login from "../features/auth/LoginForm.jsx";
+import Signup from "../features/auth/SignupForm.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -28,6 +36,24 @@ const router = createBrowserRouter([
             children: patientRoutes,
           },
         ],
+      },
+    ],
+  },
+  {
+    element: <AuthLayout />,
+    errorElement: <Error />,
+    children: [
+      {
+        path: "/login",
+        element: <Login />,
+        action: loginAction,
+        loader: loginLoader,
+      },
+      {
+        path: "/signup",
+        element: <Signup />,
+        loader: signUpLoader,
+        action: signUpAction,
       },
     ],
   },

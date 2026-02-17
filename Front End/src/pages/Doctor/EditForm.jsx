@@ -19,7 +19,10 @@ const EditForm = ({ fetcher, onSuccess }) => {
 
   useEffect(() => {
     if (fetcher.data?.success && fetcher.state === "idle") {
-      onSuccess();
+      const timer = setTimeout(() => {
+        if (onSuccess) onSuccess();
+      }, 1000);
+      return () => clearTimeout(timer);
     }
   }, [fetcher.data, fetcher.state, onSuccess]);
 
@@ -33,10 +36,21 @@ const EditForm = ({ fetcher, onSuccess }) => {
 
       <Box
         key={profile._id || "loading"}
-        sx={{ display: "flex", flexDirection: "column", gap: 2.5, p: 1 }}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2.5,
+          p: 1,
+          bgcolor: "background.paper",
+        }}
       >
         <Box>
-          <Typography variant="body2" fontWeight="bold" gutterBottom>
+          <Typography
+            variant="body2"
+            fontWeight="bold"
+            gutterBottom
+            color="text.primary"
+          >
             Profile Photo
           </Typography>
           <input
@@ -46,8 +60,11 @@ const EditForm = ({ fetcher, onSuccess }) => {
             style={{
               width: "100%",
               padding: "8px",
-              border: "1px solid #ccc",
+              border: "1px solid",
+              borderColor: "divider",
               borderRadius: "4px",
+              backgroundColor: "transparent",
+              color: "inherit",
             }}
           />
         </Box>
@@ -58,6 +75,13 @@ const EditForm = ({ fetcher, onSuccess }) => {
           defaultValue={user.name || ""}
           required
           fullWidth
+          sx={{
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": { borderColor: "divider" },
+              bgcolor: "background.default",
+            },
+          }}
         />
 
         <Input
@@ -67,6 +91,13 @@ const EditForm = ({ fetcher, onSuccess }) => {
           defaultValue={user.phone || ""}
           required
           fullWidth
+          sx={{
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": { borderColor: "divider" },
+              bgcolor: "background.default",
+            },
+          }}
         />
 
         <Input
@@ -76,9 +107,20 @@ const EditForm = ({ fetcher, onSuccess }) => {
           defaultValue={currentSpecializationId}
           required
           fullWidth
+          sx={{
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": { borderColor: "divider" },
+              bgcolor: "background.default",
+            },
+          }}
         >
           {safeServices.map((service) => (
-            <MenuItem key={service._id} value={service._id}>
+            <MenuItem
+              key={service._id}
+              value={service._id}
+              sx={{ color: "text.primary" }}
+            >
               {service.name}
             </MenuItem>
           ))}
@@ -89,6 +131,13 @@ const EditForm = ({ fetcher, onSuccess }) => {
           name="education.en"
           defaultValue={profile.education || ""}
           fullWidth
+          sx={{
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": { borderColor: "divider" },
+              bgcolor: "background.default",
+            },
+          }}
         />
 
         <Input
@@ -97,6 +146,13 @@ const EditForm = ({ fetcher, onSuccess }) => {
           type="number"
           defaultValue={profile.experienceYears || ""}
           fullWidth
+          sx={{
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": { borderColor: "divider" },
+              bgcolor: "background.default",
+            },
+          }}
         />
 
         <Input
@@ -106,24 +162,37 @@ const EditForm = ({ fetcher, onSuccess }) => {
           rows={3}
           defaultValue={profile.bio || ""}
           fullWidth
+          sx={{
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": { borderColor: "divider" },
+              bgcolor: "background.default",
+            },
+          }}
         />
 
         <Button
           type="submit"
           disabled={isSubmitting}
-          style={{
-            marginTop: "16px",
-            padding: "12px",
-            borderRadius: "8px",
+          sx={{
+            mt: 2,
+            p: 1.5,
+            borderRadius: 2,
             fontWeight: "bold",
-            backgroundColor: isSubmitting ? "#ccc" : "#1976d2",
-            color: "#fff",
-            border: "none",
-            cursor: isSubmitting ? "not-allowed" : "pointer",
+            bgcolor: "primary.main",
+            color: "white",
+            "&:hover": {
+              bgcolor: "primary.dark",
+            },
+            "&.Mui-disabled": {
+              bgcolor: "action.disabledBackground",
+              color: "action.disabled",
+            },
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            gap: "8px",
+            gap: 1,
+            textTransform: "none",
           }}
         >
           {isSubmitting ? (

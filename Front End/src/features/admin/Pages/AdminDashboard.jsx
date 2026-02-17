@@ -1,7 +1,7 @@
 import React from "react";
 import { useLoaderData } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Grid, Paper, Typography, Box, Avatar } from "@mui/material";
+import { Grid, Paper, Typography, Box, Avatar, Container } from "@mui/material";
 
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
@@ -17,114 +17,150 @@ const AdminDashboard = () => {
     {
       title: "Total Patients",
       value: patientsCount || 0,
-      color: "#1976d2",
-      bgColor: "#e3f2fd",
-      icon: <PeopleAltIcon fontSize="large" />,
+      color: "primary.main",
+      bgColor: "action.hover",
+      icon: <PeopleAltIcon sx={{ fontSize: 40 }} />,
     },
     {
       title: "Today Appointments",
       value: appointmentsToday || 0,
-      color: "#2e7d32",
-      bgColor: "#e8f5e9",
-      icon: <EventAvailableIcon fontSize="large" />,
+      color: "success.main",
+      bgColor: "action.hover",
+      icon: <EventAvailableIcon sx={{ fontSize: 40 }} />,
     },
     {
       title: "Available Doctors",
       value: doctorsCount || 0,
-      color: "#9c27b0",
-      bgColor: "#f3e5f5",
-      icon: <MedicalServicesIcon fontSize="large" />,
+      color: "secondary.main",
+      bgColor: "action.hover",
+      icon: <MedicalServicesIcon sx={{ fontSize: 40 }} />,
     },
   ];
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Typography
-        variant="h4"
-        sx={{
-          mb: 4,
-          fontWeight: "bold",
-          color: "#2c3e50",
-          textAlign: "left",
-        }}
-      >
-        Dashboard Overview
-      </Typography>
-
-      <Paper
-        elevation={0}
-        sx={{
-          mb: 4,
-          p: 3,
-          borderRadius: "12px",
-          bgcolor: "primary.main",
-          color: "white",
-          boxShadow: "0 4px 20px rgba(25, 118, 210, 0.2)",
-        }}
-      >
-        <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
-          Welcome back, {user?.name || "Admin"} 👋
+    <Container maxWidth="xl" sx={{ py: 2 }}>
+      <Box sx={{ flexGrow: 1 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            mb: 5,
+            fontWeight: "900",
+            color: "text.primary",
+            textAlign: "left",
+            letterSpacing: -0.5,
+          }}
+        >
+          Dashboard Overview
         </Typography>
-        <Typography variant="body1" sx={{ opacity: 0.9 }}>
-          Here is what's happening in your clinic today.
-        </Typography>
-      </Paper>
 
-      <Grid container spacing={3}>
-        {stats.map((stat, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderRadius: "16px",
-                border: "1px solid #e0e0e0",
-                borderLeft: `8px solid ${stat.color}`,
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "translateY(-5px)",
-                  boxShadow: "0 10px 20px rgba(0,0,0,0.08)",
-                },
-              }}
+        <Paper
+          elevation={0}
+          sx={{
+            mb: 6,
+            p: { xs: 4, md: 5 },
+            borderRadius: "24px",
+            bgcolor: "primary.main",
+            color: "primary.contrastText",
+            background: (theme) =>
+              `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+            boxShadow: "0 10px 40px rgba(0, 0, 0, 0.1)",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          <Box sx={{ position: "relative", zIndex: 1 }}>
+            <Typography
+              variant="h3"
+              sx={{ fontWeight: "bold", mb: 2, letterSpacing: -1 }}
             >
-              <Box>
-                <Typography
-                  variant="subtitle2"
-                  sx={{
-                    color: "text.secondary",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.5,
-                  }}
-                >
-                  {stat.title}
-                </Typography>
-                <Typography
-                  variant="h4"
-                  sx={{ fontWeight: "900", mt: 1, color: "#2c3e50" }}
-                >
-                  {stat.value}
-                </Typography>
-              </Box>
+              Welcome back, {user?.name || "Admin"} 👋
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{ opacity: 0.8, fontWeight: "400", maxWidth: "600px" }}
+            >
+              Everything is looking good! You have {appointmentsToday || 0}{" "}
+              appointments scheduled for today.
+            </Typography>
+          </Box>
+        </Paper>
 
-              <Avatar
+        <Grid container spacing={4}>
+          {" "}
+          {stats.map((stat, index) => (
+            <Grid item xs={12} sm={6} lg={4} key={index}>
+              <Paper
+                elevation={0}
                 sx={{
-                  bgcolor: stat.bgColor,
-                  color: stat.color,
-                  width: 56,
-                  height: 56,
+                  p: 4,
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderRadius: "24px",
+                  bgcolor: "background.paper",
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderTop: (theme) =>
+                    `8px solid ${
+                      index === 0
+                        ? theme.palette.primary.main
+                        : index === 1
+                          ? theme.palette.success.main
+                          : theme.palette.secondary.main
+                    }`,
+                  transition:
+                    "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                  "&:hover": {
+                    transform: "translateY(-10px)",
+                    boxShadow: "0 20px 40px rgba(0,0,0,0.12)",
+                  },
                 }}
               >
-                {stat.icon}
-              </Avatar>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+                <Box>
+                  <Typography
+                    variant="overline"
+                    sx={{
+                      color: "text.secondary",
+                      fontWeight: 800,
+                      fontSize: "0.75rem",
+                      letterSpacing: 1.5,
+                    }}
+                  >
+                    {stat.title}
+                  </Typography>
+                  <Typography
+                    variant="h2"
+                    sx={{
+                      fontWeight: "900",
+                      mt: 1,
+                      color: "text.primary",
+                      letterSpacing: -1,
+                    }}
+                  >
+                    {stat.value}
+                  </Typography>
+                </Box>
+
+                <Avatar
+                  sx={{
+                    bgcolor: stat.bgColor,
+                    color: stat.color,
+                    width: 80,
+                    height: 80,
+                    borderRadius: "20px",
+                    border: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
+                  {stat.icon}
+                </Avatar>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    </Container>
   );
 };
 

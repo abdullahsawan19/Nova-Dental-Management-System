@@ -22,8 +22,10 @@ const ChatForm = ({ onSendMessage, isLoading }) => {
         alignItems: "center",
         gap: 1,
         p: 2,
-        bgcolor: "#ffffff",
-        borderTop: "1px solid #eee",
+        // 🌟 خلفية المربع اللي شايل الفورم كله
+        bgcolor: "background.paper",
+        borderTop: 1,
+        borderColor: "divider",
       }}
     >
       <TextField
@@ -36,22 +38,29 @@ const ChatForm = ({ onSendMessage, isLoading }) => {
         sx={{
           "& .MuiOutlinedInput-root": {
             borderRadius: "30px",
-            bgcolor: "#f4f6f8",
+            bgcolor: "background.default",
             "& fieldset": { border: "none" },
+            "& input": { color: "text.primary" },
           },
         }}
       />
       <IconButton
         type="submit"
-        color="primary"
         disabled={!message.trim() || isLoading}
         sx={{
-          bgcolor: message.trim() && !isLoading ? "primary.main" : "#e0e0e0",
-          color: "#fff",
+          bgcolor:
+            message.trim() && !isLoading
+              ? "primary.main"
+              : "action.disabledBackground",
+          color: message.trim() && !isLoading ? "#fff" : "action.disabled",
           p: 1.5,
           "&:hover": {
-            bgcolor: "primary.dark",
+            bgcolor:
+              message.trim() && !isLoading
+                ? "primary.dark"
+                : "action.disabledBackground",
           },
+          borderRadius: "50%",
         }}
       >
         {isLoading ? (

@@ -40,7 +40,7 @@ const DoctorDetails = () => {
   const { user = {}, education = "", photo = "", specialization = "" } = doctor;
 
   return (
-    <Box sx={{ bgcolor: "#f9fafb", minHeight: "100vh", py: 6 }}>
+    <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: 6 }}>
       <Container maxWidth="lg">
         <Button
           startIcon={<ArrowBackIcon />}
@@ -55,8 +55,9 @@ const DoctorDetails = () => {
           sx={{
             borderRadius: 4,
             overflow: "hidden",
-            border: "1px solid",
+            border: 1,
             borderColor: "divider",
+            bgcolor: "background.paper",
           }}
         >
           <Grid container>
@@ -65,7 +66,7 @@ const DoctorDetails = () => {
               xs={12}
               md={4}
               sx={{
-                bgcolor: "#e3f2fd",
+                bgcolor: "action.hover",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
@@ -77,7 +78,8 @@ const DoctorDetails = () => {
                   borderRadius: "50%",
                   width: 250,
                   height: 250,
-                  border: "5px solid white",
+                  border: 5,
+                  borderColor: "background.paper",
                   boxShadow: 3,
                 }}
               >
@@ -115,7 +117,7 @@ const DoctorDetails = () => {
                   </Typography>
                   <Typography
                     variant="h6"
-                    color="primary"
+                    color="primary.main"
                     fontWeight="bold"
                     sx={{ display: "flex", alignItems: "center", gap: 1 }}
                   >
@@ -135,7 +137,12 @@ const DoctorDetails = () => {
 
               <Divider sx={{ my: 4 }} />
 
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                color="text.primary"
+                gutterBottom
+              >
                 Professional Details
               </Typography>
 
@@ -147,7 +154,11 @@ const DoctorDetails = () => {
                   <ListItemText
                     primary="Education & Background"
                     secondary={education || "Pending update..."}
-                    primaryTypographyProps={{ fontWeight: "bold" }}
+                    primaryTypographyProps={{
+                      fontWeight: "bold",
+                      color: "text.primary",
+                    }}
+                    secondaryTypographyProps={{ color: "text.secondary" }}
                   />
                 </ListItem>
 
@@ -158,7 +169,11 @@ const DoctorDetails = () => {
                   <ListItemText
                     primary="Email Address"
                     secondary={user?.email || "Not available"}
-                    primaryTypographyProps={{ fontWeight: "bold" }}
+                    primaryTypographyProps={{
+                      fontWeight: "bold",
+                      color: "text.primary",
+                    }}
+                    secondaryTypographyProps={{ color: "text.secondary" }}
                   />
                 </ListItem>
 
@@ -169,7 +184,11 @@ const DoctorDetails = () => {
                   <ListItemText
                     primary="Phone Number"
                     secondary={user?.phone || "Not available"}
-                    primaryTypographyProps={{ fontWeight: "bold" }}
+                    primaryTypographyProps={{
+                      fontWeight: "bold",
+                      color: "text.primary",
+                    }}
+                    secondaryTypographyProps={{ color: "text.secondary" }}
                   />
                 </ListItem>
               </List>

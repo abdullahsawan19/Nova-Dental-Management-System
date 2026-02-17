@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSubmit, useActionData, useNavigation } from "react-router-dom";
-import { Box, Typography, Container, Alert } from "@mui/material";
+import { Box, Typography, Container } from "@mui/material";
 import AppointmentForm from "../../features/appointments/AppointmentForm";
+import CustomAlert from "../../components/feedback/Alert";
 
 const Appointment = () => {
   const submit = useSubmit();
@@ -16,6 +17,17 @@ const Appointment = () => {
     timeSlot: "",
   });
 
+  const [alertInfo, setAlertInfo] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
+  const handleCloseAlert = (event, reason) => {
+    if (reason === "clickaway") return;
+    setAlertInfo({ ...alertInfo, open: false });
+  };
+
   useEffect(() => {
     const savedData = sessionStorage.getItem("pendingBooking");
     if (savedData) {
@@ -24,21 +36,22 @@ const Appointment = () => {
     }
   }, []);
 
-  const handleBookSubmit = () => {
-    if (
-      !bookingData.doctorId ||
-      !bookingData.serviceId ||
-      !bookingData.date ||
-      !bookingData.timeSlot
-    ) {
-      alert("Please complete all booking steps!");
-      return;
+  useEffect(() => {
+    if (actionData?.error) {
+      setAlertInfo({
+        open: true,
+        message: actionData.error,
+        severity: "error",
+      });
     }
+  }, [actionData]);
+
+  const handleBookSubmit = () => {
     submit(bookingData, { method: "post" });
   };
 
   return (
-    <Box sx={{ py: 8, bgcolor: "#f9fafb", minHeight: "100vh" }}>
+    <Box sx={{ py: 8, bgcolor: "background.default", minHeight: "100vh" }}>
       <Container maxWidth="md">
         <Box sx={{ textAlign: "center", mb: 4 }}>
           <Typography variant="h3" fontWeight="bold" color="primary">
@@ -49,12 +62,6 @@ const Appointment = () => {
           </Typography>
         </Box>
 
-        {actionData?.error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {actionData.error}
-          </Alert>
-        )}
-
         <AppointmentForm
           bookingData={bookingData}
           setBookingData={setBookingData}
@@ -62,6 +69,13 @@ const Appointment = () => {
           isSubmitting={isSubmitting}
         />
       </Container>
+
+      <CustomAlert
+        open={alertInfo.open}
+        onClose={handleCloseAlert}
+        message={alertInfo.message}
+        severity={alertInfo.severity}
+      />
     </Box>
   );
 };

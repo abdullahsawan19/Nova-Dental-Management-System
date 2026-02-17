@@ -1,11 +1,21 @@
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Box, TextField, Button, Alert, CircularProgress } from "@mui/material";
 
-const UpdatePatientData = ({ fetcher }) => {
+const UpdatePatientData = ({ fetcher, onSuccess }) => {
   const { currentUser, isLoading } = useSelector((state) => state.user);
 
   const isSubmitting = fetcher.state === "submitting";
   const actionData = fetcher.data;
+
+  useEffect(() => {
+    if (actionData?.success && fetcher.state === "idle") {
+      const timer = setTimeout(() => {
+        if (onSuccess) onSuccess();
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [actionData, fetcher.state, onSuccess]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -28,14 +38,21 @@ const UpdatePatientData = ({ fetcher }) => {
 
   if (isLoading && !currentUser) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          p: 4,
+          bgcolor: "background.paper",
+        }}
+      >
         <CircularProgress size={30} />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 1 }}>
+    <Box sx={{ p: 1, bgcolor: "background.paper" }}>
       {actionData?.success && (
         <Alert severity="success" sx={{ mb: 2 }}>
           {actionData.message}
@@ -55,7 +72,13 @@ const UpdatePatientData = ({ fetcher }) => {
           fullWidth
           margin="normal"
           size="small"
-          InputLabelProps={{ shrink: true }}
+          InputLabelProps={{ shrink: true, sx: { color: "text.secondary" } }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              bgcolor: "background.default",
+              "& input": { color: "text.primary" },
+            },
+          }}
         />
 
         <TextField
@@ -66,7 +89,13 @@ const UpdatePatientData = ({ fetcher }) => {
           fullWidth
           margin="normal"
           size="small"
-          InputLabelProps={{ shrink: true }}
+          InputLabelProps={{ shrink: true, sx: { color: "text.secondary" } }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              bgcolor: "background.default",
+              "& input": { color: "text.primary" },
+            },
+          }}
         />
 
         <TextField
@@ -76,7 +105,13 @@ const UpdatePatientData = ({ fetcher }) => {
           fullWidth
           margin="normal"
           size="small"
-          InputLabelProps={{ shrink: true }}
+          InputLabelProps={{ shrink: true, sx: { color: "text.secondary" } }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              bgcolor: "background.default",
+              "& input": { color: "text.primary" },
+            },
+          }}
         />
 
         <Button

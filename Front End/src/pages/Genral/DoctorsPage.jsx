@@ -32,12 +32,9 @@ const DoctorsPage = () => {
     startIndex + itemsPerPage,
   );
   const totalPages = Math.ceil(safeDoctors.length / itemsPerPage);
-  console.log(
-    "Image URL:",
-    `${import.meta.env.VITE_API_URL}/uploads/${currentDoctors[0]?.photo}`,
-  );
+
   return (
-    <Box sx={{ bgcolor: "#f9fafb", minHeight: "100vh", py: 6 }}>
+    <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: 6 }}>
       <Container maxWidth="lg">
         {/* Header */}
         <Box sx={{ mb: 6, textAlign: "center" }}>
@@ -78,7 +75,7 @@ const DoctorsPage = () => {
                   flexDirection: "column",
                   borderRadius: 4,
                   overflow: "hidden",
-                  border: "1px solid",
+                  border: 1,
                   borderColor: "divider",
                   bgcolor: "background.paper",
                   transition: "transform 0.3s, box-shadow 0.3s",
@@ -94,6 +91,7 @@ const DoctorsPage = () => {
                     height: "220px",
                     width: "100%",
                     flexShrink: 0,
+                    bgcolor: "action.hover",
                   }}
                 >
                   <CardMedia
@@ -120,13 +118,14 @@ const DoctorsPage = () => {
                   <Typography
                     variant="h6"
                     fontWeight="700"
+                    color="text.primary"
                     sx={{ mb: 0.5, lineHeight: 1.2 }}
                   >
                     Dr. {doc.user?.name}
                   </Typography>
                   <Typography
                     variant="body2"
-                    color="primary"
+                    color="primary.main"
                     fontWeight="bold"
                     sx={{ mb: 1 }}
                   >
@@ -168,6 +167,11 @@ const DoctorsPage = () => {
               onChange={handleChangePage}
               color="primary"
               size="large"
+              sx={{
+                "& .MuiPaginationItem-root": {
+                  color: "text.primary",
+                },
+              }}
             />
           </Box>
         )}

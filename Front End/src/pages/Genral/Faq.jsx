@@ -15,7 +15,7 @@ const Faq = () => {
   const { publicFaqs, isLoading } = useSelector((state) => state.faq);
 
   return (
-    <Box sx={{ py: 8, bgcolor: "#f9fafb", minHeight: "100vh" }}>
+    <Box sx={{ py: 8, bgcolor: "background.default", minHeight: "100vh" }}>
       <Container maxWidth="md">
         <Box sx={{ textAlign: "center", mb: 6 }}>
           <Typography
@@ -45,6 +45,8 @@ const Faq = () => {
                 borderRadius: "12px !important",
                 "&:before": { display: "none" },
                 boxShadow: "0 4px 15px rgba(0,0,0,0.03)",
+                bgcolor: "background.paper",
+                color: "text.primary",
               }}
             >
               <AccordionSummary
@@ -55,14 +57,15 @@ const Faq = () => {
                   },
                 }}
               >
-                <Typography variant="h6" fontWeight="600" color="#2c3e50">
+                <Typography variant="h6" fontWeight="600" color="text.primary">
                   {faq.question}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails
                 sx={{
-                  bgcolor: "#fafafa",
-                  borderTop: "1px solid #eee",
+                  bgcolor: "action.hover",
+                  borderTop: 1,
+                  borderColor: "divider",
                   p: 3,
                   borderBottomLeftRadius: "12px",
                   borderBottomRightRadius: "12px",

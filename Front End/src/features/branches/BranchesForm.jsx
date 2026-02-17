@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFetcher } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import Input from "../../components/ui/Input";
@@ -26,11 +26,8 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const BranchesForm = ({ open, onClose, initialData }) => {
   const [phonesCount, setPhonesCount] = useState([0]);
-
   const fetcher = useFetcher();
-
   const actionData = fetcher.data;
-
   const isSubmitting = fetcher.state === "submitting";
 
   useEffect(() => {
@@ -53,20 +50,29 @@ const BranchesForm = ({ open, onClose, initialData }) => {
     setPhonesCount(phonesCount.filter((_, i) => i !== index));
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: { bgcolor: "background.paper" },
+      }}
+    >
       <DialogTitle
         sx={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          color: "text.primary",
         }}
       >
         {initialData ? "Edit Branch" : "Add New Branch"}
-        <IconButton onClick={onClose}>
+        <IconButton onClick={onClose} sx={{ color: "text.primary" }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <Divider />
+      <Divider sx={{ borderColor: "divider" }} />
       <DialogContent sx={{ pt: 3 }}>
         {actionData?.error && (
           <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
@@ -88,7 +94,7 @@ const BranchesForm = ({ open, onClose, initialData }) => {
             <Box>
               <Typography
                 variant="subtitle2"
-                color="primary"
+                color="primary.main"
                 sx={{ mb: 1, fontWeight: "bold" }}
               >
                 Basic Information
@@ -142,12 +148,12 @@ const BranchesForm = ({ open, onClose, initialData }) => {
               </Grid>
             </Box>
 
-            <Divider />
+            <Divider sx={{ borderColor: "divider" }} />
 
             <Box>
               <Typography
                 variant="subtitle2"
-                color="primary"
+                color="primary.main"
                 sx={{ mb: 1, fontWeight: "bold" }}
               >
                 Contact Details
@@ -163,14 +169,26 @@ const BranchesForm = ({ open, onClose, initialData }) => {
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Box sx={{ bgcolor: "#f5f5f5", p: 2, borderRadius: 2 }}>
+                  <Box
+                    sx={{
+                      bgcolor: "background.default",
+                      p: 2,
+                      borderRadius: 2,
+                      border: 1,
+                      borderColor: "divider",
+                    }}
+                  >
                     <Stack
                       direction="row"
                       justifyContent="space-between"
                       alignItems="center"
                       mb={1}
                     >
-                      <Typography variant="body2" fontWeight="bold">
+                      <Typography
+                        variant="body2"
+                        fontWeight="bold"
+                        color="text.primary"
+                      >
                         Phone Numbers
                       </Typography>
                       <IconButton
@@ -189,7 +207,12 @@ const BranchesForm = ({ open, onClose, initialData }) => {
                           label={`Phone ${index + 1}`}
                           name="phones"
                           required
-                          sx={{ bgcolor: "white" }}
+                          sx={{
+                            bgcolor: "background.paper",
+                            "& .MuiInputLabel-root": {
+                              color: "text.secondary",
+                            },
+                          }}
                           defaultValue={initialData?.phones?.[index] || ""}
                         />
                         {phonesCount.length > 1 && (
@@ -208,12 +231,12 @@ const BranchesForm = ({ open, onClose, initialData }) => {
               </Grid>
             </Box>
 
-            <Divider />
+            <Divider sx={{ borderColor: "divider" }} />
 
             <Box>
               <Typography
                 variant="subtitle2"
-                color="primary"
+                color="primary.main"
                 sx={{ mb: 1, fontWeight: "bold" }}
               >
                 Working Hours
@@ -242,7 +265,10 @@ const BranchesForm = ({ open, onClose, initialData }) => {
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <FormLabel component="legend" sx={{ fontSize: "0.8rem" }}>
+                  <FormLabel
+                    component="legend"
+                    sx={{ fontSize: "0.8rem", color: "text.secondary" }}
+                  >
                     Working Days
                   </FormLabel>
                   <FormGroup row>
@@ -250,6 +276,7 @@ const BranchesForm = ({ open, onClose, initialData }) => {
                       (day, index) => (
                         <FormControlLabel
                           key={day}
+                          sx={{ color: "text.primary" }}
                           control={
                             <Checkbox
                               name="workingDays"
@@ -272,8 +299,19 @@ const BranchesForm = ({ open, onClose, initialData }) => {
           </Stack>
         </fetcher.Form>
       </DialogContent>
-      <DialogActions sx={{ p: 3, bgcolor: "#f9fafb" }}>
-        <Button onClick={onClose} color="inherit" disabled={isSubmitting}>
+      <DialogActions
+        sx={{
+          p: 3,
+          bgcolor: "background.default",
+          borderTop: 1,
+          borderColor: "divider",
+        }}
+      >
+        <Button
+          onClick={onClose}
+          sx={{ color: "text.primary" }}
+          disabled={isSubmitting}
+        >
           Cancel
         </Button>
         <Button
@@ -281,7 +319,7 @@ const BranchesForm = ({ open, onClose, initialData }) => {
           form="branch-form"
           variant="contained"
           color="primary"
-          sx={{ px: 4 }}
+          sx={{ px: 4, fontWeight: "bold" }}
           disabled={isSubmitting}
           startIcon={
             isSubmitting ? <CircularProgress size={20} color="inherit" /> : null

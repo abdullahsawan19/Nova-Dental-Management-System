@@ -1,14 +1,6 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { useFetcher } from "react-router-dom";
-import {
-  Box,
-  Typography,
-  Paper,
-  Tooltip,
-  Rating,
-  IconButton,
-} from "@mui/material";
+import { Box, Typography, Paper, Tooltip, Rating } from "@mui/material";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -37,7 +29,12 @@ const ManageReviews = () => {
             height: "100%",
           }}
         >
-          <Typography variant="subtitle2" fontWeight="bold" lineHeight={1.2}>
+          <Typography
+            variant="subtitle2"
+            fontWeight="bold"
+            lineHeight={1.2}
+            color="text.primary"
+          >
             {params.row.user?.name || "Deleted User"}
           </Typography>
           <Typography variant="caption" color="text.secondary">
@@ -51,7 +48,6 @@ const ManageReviews = () => {
       headerName: "Doctor Name",
       flex: 1,
       minWidth: 150,
-
       renderCell: (params) => (
         <Box
           sx={{
@@ -61,7 +57,7 @@ const ManageReviews = () => {
             height: "100%",
           }}
         >
-          <Typography fontWeight="500" color="primary">
+          <Typography fontWeight="500" color="primary.main">
             Dr. {params.value}
           </Typography>
         </Box>
@@ -90,7 +86,12 @@ const ManageReviews = () => {
           }}
         >
           <Tooltip title={params.value}>
-            <Typography noWrap variant="body2" sx={{ width: "100%" }}>
+            <Typography
+              noWrap
+              variant="body2"
+              sx={{ width: "100%" }}
+              color="text.primary"
+            >
               {params.value}
             </Typography>
           </Tooltip>
@@ -114,9 +115,16 @@ const ManageReviews = () => {
   ];
 
   return (
-    <Box sx={{ p: 4, height: "100%", width: "100%", bgcolor: "#f9fafb" }}>
+    <Box
+      sx={{
+        p: 4,
+        height: "100%",
+        width: "100%",
+        bgcolor: "background.default",
+      }}
+    >
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" fontWeight="800" color="#1a1a1a">
+        <Typography variant="h5" fontWeight="800" color="text.primary">
           Manage Reviews
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -130,9 +138,11 @@ const ManageReviews = () => {
           height: 650,
           width: "100%",
           borderRadius: 4,
-          border: "1px solid #e0e0e0",
+          border: 1,
+          borderColor: "divider",
           overflow: "hidden",
           boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
+          bgcolor: "background.paper",
         }}
       >
         <DataGrid
@@ -148,13 +158,29 @@ const ManageReviews = () => {
           pageSizeOptions={[5, 10, 20]}
           sx={{
             border: "none",
+            color: "text.primary",
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#f4f6f8",
-              color: "#455a64",
+              backgroundColor: "action.hover",
+              color: "text.primary",
               fontWeight: "bold",
             },
+            "& .MuiDataGrid-cell": {
+              borderColor: "divider",
+            },
             "& .MuiDataGrid-row:hover": {
-              backgroundColor: "#f9fafb",
+              backgroundColor: "action.hover",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderColor: "divider",
+            },
+            "& .MuiTablePagination-root": {
+              color: "text.primary",
+            },
+            "& .MuiButtonBase-root": {
+              color: "text.primary",
+            },
+            "& .MuiDataGrid-iconSeparator": {
+              color: "divider",
             },
           }}
         />

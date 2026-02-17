@@ -7,7 +7,13 @@ const drawerWidth = 240;
 
 const DashboardLayout = () => {
   return (
-    <Box sx={{ display: "flex", bgcolor: "#1b0c0c" }}>
+    <Box
+      sx={{
+        display: "flex",
+        bgcolor: "background.default",
+        minHeight: "100vh",
+      }}
+    >
       <CssBaseline />
 
       <GlobalSpinner />
@@ -20,9 +26,11 @@ const DashboardLayout = () => {
           flexGrow: 1,
           p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          color: "#fff",
-          bgcolor: "#1b0c0c",
+          color: "text.primary",
+          bgcolor: "background.default",
           minHeight: "100vh",
+          transition:
+            "background-color 0.4s ease-in-out, color 0.4s ease-in-out",
         }}
       >
         <Outlet />

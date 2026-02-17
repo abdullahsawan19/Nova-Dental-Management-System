@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { TextField, Box } from "@mui/material";
 
 const Input = ({
   label,
@@ -7,25 +7,34 @@ const Input = ({
   value,
   onChange,
   name,
-  className,
+  sx,
   children,
   ...props
 }) => {
   return (
-    <div>
-      {label && <label>{label}</label>}
-      <TextField
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className={className}
-        {...props}
-      >
-        {children}
-      </TextField>
-    </div>
+    <TextField
+      fullWidth
+      label={label}
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      variant="outlined"
+      sx={{
+        "& .MuiOutlinedInput-root": {
+          bgcolor: "background.default",
+          borderRadius: 2,
+        },
+        "& .MuiInputLabel-root": {
+          color: "text.secondary",
+        },
+        ...sx,
+      }}
+      {...props}
+    >
+      {children}
+    </TextField>
   );
 };
 

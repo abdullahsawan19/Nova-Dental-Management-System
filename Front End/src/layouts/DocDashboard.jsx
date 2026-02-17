@@ -9,7 +9,7 @@ const DocDashboard = () => {
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
-        bgcolor: "#f4f6f8",
+        bgcolor: "background.default",
       }}
     >
       <DoctorNav />

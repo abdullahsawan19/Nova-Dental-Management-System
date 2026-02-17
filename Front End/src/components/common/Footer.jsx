@@ -8,6 +8,7 @@ import {
   Link as MuiLink,
   IconButton,
   Stack,
+  Divider,
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -39,11 +40,13 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        bgcolor: "#f8f9fa",
-        color: "#333",
-        pt: 2.5,
-        pb: 1,
-        borderTop: "1px solid #e0e0e0",
+        bgcolor: "background.paper",
+        color: "text.primary",
+        pt: 3,
+        pb: 2,
+        mt: "auto",
+        borderTop: "1px solid",
+        borderColor: "divider",
       }}
     >
       <Container maxWidth="lg">
@@ -60,18 +63,18 @@ const Footer = () => {
             <Typography
               variant="caption"
               color="text.secondary"
-              sx={{ display: "block", mb: 0.5, lineHeight: 1.4 }}
+              sx={{ display: "block", mb: 1, lineHeight: 1.4 }}
             >
               Providing the best healthcare services with modern technology.
             </Typography>
             <Box sx={{ ml: -1 }}>
-              <IconButton size="small" sx={{ color: "#888", p: 0.5 }}>
+              <IconButton size="small" sx={{ color: "text.secondary", p: 0.5 }}>
                 <FacebookIcon sx={{ fontSize: 18 }} />
               </IconButton>
-              <IconButton size="small" sx={{ color: "#888", p: 0.5 }}>
+              <IconButton size="small" sx={{ color: "text.secondary", p: 0.5 }}>
                 <InstagramIcon sx={{ fontSize: 18 }} />
               </IconButton>
-              <IconButton size="small" sx={{ color: "#888", p: 0.5 }}>
+              <IconButton size="small" sx={{ color: "text.secondary", p: 0.5 }}>
                 <TwitterIcon sx={{ fontSize: 18 }} />
               </IconButton>
             </Box>
@@ -81,7 +84,7 @@ const Footer = () => {
             <Typography
               variant="subtitle2"
               fontWeight="bold"
-              color="#1a1a1a"
+              color="text.primary"
               mb={1}
             >
               Quick Links
@@ -109,7 +112,7 @@ const Footer = () => {
             <Typography
               variant="subtitle2"
               fontWeight="bold"
-              color="#1a1a1a"
+              color="text.primary"
               mb={1}
             >
               Contact Us
@@ -148,15 +151,14 @@ const Footer = () => {
           </Grid>
         </Grid>
 
+        <Divider sx={{ mt: 2, mb: 1, borderColor: "divider" }} />
+
         <Typography
           variant="caption"
           align="center"
           sx={{
             color: "text.disabled",
             display: "block",
-            mt: 2,
-            pt: 1,
-            borderTop: "1px solid #eee",
           }}
         >
           &copy; {new Date().getFullYear()} {activeBranch?.name || "ClinicPro"}.

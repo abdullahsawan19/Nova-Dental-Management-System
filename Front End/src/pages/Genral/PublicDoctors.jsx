@@ -56,9 +56,14 @@ const PublicDoctors = () => {
   if (safeDoctors.length === 0) return null;
 
   return (
-    <Box sx={{ position: "relative", px: { xs: 2, md: 6 }, py: 4 }}>
-      {/* Header */}
-      {/* Header */}
+    <Box
+      sx={{
+        position: "relative",
+        px: { xs: 2, md: 6 },
+        py: 4,
+        bgcolor: "background.default",
+      }}
+    >
       <Box sx={{ mb: 6, display: "flex", justifyContent: "center" }}>
         <Box
           onClick={() => navigate("/doctors")}
@@ -131,6 +136,7 @@ const PublicDoctors = () => {
             zIndex: 2,
             boxShadow: 3,
             bgcolor: "background.paper",
+            color: "text.primary",
             "&:hover": { bgcolor: "primary.main", color: "white" },
             display: isSliderActive ? "flex" : "none",
           }}
@@ -161,7 +167,7 @@ const PublicDoctors = () => {
                   flexDirection: "column",
                   borderRadius: 4,
                   overflow: "hidden",
-                  border: "1px solid",
+                  border: 1,
                   borderColor: "divider",
                   bgcolor: "background.paper",
                   transition: "transform 0.3s, box-shadow 0.3s",
@@ -177,6 +183,7 @@ const PublicDoctors = () => {
                     height: "250px",
                     width: "100%",
                     flexShrink: 0,
+                    bgcolor: "action.hover",
                   }}
                 >
                   <CardMedia
@@ -204,13 +211,14 @@ const PublicDoctors = () => {
                   <Typography
                     variant="h6"
                     fontWeight="700"
+                    color="text.primary"
                     sx={{ mb: 0.5, lineHeight: 1.2 }}
                   >
                     Dr. {doc.user?.name}
                   </Typography>
                   <Typography
                     variant="body2"
-                    color="primary"
+                    color="primary.main"
                     fontWeight="bold"
                     sx={{ mb: 1 }}
                   >
@@ -254,6 +262,7 @@ const PublicDoctors = () => {
             zIndex: 2,
             boxShadow: 3,
             bgcolor: "background.paper",
+            color: "text.primary",
             "&:hover": { bgcolor: "primary.main", color: "white" },
             display: isSliderActive ? "flex" : "none",
           }}

@@ -25,9 +25,17 @@ const ReviewForm = ({ onSuccess }) => {
       <input type="hidden" name="intent" value="create" />
       <input type="hidden" name="rating" value={rating} />
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 1 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+          p: 1,
+          bgcolor: "background.paper",
+        }}
+      >
         <Box>
-          <Typography component="legend" fontWeight="bold">
+          <Typography component="legend" fontWeight="bold" color="text.primary">
             Your Rating
           </Typography>
           <Rating
@@ -47,6 +55,13 @@ const ReviewForm = ({ onSuccess }) => {
           fullWidth
           required
           placeholder="e.g., Ahmed Ali"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              bgcolor: "background.default",
+              "& input": { color: "text.primary" },
+            },
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+          }}
         />
 
         <TextField
@@ -58,6 +73,13 @@ const ReviewForm = ({ onSuccess }) => {
           fullWidth
           required
           placeholder="Tell us about your experience..."
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              bgcolor: "background.default",
+              "& textarea": { color: "text.primary" },
+            },
+            "& .MuiInputLabel-root": { color: "text.secondary" },
+          }}
         />
 
         <Button

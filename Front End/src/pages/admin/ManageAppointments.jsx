@@ -28,8 +28,9 @@ function CustomToolbar() {
         display: "flex",
         justifyContent: "flex-start",
         alignItems: "center",
-        bgcolor: "#f8f9fa",
-        borderBottom: "1px solid #e0e0e0",
+        bgcolor: "background.paper",
+        borderBottom: 1,
+        borderColor: "divider",
       }}
     >
       <Stack direction="row" spacing={1}>
@@ -88,7 +89,12 @@ const ManageAppointments = () => {
       flex: 1.2,
       minWidth: 150,
       renderCell: (params) => (
-        <Typography variant="subtitle2" fontWeight="bold" sx={{ mt: 2 }}>
+        <Typography
+          variant="subtitle2"
+          fontWeight="bold"
+          sx={{ mt: 2 }}
+          color="text.primary"
+        >
           {params.value}
         </Typography>
       ),
@@ -101,7 +107,7 @@ const ManageAppointments = () => {
       renderCell: (params) => (
         <Typography
           variant="body2"
-          color="primary"
+          color="primary.main"
           sx={{ mt: 2, fontWeight: "600" }}
         >
           Dr. {params.value}
@@ -118,7 +124,7 @@ const ManageAppointments = () => {
       renderCell: (params) => (
         <Typography
           variant="body2"
-          sx={{ mt: 2, fontWeight: "bold", color: "#2e7d32" }}
+          sx={{ mt: 2, fontWeight: "bold", color: "success.main" }}
         >
           {params.value} EGP
         </Typography>
@@ -143,17 +149,12 @@ const ManageAppointments = () => {
               width: "100%",
               mt: 1,
               borderRadius: "8px",
-              bgcolor:
-                currentStatus === "confirmed"
-                  ? "#e8f5e9"
-                  : currentStatus === "cancelled"
-                    ? "#ffebee"
-                    : currentStatus === "completed"
-                      ? "#e3f2fd"
-                      : "#fff3e0",
+              bgcolor: "background.default",
+              color: "text.primary",
               fontSize: "0.8rem",
               fontWeight: "700",
               "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+              "& .MuiSelect-icon": { color: "text.primary" },
             }}
           >
             <MenuItem value="pending_payment" disabled>
@@ -171,7 +172,7 @@ const ManageAppointments = () => {
   ];
 
   return (
-    <Box sx={{ p: 4, bgcolor: "#f9fafb", minHeight: "100vh" }}>
+    <Box sx={{ p: 4, bgcolor: "background.default", minHeight: "100vh" }}>
       <Box
         sx={{
           mb: 4,
@@ -183,7 +184,7 @@ const ManageAppointments = () => {
         }}
       >
         <Box>
-          <Typography variant="h4" fontWeight="900" color="#1a1a1a">
+          <Typography variant="h4" fontWeight="900" color="text.primary">
             Appointments Dashboard
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -197,11 +198,14 @@ const ManageAppointments = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           sx={{
-            bgcolor: "white",
+            bgcolor: "background.paper",
             width: "380px",
             borderRadius: "12px",
             boxShadow: "0px 2px 8px rgba(0,0,0,0.05)",
-            "& .MuiOutlinedInput-root": { borderRadius: "12px" },
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "12px",
+              color: "text.primary",
+            },
           }}
           InputProps={{
             startAdornment: (
@@ -219,9 +223,11 @@ const ManageAppointments = () => {
           height: 700,
           width: "100%",
           borderRadius: 5,
-          border: "1px solid #e0e0e0",
+          border: 1,
+          borderColor: "divider",
           overflow: "hidden",
           boxShadow: "0px 10px 30px rgba(0,0,0,0.04)",
+          bgcolor: "background.paper",
         }}
       >
         <DataGrid
@@ -238,14 +244,24 @@ const ManageAppointments = () => {
           pageSizeOptions={[10, 25, 50]}
           sx={{
             border: "none",
+            color: "text.primary",
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#f4f6f8",
-              color: "#37474f",
+              backgroundColor: "action.hover",
+              color: "text.primary",
               fontWeight: "800",
               fontSize: "0.9rem",
             },
-            "& .MuiDataGrid-cell": { borderBottom: "1px solid #f0f0f0" },
-            "& .MuiDataGrid-row:hover": { backgroundColor: "#f5faff" },
+            "& .MuiDataGrid-cell": {
+              borderBottom: 1,
+              borderColor: "divider",
+              color: "text.primary",
+            },
+            "& .MuiDataGrid-row:hover": { backgroundColor: "action.hover" },
+            "& .MuiTablePagination-root": { color: "text.primary" },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: 1,
+              borderColor: "divider",
+            },
           }}
         />
       </Paper>

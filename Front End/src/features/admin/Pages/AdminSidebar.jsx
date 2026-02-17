@@ -1,5 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { logoutUser } from "../../auth/authSlice";
+import { useDispatch } from "react-redux";
+import { useThemeContext } from "../../../theme/ThemeContextProvider";
 
 import {
   Drawer,
@@ -13,6 +15,8 @@ import {
   Typography,
   Box,
   Button,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -24,12 +28,14 @@ import StoreIcon from "@mui/icons-material/Store";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
-import { useDispatch } from "react-redux";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 
 const AdminSidebar = ({ drawerWidth }) => {
   const location = useLocation();
-  // const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { mode, toggleColorMode } = useThemeContext();
+
   const handleLogout = () => {
     dispatch(logoutUser());
   };
@@ -52,6 +58,7 @@ const AdminSidebar = ({ drawerWidth }) => {
     { label: "Reviews", path: "/admin/reviews", icon: <RateReviewIcon /> },
     { label: "Faq", path: "/admin/faq", icon: <LiveHelpIcon /> },
   ];
+
   return (
     <Drawer
       variant="permanent"
@@ -61,25 +68,42 @@ const AdminSidebar = ({ drawerWidth }) => {
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
-          backgroundColor: "#1b0c0c",
-          borderRight: "3px solid #e0e0e0",
+          backgroundColor: "background.paper",
+          color: "text.primary",
+          borderRight: "1px solid",
+          borderColor: "divider",
         },
       }}
       anchor="left"
     >
       <Toolbar
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          px: 2,
+        }}
       >
         <Typography
           variant="h6"
           noWrap
-          component="div"
-          sx={{ color: "#1976d2", fontWeight: "bold" }}
+          sx={{ color: "primary.main", fontWeight: "bold" }}
         >
-          🦷 Admin Panel
+          🦷 Admin
         </Typography>
+
+        <Tooltip title={mode === "dark" ? "Light Mode" : "Dark Mode"}>
+          <IconButton onClick={toggleColorMode} color="inherit">
+            {mode === "dark" ? (
+              <LightModeIcon sx={{ color: "#fbbf24" }} />
+            ) : (
+              <DarkModeIcon sx={{ color: "#374151" }} />
+            )}
+          </IconButton>
+        </Tooltip>
       </Toolbar>
-      <Divider />
+
+      <Divider sx={{ borderColor: "divider" }} />
 
       <List>
         {adminLinks.map((item) => {
@@ -92,19 +116,27 @@ const AdminSidebar = ({ drawerWidth }) => {
                 to={item.path}
                 selected={isActive}
                 sx={{
-                  color: "rgb(255, 255, 255)",
+                  color: "text.primary",
                   "&.Mui-selected": {
-                    backgroundColor: "#1a1d20",
-                    color: "rgb(255, 255, 255)",
-                    "&:hover": { backgroundColor: "#394a58" },
-                    borderRight: "4px solid #1976d2",
+                    backgroundColor: "action.selected",
+                    color: "primary.main",
+                    "&:hover": { backgroundColor: "action.hover" },
+                    borderRight: "4px solid",
+                    borderColor: "primary.main",
                   },
                 }}
               >
-                <ListItemIcon sx={{ color: isActive ? "#1976d2" : "inherit" }}>
+                <ListItemIcon
+                  sx={{ color: isActive ? "primary.main" : "inherit" }}
+                >
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.label} />
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{
+                    fontWeight: isActive ? "bold" : "medium",
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           );
@@ -118,6 +150,11 @@ const AdminSidebar = ({ drawerWidth }) => {
           fullWidth
           startIcon={<LogoutIcon />}
           onClick={handleLogout}
+          sx={{
+            fontWeight: "bold",
+            textTransform: "none",
+            borderRadius: 2,
+          }}
         >
           Logout
         </Button>

@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import CloseIcon from "@mui/icons-material/Close";
-import ChatIcon from "@mui/icons-material/Chat";
+import ForumRoundedIcon from "@mui/icons-material/ForumRounded";
 import chatServices from "../../services/chatServices";
 import ChatForm from "../../features/chat/chatForm";
 
@@ -134,7 +134,7 @@ const FloatingChat = () => {
               display: "flex",
               flexDirection: "column",
               gap: 1.5,
-              bgcolor: "#f9fafb",
+              bgcolor: "background.default",
             }}
           >
             {messages.map((msg, index) => {
@@ -159,8 +159,8 @@ const FloatingChat = () => {
                   <Box
                     sx={{
                       maxWidth: "75%",
-                      bgcolor: isAi ? "#fff" : "primary.main",
-                      color: isAi ? "#1a1a1a" : "#fff",
+                      bgcolor: isAi ? "background.paper" : "primary.main",
+                      color: isAi ? "text.primary" : "#fff",
                       p: 1.5,
                       borderRadius: 2,
                       borderBottomLeftRadius: isAi ? 0 : 8,
@@ -210,7 +210,7 @@ const FloatingChat = () => {
           boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
         }}
       >
-        {isOpen ? <CloseIcon /> : <ChatIcon />}
+        {isOpen ? <CloseIcon /> : <ForumRoundedIcon />}
       </Fab>
     </>
   );

@@ -5,6 +5,7 @@ import { CircularProgress, Box } from "@mui/material";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "./features/auth/authSlice";
+import { ThemeContextProvider } from "./theme/ThemeContextProvider";
 
 function App() {
   const dispatch = useDispatch();
@@ -15,23 +16,26 @@ function App() {
       dispatch(getCurrentUser());
     }
   }, [dispatch, token, user]);
+
   return (
-    <RouterProvider
-      router={router}
-      fallbackElement={
-        <Box
-          sx={{
-            display: "flex",
-            height: "100vh",
-            alignItems: "center",
-            justifyContent: "center",
-            bgcolor: "#1b0c0c",
-          }}
-        >
-          <CircularProgress sx={{ color: "primary.main" }} />
-        </Box>
-      }
-    />
+    <ThemeContextProvider>
+      <RouterProvider
+        router={router}
+        fallbackElement={
+          <Box
+            sx={{
+              display: "flex",
+              height: "100vh",
+              alignItems: "center",
+              justifyContent: "center",
+              bgcolor: "background.default",
+            }}
+          >
+            <CircularProgress sx={{ color: "primary.main" }} />
+          </Box>
+        }
+      />
+    </ThemeContextProvider>
   );
 }
 

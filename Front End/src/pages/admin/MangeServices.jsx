@@ -41,7 +41,6 @@ const MangeServices = () => {
     (state) => state.services,
   );
 
-  // States
   const [openModal, setOpenModal] = useState(false);
   const [currentService, setCurrentService] = useState(null);
 
@@ -87,7 +86,7 @@ const MangeServices = () => {
               : ""
           }
           variant="rounded"
-          sx={{ width: 40, height: 40, bgcolor: "#eee" }}
+          sx={{ width: 40, height: 40, bgcolor: "action.hover" }}
         >
           {params.row.name?.en?.charAt(0) || "S"}
         </Avatar>
@@ -107,7 +106,7 @@ const MangeServices = () => {
             height: "100%",
           }}
         >
-          <Typography variant="body2" fontWeight="bold">
+          <Typography variant="body2" fontWeight="bold" color="text.primary">
             🇬🇧 {params.row.name?.en}
           </Typography>
           <Typography variant="caption" color="text.secondary">
@@ -121,7 +120,7 @@ const MangeServices = () => {
       headerName: "Fees",
       width: 120,
       renderCell: (params) => (
-        <Typography variant="body2" fontWeight="bold">
+        <Typography variant="body2" fontWeight="bold" color="text.primary">
           {params.row.fees} EGP
         </Typography>
       ),
@@ -179,10 +178,17 @@ const MangeServices = () => {
   ];
 
   return (
-    <Box sx={{ p: 4, height: "100%", width: "100%", bgcolor: "#f9fafb" }}>
+    <Box
+      sx={{
+        p: 4,
+        height: "100%",
+        width: "100%",
+        bgcolor: "background.default",
+      }}
+    >
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight="800" color="#1a1a1a">
+          <Typography variant="h5" fontWeight="800" color="text.primary">
             Manage Services
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -198,7 +204,7 @@ const MangeServices = () => {
             textTransform: "none",
             px: 3,
             boxShadow: 2,
-            bgcolor: "#1976d2",
+            bgcolor: "primary.main",
           }}
         >
           Add New Service
@@ -217,9 +223,11 @@ const MangeServices = () => {
           height: 600,
           width: "100%",
           borderRadius: 4,
-          border: "1px solid #e0e0e0",
+          border: 1,
+          borderColor: "divider",
           overflow: "hidden",
           boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
+          bgcolor: "background.paper",
         }}
       >
         <DataGrid
@@ -232,13 +240,26 @@ const MangeServices = () => {
           rowHeight={70}
           sx={{
             border: "none",
+            color: "text.primary",
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#f4f6f8",
-              color: "#455a64",
+              backgroundColor: "action.hover",
+              color: "text.primary",
               fontWeight: "bold",
             },
             "& .MuiDataGrid-row:hover": {
-              backgroundColor: "#f9fafb",
+              backgroundColor: "action.hover",
+            },
+            "& .MuiDataGrid-cell": {
+              borderColor: "divider",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderColor: "divider",
+            },
+            "& .MuiTablePagination-root": {
+              color: "text.primary",
+            },
+            "& .MuiButtonBase-root": {
+              color: "text.primary",
             },
           }}
           initialState={{
@@ -257,6 +278,9 @@ const MangeServices = () => {
         onClose={handleCloseModal}
         maxWidth="md"
         fullWidth
+        PaperProps={{
+          sx: { bgcolor: "background.paper" },
+        }}
       >
         <DialogTitle
           sx={{
@@ -264,16 +288,21 @@ const MangeServices = () => {
             justifyContent: "space-between",
             alignItems: "center",
             pb: 1,
+            color: "text.primary",
           }}
         >
           <Typography variant="h6" fontWeight="bold">
             {currentService ? "Edit Service" : "Add New Service"}
           </Typography>
-          <IconButton onClick={handleCloseModal} size="small">
+          <IconButton
+            onClick={handleCloseModal}
+            size="small"
+            sx={{ color: "text.primary" }}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={{ borderColor: "divider" }}>
           <Form
             method="post"
             encType="multipart/form-data"
@@ -296,6 +325,12 @@ const MangeServices = () => {
                   name="nameEn"
                   required
                   defaultValue={currentService?.name?.en}
+                  sx={{
+                    "& .MuiInputLabel-root": { color: "text.secondary" },
+                    "& .MuiOutlinedInput-root": {
+                      bgcolor: "background.default",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -306,6 +341,12 @@ const MangeServices = () => {
                   dir="rtl"
                   required
                   defaultValue={currentService?.name?.ar}
+                  sx={{
+                    "& .MuiInputLabel-root": { color: "text.secondary" },
+                    "& .MuiOutlinedInput-root": {
+                      bgcolor: "background.default",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -317,6 +358,12 @@ const MangeServices = () => {
                   rows={3}
                   required
                   defaultValue={currentService?.description?.en}
+                  sx={{
+                    "& .MuiInputLabel-root": { color: "text.secondary" },
+                    "& .MuiOutlinedInput-root": {
+                      bgcolor: "background.default",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -329,6 +376,12 @@ const MangeServices = () => {
                   rows={3}
                   required
                   defaultValue={currentService?.description?.ar}
+                  sx={{
+                    "& .MuiInputLabel-root": { color: "text.secondary" },
+                    "& .MuiOutlinedInput-root": {
+                      bgcolor: "background.default",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -339,10 +392,21 @@ const MangeServices = () => {
                   name="fees"
                   required
                   defaultValue={currentService?.fees}
+                  sx={{
+                    "& .MuiInputLabel-root": { color: "text.secondary" },
+                    "& .MuiOutlinedInput-root": {
+                      bgcolor: "background.default",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <Typography variant="caption" display="block" gutterBottom>
+                <Typography
+                  variant="caption"
+                  display="block"
+                  gutterBottom
+                  color="text.secondary"
+                >
                   {currentService
                     ? "Update Image (Optional)"
                     : "Service Image (Required)"}
@@ -353,6 +417,14 @@ const MangeServices = () => {
                   disableUnderline
                   fullWidth
                   required={!currentService}
+                  sx={{
+                    p: 1,
+                    border: 1,
+                    borderColor: "divider",
+                    borderRadius: 1,
+                    color: "text.primary",
+                    bgcolor: "background.default",
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -362,7 +434,7 @@ const MangeServices = () => {
                   fullWidth
                   size="large"
                   disabled={isSubmitting}
-                  sx={{ mt: 2, borderRadius: 2 }}
+                  sx={{ mt: 2, borderRadius: 2, py: 1.5, fontWeight: "bold" }}
                 >
                   {isSubmitting ? (
                     <CircularProgress size={24} color="inherit" />

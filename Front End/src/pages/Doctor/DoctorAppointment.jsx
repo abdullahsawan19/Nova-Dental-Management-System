@@ -29,8 +29,9 @@ function CustomToolbar() {
         display: "flex",
         justifyContent: "flex-start",
         alignItems: "center",
-        bgcolor: "#f8f9fa",
-        borderBottom: "1px solid #e0e0e0",
+        bgcolor: "background.paper",
+        borderBottom: 1,
+        borderColor: "divider",
       }}
     >
       <Stack direction="row" spacing={1}>
@@ -88,7 +89,11 @@ const DoctorAppointment = () => {
       minWidth: 200,
       renderCell: (params) => (
         <Box sx={{ py: 1 }}>
-          <Typography variant="subtitle2" fontWeight="bold">
+          <Typography
+            variant="subtitle2"
+            fontWeight="bold"
+            color="text.primary"
+          >
             {params.value}
           </Typography>
           <Typography variant="caption" color="text.secondary">
@@ -138,7 +143,7 @@ const DoctorAppointment = () => {
               textTransform: "none",
               borderRadius: "8px",
               boxShadow: "none",
-              "&:hover": { boxShadow: "none", bgcolor: "#2e7d32" },
+              "&:hover": { boxShadow: "none" },
             }}
           >
             {isCompleted ? "Finished" : "Complete"}
@@ -149,7 +154,7 @@ const DoctorAppointment = () => {
   ];
 
   return (
-    <Box sx={{ p: 4, bgcolor: "#f9fafb", minHeight: "100vh" }}>
+    <Box sx={{ p: 4, bgcolor: "background.default", minHeight: "100vh" }}>
       <Box
         sx={{
           mb: 4,
@@ -161,7 +166,7 @@ const DoctorAppointment = () => {
         }}
       >
         <Box>
-          <Typography variant="h4" fontWeight="900" color="#1a1a1a">
+          <Typography variant="h4" fontWeight="900" color="text.primary">
             My Appointments
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -175,10 +180,13 @@ const DoctorAppointment = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           sx={{
-            bgcolor: "white",
+            bgcolor: "background.paper",
             width: "350px",
             borderRadius: "12px",
-            "& .MuiOutlinedInput-root": { borderRadius: "12px" },
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "12px",
+              color: "text.primary",
+            },
           }}
           InputProps={{
             startAdornment: (
@@ -196,9 +204,11 @@ const DoctorAppointment = () => {
           height: 650,
           width: "100%",
           borderRadius: 5,
-          border: "1px solid #e0e0e0",
+          border: 1,
+          borderColor: "divider",
           overflow: "hidden",
           boxShadow: "0px 10px 30px rgba(0,0,0,0.04)",
+          bgcolor: "background.paper",
         }}
       >
         <DataGrid
@@ -215,13 +225,35 @@ const DoctorAppointment = () => {
           pageSizeOptions={[10, 20]}
           sx={{
             border: "none",
+            color: "text.primary",
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#f4f6f8",
-              color: "#37474f",
+              backgroundColor: "action.hover",
+              color: "text.primary",
               fontWeight: "800",
             },
-            "& .MuiDataGrid-cell": { borderBottom: "1px solid #f0f0f0" },
-            "& .MuiDataGrid-row:hover": { backgroundColor: "#f5faff" },
+            "& .MuiDataGrid-cell": {
+              borderBottom: 1,
+              borderColor: "divider",
+              color: "text.primary",
+            },
+            "& .MuiDataGrid-row:hover": { backgroundColor: "action.hover" },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: 1,
+              borderColor: "divider",
+              color: "text.primary",
+            },
+            "& .MuiTablePagination-root": {
+              color: "text.primary",
+            },
+            "& .MuiDataGrid-iconButtonContainer": {
+              color: "text.primary",
+            },
+            "& .MuiDataGrid-menuIcon": {
+              color: "text.primary",
+            },
+            "& .MuiDataGrid-columnHeaderTitle": {
+              fontWeight: "bold",
+            },
           }}
         />
       </Paper>

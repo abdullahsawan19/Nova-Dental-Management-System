@@ -11,7 +11,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { fetchAvailableSlots } from "../../features/appointments/appointmentsSlice";
+import { fetchAvailableSlots } from "./appointmentsSlice";
 
 const UpdateAppointmentForm = ({ appt, onClose }) => {
   const fetcher = useFetcher();

@@ -14,7 +14,7 @@ import {
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
-import UpdateAppointmentForm from "./UpdateAppointmentForm";
+import UpdateAppointmentForm from "../../features/appointments/UpdateAppointmentForm";
 
 const AppointmentsDeatils = () => {
   const fetcher = useFetcher();
@@ -50,7 +50,11 @@ const AppointmentsDeatils = () => {
       flex: 1.2,
       minWidth: 150,
       renderCell: (params) => (
-        <Typography variant="subtitle2" fontWeight="bold" sx={{ mt: 2 }}>
+        <Typography
+          variant="subtitle2"
+          fontWeight="bold"
+          sx={{ mt: 2, color: "text.primary" }}
+        >
           {params.value}
         </Typography>
       ),
@@ -63,7 +67,7 @@ const AppointmentsDeatils = () => {
       renderCell: (params) => (
         <Typography
           variant="body2"
-          color="primary"
+          color="primary.main"
           sx={{ mt: 2, fontWeight: "600" }}
         >
           Dr. {params.value}
@@ -137,9 +141,20 @@ const AppointmentsDeatils = () => {
   ];
 
   return (
-    <Box sx={{ p: { xs: 2, md: 5 }, bgcolor: "#f9fafb", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        p: { xs: 2, md: 5 },
+        bgcolor: "background.default",
+        minHeight: "100vh",
+      }}
+    >
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="900" color="#1a1a1a" gutterBottom>
+        <Typography
+          variant="h4"
+          fontWeight="900"
+          color="text.primary"
+          gutterBottom
+        >
           My Appointments
         </Typography>
         <Typography variant="body1" color="text.secondary">
@@ -153,9 +168,11 @@ const AppointmentsDeatils = () => {
           height: 650,
           width: "100%",
           borderRadius: 4,
-          border: "1px solid #e0e0e0",
+          border: "1px solid",
+          borderColor: "divider",
           overflow: "hidden",
           boxShadow: "0px 4px 20px rgba(0,0,0,0.03)",
+          bgcolor: "background.paper",
         }}
       >
         <DataGrid
@@ -178,9 +195,15 @@ const AppointmentsDeatils = () => {
           sx={{
             border: "none",
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#f4f6f8",
-              color: "#37474f",
+              backgroundColor: "action.hover",
+              color: "text.primary",
               fontWeight: "800",
+            },
+            "& .MuiDataGrid-cell": {
+              color: "text.primary",
+            },
+            "& .MuiDataGrid-toolbarContainer": {
+              color: "text.primary",
             },
             "& .blurred-row": {
               opacity: 0.6,
@@ -196,8 +219,13 @@ const AppointmentsDeatils = () => {
         onClose={() => setOpenModal(false)}
         maxWidth="xs"
         fullWidth
+        PaperProps={{
+          sx: {
+            bgcolor: "background.paper",
+          },
+        }}
       >
-        <DialogTitle sx={{ fontWeight: "bold", color: "#1a1a1a" }}>
+        <DialogTitle sx={{ fontWeight: "bold", color: "text.primary" }}>
           Reschedule Appointment
         </DialogTitle>
         {selectedAppt && (

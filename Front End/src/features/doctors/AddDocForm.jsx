@@ -21,6 +21,14 @@ export default function AddDocForm({ onSuccess }) {
     }
   }, [actionData, fetcher.state, onSuccess]);
 
+  const fieldStyles = {
+    "& .MuiOutlinedInput-root": {
+      bgcolor: "background.default",
+      "& input": { color: "text.primary" },
+    },
+    "& .MuiInputLabel-root": { color: "text.secondary" },
+  };
+
   return (
     <fetcher.Form method="post" noValidate>
       <input type="hidden" name="intent" value="create" />
@@ -43,6 +51,7 @@ export default function AddDocForm({ onSuccess }) {
             required
             variant="outlined"
             size="small"
+            sx={fieldStyles}
           />
         </Grid>
 
@@ -56,6 +65,7 @@ export default function AddDocForm({ onSuccess }) {
             required
             variant="outlined"
             size="small"
+            sx={fieldStyles}
           />
         </Grid>
 
@@ -68,6 +78,7 @@ export default function AddDocForm({ onSuccess }) {
             required
             variant="outlined"
             size="small"
+            sx={fieldStyles}
           />
         </Grid>
 
@@ -80,6 +91,7 @@ export default function AddDocForm({ onSuccess }) {
             required
             variant="outlined"
             size="small"
+            sx={fieldStyles}
           />
         </Grid>
 
@@ -92,6 +104,7 @@ export default function AddDocForm({ onSuccess }) {
             required
             variant="outlined"
             size="small"
+            sx={fieldStyles}
           />
         </Grid>
       </Grid>

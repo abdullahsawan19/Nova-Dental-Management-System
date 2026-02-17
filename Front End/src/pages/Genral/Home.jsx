@@ -52,7 +52,7 @@ const Home = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
       <CustomAlert
         open={alertConfig.open}
         onClose={handleCloseAlert}

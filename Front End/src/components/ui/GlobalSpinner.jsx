@@ -22,12 +22,12 @@ const GlobalSpinner = () => {
   return (
     <Backdrop
       sx={{
-        color: "#fff",
+        color: "primary.main",
         zIndex: (theme) => theme.zIndex.drawer + 999,
         display: "flex",
         flexDirection: "column",
         gap: 2,
-        backgroundColor: "rgba(0, 0, 0, 0.4)",
+        backgroundColor: "action.disabledBackground",
         backdropFilter: "blur(3px)",
       }}
       open={true}
@@ -38,7 +38,11 @@ const GlobalSpinner = () => {
         <Typography
           variant="h6"
           component="div"
-          sx={{ fontWeight: "bold", letterSpacing: 1 }}
+          sx={{
+            fontWeight: "bold",
+            letterSpacing: 1,
+            color: "text.primary",
+          }}
         >
           {isNavigating || isFetching ? "Processing..." : "Loading Data..."}
         </Typography>

@@ -11,19 +11,22 @@ const Unauthorized = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "80vh",
+        minHeight: "100vh",
+        bgcolor: "background.default",
         textAlign: "center",
         gap: 2,
+        p: 3,
       }}
     >
       <LockPersonIcon sx={{ fontSize: 100, color: "error.main" }} />
-      <Typography variant="h4" fontWeight="bold">
+      <Typography variant="h4" fontWeight="bold" color="text.primary">
         Access Denied
       </Typography>
-      <Typography variant="body1" color="text.secondary">
+      <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 500 }}>
         You do not have permission to view this page. Please contact your
+        administrator.
       </Typography>
-      <Button variant="contained" component={Link} to="/">
+      <Button variant="contained" component={Link} to="/" sx={{ mt: 2 }}>
         Go to Home
       </Button>
     </Box>

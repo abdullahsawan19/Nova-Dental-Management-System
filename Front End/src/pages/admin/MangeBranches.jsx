@@ -31,12 +31,14 @@ function CustomToolbar() {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        borderBottom: "1px solid #f0f0f0",
+        bgcolor: "background.paper",
+        borderBottom: 1,
+        borderColor: "divider",
       }}
     >
       <Box>
-        <GridToolbarColumnsButton sx={{ color: "#555" }} />
-        <GridToolbarFilterButton sx={{ color: "#555" }} />
+        <GridToolbarColumnsButton sx={{ color: "text.primary" }} />
+        <GridToolbarFilterButton sx={{ color: "text.primary" }} />
       </Box>
 
       <GridToolbarQuickFilter
@@ -47,10 +49,10 @@ function CustomToolbar() {
           width: 250,
           "& .MuiOutlinedInput-root": {
             borderRadius: 2,
-            backgroundColor: "#fafafa",
-            "& fieldset": { borderColor: "#ddd" },
-            "&:hover fieldset": { borderColor: "#bbb" },
-            "&.Mui-focused fieldset": { borderColor: "#1976d2" },
+            backgroundColor: "background.default",
+            color: "text.primary",
+            "& fieldset": { borderColor: "divider" },
+            "&:hover fieldset": { borderColor: "primary.main" },
           },
         }}
       />
@@ -86,7 +88,6 @@ const MangeBranches = () => {
       flex: 1,
       minWidth: 150,
       valueGetter: (value, row) => row?.name?.en || "---",
-      disableColumnMenu: true,
     },
     {
       field: "address",
@@ -95,7 +96,6 @@ const MangeBranches = () => {
       minWidth: 200,
       valueGetter: (value, row) =>
         row?.address?.en || row?.address?.ar || "---",
-      disableColumnMenu: true,
     },
     {
       field: "openTime",
@@ -103,7 +103,6 @@ const MangeBranches = () => {
       flex: 1,
       minWidth: 150,
       valueGetter: (value, row) => row?.openTime || "---",
-      disableColumnMenu: true,
     },
     {
       field: "closeTime",
@@ -111,16 +110,13 @@ const MangeBranches = () => {
       flex: 1,
       minWidth: 150,
       valueGetter: (value, row) => row?.closeTime || "---",
-      disableColumnMenu: true,
     },
-
     {
       field: "status",
       headerName: "Status",
       width: 100,
       align: "center",
       headerAlign: "center",
-      disableColumnMenu: true,
       renderCell: (params) => (
         <Chip
           label={params.row.isActive ? "Active" : "Inactive"}
@@ -137,7 +133,6 @@ const MangeBranches = () => {
       width: 80,
       align: "center",
       headerAlign: "center",
-      disableColumnMenu: true,
       sortable: false,
       renderCell: (params) => (
         <fetcher.Form method="post">
@@ -167,17 +162,15 @@ const MangeBranches = () => {
       align: "center",
       headerAlign: "center",
       sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
       renderCell: (params) => (
         <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
           <Tooltip title="Edit">
             <IconButton
               size="small"
               sx={{
-                color: "#1976d2",
-                bgcolor: "#e3f2fd",
-                "&:hover": { bgcolor: "#bbdefb" },
+                color: "primary.main",
+                bgcolor: "action.hover",
+                "&:hover": { bgcolor: "primary.light", color: "white" },
               }}
               onClick={() => handleOpenModal(params.row)}
             >
@@ -189,9 +182,9 @@ const MangeBranches = () => {
             <IconButton
               size="small"
               sx={{
-                color: "#d32f2f",
-                bgcolor: "#ffebee",
-                "&:hover": { bgcolor: "#ffcdd2" },
+                color: "error.main",
+                bgcolor: "action.hover",
+                "&:hover": { bgcolor: "error.main", color: "white" },
               }}
               onClick={() => {
                 if (
@@ -215,7 +208,14 @@ const MangeBranches = () => {
   ];
 
   return (
-    <Box sx={{ p: 4, height: "100%", width: "100%", bgcolor: "#f9fafb" }}>
+    <Box
+      sx={{
+        p: 4,
+        height: "100%",
+        width: "100%",
+        bgcolor: "background.default",
+      }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -225,7 +225,7 @@ const MangeBranches = () => {
         }}
       >
         <Box>
-          <Typography variant="h5" fontWeight="800" color="#1a1a1a">
+          <Typography variant="h5" fontWeight="800" color="text.primary">
             Manage Branches
           </Typography>
           <Typography variant="body2" color="text.secondary" mt={0.5}>
@@ -244,7 +244,6 @@ const MangeBranches = () => {
             py: 1,
             textTransform: "none",
             fontSize: "0.95rem",
-            boxShadow: "0px 4px 12px rgba(25, 118, 210, 0.2)",
           }}
         >
           Add Branch
@@ -257,8 +256,10 @@ const MangeBranches = () => {
           height: 650,
           width: "100%",
           borderRadius: 4,
-          border: "1px solid #eaeaea",
+          border: 1,
+          borderColor: "divider",
           overflow: "hidden",
+          bgcolor: "background.paper",
         }}
       >
         <DataGrid
@@ -267,38 +268,35 @@ const MangeBranches = () => {
           getRowId={(row) => row._id}
           slots={{ toolbar: CustomToolbar }}
           loading={isGlobalLoading}
-          slotProps={{
-            loadingOverlay: {
-              variant: "linear-progress",
-              noRowsVariant: "linear-progress",
-            },
-          }}
-          disableDensitySelector
-          initialState={{
-            pagination: { paginationModel: { pageSize: 10 } },
-          }}
-          pageSizeOptions={[5, 10, 25]}
           disableRowSelectionOnClick
           rowHeight={60}
           sx={{
             border: "none",
+            color: "text.primary",
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#f8f9fa",
-              color: "#333",
-              fontSize: "0.9rem",
+              backgroundColor: "action.hover",
+              color: "text.primary",
               fontWeight: "700",
-              borderBottom: "1px solid #eee",
-            },
-            "& .MuiDataGrid-row": {
-              "&:hover": { backgroundColor: "#fcfcfc" },
+              borderBottom: 1,
+              borderColor: "divider",
             },
             "& .MuiDataGrid-cell": {
-              borderBottom: "1px solid #f0f0f0",
-              fontSize: "0.9rem",
-              color: "#444",
+              borderBottom: 1,
+              borderColor: "divider",
+              color: "text.primary",
             },
-            "& .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus": {
-              outline: "none",
+            "& .MuiDataGrid-row:hover": {
+              backgroundColor: "action.hover",
+            },
+            "& .MuiTablePagination-root": {
+              color: "text.primary",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: 1,
+              borderColor: "divider",
+            },
+            "& .MuiButtonBase-root": {
+              color: "text.primary",
             },
           }}
         />
