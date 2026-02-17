@@ -65,6 +65,7 @@ const DoctorNav = () => {
                 color: "primary.main",
                 letterSpacing: "-0.5px",
               }}
+              onClick={() => navigate("/doctors")}
             >
               Doctor Dashboard
             </Typography>

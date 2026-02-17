@@ -28,12 +28,22 @@ const AddServiceForm = () => {
     image: null,
   });
 
+  const [previewImage, setPreviewImage] = useState(
+    "../../assets/public/Teeth.jfif",
+  );
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, image: e.target.files[0] });
+    const file = e.target.files[0];
+
+    setFormData({ ...formData, image: file });
+
+    if (file) {
+      setPreviewImage(URL.createObjectURL(file));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -162,6 +172,8 @@ const AddServiceForm = () => {
               }}
             />
           </Grid>
+
+          {/* تعديل مكان الـ Input الخاص بالصورة */}
           <Grid item xs={12} md={6}>
             <Box
               sx={{
@@ -170,16 +182,36 @@ const AddServiceForm = () => {
                 borderColor: "divider",
                 borderRadius: 1,
                 bgcolor: "background.default",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center", // عشان نوسطن الصورة
+                gap: 1.5,
               }}
             >
               <Typography
                 variant="caption"
                 color="text.secondary"
                 display="block"
-                mb={0.5}
+                alignSelf="flex-start" // نخلي النص على الشمال
               >
                 Service Image
               </Typography>
+
+              {/* 3. عرض الصورة هنا */}
+              <Box
+                component="img"
+                src={previewImage}
+                alt="Service Preview"
+                sx={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 2, // خليناها حواف ناعمة بدل الدائرة عشان دي خدمة مش شخص
+                  objectFit: "cover",
+                  border: "1px solid",
+                  borderColor: "divider",
+                }}
+              />
+
               <Input
                 type="file"
                 disableUnderline

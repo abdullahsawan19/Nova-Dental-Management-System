@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react"; // ضفنا useState هنا
 import { Box, CircularProgress, MenuItem, Typography } from "@mui/material";
 import { useRouteLoaderData } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -16,6 +16,17 @@ const EditForm = ({ fetcher, onSuccess }) => {
   const safeServices = Array.isArray(services) ? services : [];
 
   const currentSpecializationId = profile.specializationData?.id || "";
+
+  const [previewImage, setPreviewImage] = useState(
+    user.photo || "../../assets/public/Doctor.jfif",
+  );
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
 
   useEffect(() => {
     if (fetcher.data?.success && fetcher.state === "idle") {
@@ -53,10 +64,27 @@ const EditForm = ({ fetcher, onSuccess }) => {
           >
             Profile Photo
           </Typography>
+
+          <Box
+            component="img"
+            src={previewImage}
+            alt="Profile Preview"
+            sx={{
+              width: 100,
+              height: 100,
+              borderRadius: "50%",
+              objectFit: "cover",
+              mb: 2,
+              border: "1px solid",
+              borderColor: "divider",
+            }}
+          />
+
           <input
             type="file"
             name="photo"
             accept="image/*"
+            onChange={handleImageChange}
             style={{
               width: "100%",
               padding: "8px",
