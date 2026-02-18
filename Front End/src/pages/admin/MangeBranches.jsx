@@ -82,7 +82,6 @@ const MangeBranches = () => {
     setSelectedBranch(null);
   };
 
-  // 🌟 دالة الحذف بنفس اللوجيك
   const handleDelete = (id, name) => {
     if (window.confirm(`Are you sure you want to delete branch "${name}"?`)) {
       fetcher.submit({ intent: "delete", id }, { method: "post" });
@@ -130,7 +129,7 @@ const MangeBranches = () => {
             label={isActive ? "Active" : "Inactive"}
             color={isActive ? "success" : "default"}
             size="small"
-            variant="filled" // 🌟 توحيد شكل الشريحة زي الـ FAQ
+            variant="filled"
             sx={{ fontWeight: "bold", borderRadius: 1 }}
           />
         );
@@ -140,7 +139,7 @@ const MangeBranches = () => {
       field: "actions",
       type: "actions",
       headerName: "Actions",
-      width: 140, // 🌟 جمعنا التفعيل، التعديل، والحذف في عمود واحد احترافي
+      width: 140,
       getActions: (params) => {
         const branchId = params.row._id;
         const isActive = params.row.isActive;
@@ -202,7 +201,6 @@ const MangeBranches = () => {
         bgcolor: "background.default",
       }}
     >
-      {/* 🌟 هيدر مطابق تماماً للـ FAQ */}
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <Box>
           <Typography variant="h5" fontWeight="800" color="text.primary">
@@ -226,13 +224,13 @@ const MangeBranches = () => {
       <Paper
         elevation={0}
         sx={{
-          height: 600, // 🌟 نفس ارتفاع الـ FAQ
+          height: 600,
           width: "100%",
           borderRadius: 4,
           border: 1,
           borderColor: "divider",
           overflow: "hidden",
-          boxShadow: "0px 4px 20px rgba(0,0,0,0.05)", // 🌟 نفس الظل الناعم
+          boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
           bgcolor: "background.paper",
         }}
       >
@@ -240,7 +238,7 @@ const MangeBranches = () => {
           rows={branches || []}
           columns={columns}
           getRowId={(row) => row._id}
-          slots={{ toolbar: CustomToolbar }} // حافظنا على التول بار بتاعك عشان الـ Search
+          slots={{ toolbar: CustomToolbar }}
           loading={isGlobalLoading}
           disableRowSelectionOnClick
           sx={{
@@ -249,7 +247,7 @@ const MangeBranches = () => {
             "& .MuiDataGrid-columnHeaders": {
               backgroundColor: "action.hover",
               color: "text.primary",
-              fontWeight: "bold", // 🌟 بولد زي الـ FAQ
+              fontWeight: "bold",
             },
             "& .MuiDataGrid-cell": {
               borderColor: "divider",
