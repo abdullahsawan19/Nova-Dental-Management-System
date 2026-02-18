@@ -4,8 +4,6 @@ import { fetchReviews } from "../../features/reviews/reviewSlice";
 import { getAllDoctors } from "../../features/doctors/doctorSlice";
 
 export const homeLoader = async ({ request }) => {
-  console.log("Home loader started...");
-
   try {
     const url = new URL(request.url);
     const lang = url.searchParams.get("lang") || "en";

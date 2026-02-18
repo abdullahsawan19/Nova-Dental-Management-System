@@ -86,7 +86,7 @@ const MangeServices = () => {
               : ""
           }
           variant="rounded"
-          sx={{ width: 40, height: 40, bgcolor: "action.hover" }}
+          sx={{ width: 40, height: 40, bgcolor: "action.hover", mt: 1 }}
         >
           {params.row.name?.en?.charAt(0) || "S"}
         </Avatar>
@@ -119,8 +119,14 @@ const MangeServices = () => {
       field: "fees",
       headerName: "Fees",
       width: 120,
+
       renderCell: (params) => (
-        <Typography variant="body2" fontWeight="bold" color="text.primary">
+        <Typography
+          variant="body2"
+          fontWeight="bold"
+          color="text.primary"
+          sx={{ mt: 3 }}
+        >
           {params.row.fees} EGP
         </Typography>
       ),

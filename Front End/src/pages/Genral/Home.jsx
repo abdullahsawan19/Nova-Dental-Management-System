@@ -7,6 +7,8 @@ import PublicServices from "./PublicServices";
 import PublicReviews from "./PublicReviews";
 import PublicDoctors from "./PublicDoctors";
 
+import coverImage from "../../assets/public/Cover.jfif";
+
 const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
@@ -60,59 +62,87 @@ const Home = () => {
         severity={alertConfig.severity}
       />
 
-      <Container maxWidth="lg">
-        <Box
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          minHeight: { xs: "80vh", md: "92vh" },
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          px: 2,
+          backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url(${coverImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: { xs: "scroll", md: "fixed" },
+        }}
+      >
+        <Typography
+          variant="h2"
+          fontWeight="900"
           sx={{
-            py: 12,
-            textAlign: "center",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            color: "#ffffff",
+            letterSpacing: "-0.02em",
+            mb: 2,
+            fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4.5rem" },
           }}
         >
-          <Typography variant="h2" fontWeight="bold" color="primary">
-            Welcome to Our Clinic
-          </Typography>
-          <Typography
-            variant="h5"
-            color="text.secondary"
-            sx={{ mt: 2, mb: 4, maxWidth: "700px" }}
-          >
-            The best dental care for you and your family. Schedule your visit
-            today and get the smile you deserve.
-          </Typography>
+          Welcome to ClinicPro
+        </Typography>
 
-          <Button
-            variant="contained"
-            size="large"
-            startIcon={<CalendarMonthIcon />}
-            onClick={() => navigate("/appointment")}
-            sx={{
-              px: 5,
-              py: 1.5,
-              fontSize: "1.2rem",
-              borderRadius: "50px",
-              textTransform: "none",
-              fontWeight: "bold",
-              boxShadow: 3,
-              "&:hover": {
-                boxShadow: 6,
-              },
-            }}
-          >
-            Book Appointment Now
-          </Button>
-        </Box>
+        <Typography
+          variant="h5"
+          sx={{
+            color: "rgba(255, 255, 255, 0.85)",
+            mb: 5,
+            maxWidth: "700px",
+            lineHeight: 1.6,
+            fontSize: { xs: "1.1rem", md: "1.3rem" },
+          }}
+        >
+          The best dental care for you and your family. Schedule your visit
+          today and get the smile you deserve.
+        </Typography>
 
-        <Box id="services" sx={{ py: 5 }}>
+        <Button
+          variant="contained"
+          size="large"
+          startIcon={<CalendarMonthIcon />}
+          onClick={() => navigate("/appointment")}
+          sx={{
+            px: { xs: 4, md: 6 },
+            py: { xs: 1.5, md: 2 },
+            fontSize: { xs: "1.1rem", md: "1.2rem" },
+            borderRadius: "50px",
+            textTransform: "none",
+            fontWeight: "bold",
+            bgcolor: "primary.main",
+            color: "white",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+            "&:hover": {
+              bgcolor: "primary.dark",
+              boxShadow: "0 12px 32px rgba(0,0,0,0.4)",
+              transform: "translateY(-3px)",
+            },
+            transition: "all 0.3s ease",
+          }}
+        >
+          Book Appointment Now
+        </Button>
+      </Box>
+
+      <Container maxWidth="lg">
+        <Box id="services" sx={{ py: 8 }}>
           <PublicServices />
         </Box>
 
-        <Box id="doctors" sx={{ py: 5 }}>
+        <Box id="doctors" sx={{ py: 8 }}>
           <PublicDoctors />
         </Box>
 
-        <Box id="reviews" sx={{ py: 5 }}>
+        <Box id="reviews" sx={{ py: 8 }}>
           <PublicReviews />
         </Box>
       </Container>

@@ -19,12 +19,23 @@ import { signUpAction } from "../features/auth/Signup.actions.js";
 import AuthLayout from "../layouts/AuthLayout.jsx";
 import Login from "../features/auth/LoginForm.jsx";
 import Signup from "../features/auth/SignupForm.jsx";
+import { store } from "../store/store.js";
+import { getBranch } from "../features/branches/branchSlice.js";
+
+const rootLoader = async () => {
+  const state = store.getState();
+  if (!state.branches.activeBranch) {
+    await store.dispatch(getBranch());
+  }
+  return null;
+};
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
     errorElement: <Error />,
+    loader: rootLoader,
     children: [
       ...publicRoutes,
 

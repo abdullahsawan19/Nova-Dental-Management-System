@@ -130,6 +130,7 @@ const DoctorDetails = () => {
                   variant="contained"
                   size="large"
                   sx={{ borderRadius: 8, px: 4, fontWeight: "bold" }}
+                  onClick={() => navigate("/appointment")}
                 >
                   Book Appointment
                 </Button>

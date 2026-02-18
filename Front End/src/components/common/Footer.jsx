@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import {
   Box,
@@ -20,6 +19,20 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   const { activeBranch } = useSelector((state) => state.branches || {});
+  const { user } = useSelector((state) => state.auth || {});
+
+  const lang = user?.preferredLanguage || "en";
+
+  const getBranchName = () => {
+    const val = activeBranch?.name;
+    console.log(val);
+    if (!val) return "ClinicPro";
+    if (typeof val === "string") return val;
+    if (val[lang]) return val[lang];
+    if (val.en) return val.en;
+    if (val.ar) return val.ar;
+    return "ClinicPro";
+  };
 
   const getWorkingDays = () => {
     if (!activeBranch?.workingDays || activeBranch.workingDays.length === 0)
@@ -58,7 +71,7 @@ const Footer = () => {
               color="primary.main"
               sx={{ textTransform: "capitalize", mb: 0.5 }}
             >
-              {activeBranch?.name || "ClinicPro"}
+              {getBranchName()}
             </Typography>
             <Typography
               variant="caption"
@@ -161,8 +174,7 @@ const Footer = () => {
             display: "block",
           }}
         >
-          &copy; {new Date().getFullYear()} {activeBranch?.name || "ClinicPro"}.
-          All rights reserved.
+          © {new Date().getFullYear()} {getBranchName()}. All rights reserved.
         </Typography>
       </Container>
     </Box>

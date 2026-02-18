@@ -18,6 +18,7 @@ import {
   GridToolbarQuickFilter,
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
+  GridActionsCellItem,
 } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -81,6 +82,13 @@ const MangeBranches = () => {
     setSelectedBranch(null);
   };
 
+  // 🌟 دالة الحذف بنفس اللوجيك
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Are you sure you want to delete branch "${name}"?`)) {
+      fetcher.submit({ intent: "delete", id }, { method: "post" });
+    }
+  };
+
   const columns = [
     {
       field: "nameEn",
@@ -101,109 +109,87 @@ const MangeBranches = () => {
       field: "openTime",
       headerName: "Open Time",
       flex: 1,
-      minWidth: 150,
+      minWidth: 120,
       valueGetter: (value, row) => row?.openTime || "---",
     },
     {
       field: "closeTime",
       headerName: "Close Time",
       flex: 1,
-      minWidth: 150,
+      minWidth: 120,
       valueGetter: (value, row) => row?.closeTime || "---",
     },
     {
       field: "status",
       headerName: "Status",
-      width: 100,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => (
-        <Chip
-          label={params.row.isActive ? "Active" : "Inactive"}
-          color={params.row.isActive ? "success" : "default"}
-          size="small"
-          variant={params.row.isActive ? "filled" : "outlined"}
-          sx={{ fontWeight: "bold", minWidth: 70 }}
-        />
-      ),
-    },
-    {
-      field: "toggle",
-      headerName: "Active",
-      width: 80,
-      align: "center",
-      headerAlign: "center",
-      sortable: false,
-      renderCell: (params) => (
-        <fetcher.Form method="post">
-          <input type="hidden" name="intent" value="update" />
-          <input type="hidden" name="id" value={params.row._id} />
-          <Switch
-            checked={params.row.isActive}
+      width: 110,
+      renderCell: (params) => {
+        const isActive = params.row.isActive;
+        return (
+          <Chip
+            label={isActive ? "Active" : "Inactive"}
+            color={isActive ? "success" : "default"}
             size="small"
-            onChange={(e) => {
-              fetcher.submit(
-                {
-                  intent: "update",
-                  id: params.row._id,
-                  isActive: e.target.checked,
-                },
-                { method: "post" },
-              );
-            }}
+            variant="filled" // 🌟 توحيد شكل الشريحة زي الـ FAQ
+            sx={{ fontWeight: "bold", borderRadius: 1 }}
           />
-        </fetcher.Form>
-      ),
+        );
+      },
     },
     {
       field: "actions",
+      type: "actions",
       headerName: "Actions",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      sortable: false,
-      renderCell: (params) => (
-        <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              sx={{
-                color: "primary.main",
-                bgcolor: "action.hover",
-                "&:hover": { bgcolor: "primary.light", color: "white" },
-              }}
-              onClick={() => handleOpenModal(params.row)}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+      width: 140, // 🌟 جمعنا التفعيل، التعديل، والحذف في عمود واحد احترافي
+      getActions: (params) => {
+        const branchId = params.row._id;
+        const isActive = params.row.isActive;
 
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              sx={{
-                color: "error.main",
-                bgcolor: "action.hover",
-                "&:hover": { bgcolor: "error.main", color: "white" },
-              }}
-              onClick={() => {
-                if (
-                  window.confirm(
-                    `Are you sure you want to delete branch "${params.row.name.en}"?`,
-                  )
-                ) {
-                  fetcher.submit(
-                    { intent: "delete", id: params.row._id },
-                    { method: "post" },
-                  );
-                }
-              }}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ),
+        return [
+          <GridActionsCellItem
+            icon={
+              <Tooltip title={isActive ? "Deactivate" : "Activate"}>
+                <Switch
+                  checked={!!isActive}
+                  size="small"
+                  color="success"
+                  onChange={(e) => {
+                    fetcher.submit(
+                      {
+                        intent: "update",
+                        id: branchId,
+                        isActive: e.target.checked,
+                      },
+                      { method: "post" },
+                    );
+                  }}
+                />
+              </Tooltip>
+            }
+            label="Toggle Status"
+          />,
+          <GridActionsCellItem
+            icon={
+              <Tooltip title="Edit Branch">
+                <EditIcon color="primary" />
+              </Tooltip>
+            }
+            label="Edit"
+            onClick={() => handleOpenModal(params.row)}
+          />,
+          <GridActionsCellItem
+            icon={
+              <Tooltip title="Delete Branch">
+                <DeleteIcon color="error" />
+              </Tooltip>
+            }
+            label="Delete"
+            onClick={() =>
+              handleDelete(branchId, params.row.name?.en || "this branch")
+            }
+          />,
+        ];
+      },
     },
   ];
 
@@ -216,35 +202,22 @@ const MangeBranches = () => {
         bgcolor: "background.default",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
+      {/* 🌟 هيدر مطابق تماماً للـ FAQ */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <Box>
           <Typography variant="h5" fontWeight="800" color="text.primary">
             Manage Branches
           </Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>
-            View and manage all clinic branches
+          <Typography variant="body2" color="text.secondary">
+            Total Branches: {branches?.length || 0}
           </Typography>
         </Box>
-
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => handleOpenModal(null)}
           disabled={isGlobalLoading}
-          sx={{
-            borderRadius: 3,
-            px: 4,
-            py: 1,
-            textTransform: "none",
-            fontSize: "0.95rem",
-          }}
+          sx={{ borderRadius: 3, textTransform: "none", px: 3, boxShadow: 2 }}
         >
           Add Branch
         </Button>
@@ -253,12 +226,13 @@ const MangeBranches = () => {
       <Paper
         elevation={0}
         sx={{
-          height: 650,
+          height: 600, // 🌟 نفس ارتفاع الـ FAQ
           width: "100%",
           borderRadius: 4,
           border: 1,
           borderColor: "divider",
           overflow: "hidden",
+          boxShadow: "0px 4px 20px rgba(0,0,0,0.05)", // 🌟 نفس الظل الناعم
           bgcolor: "background.paper",
         }}
       >
@@ -266,39 +240,37 @@ const MangeBranches = () => {
           rows={branches || []}
           columns={columns}
           getRowId={(row) => row._id}
-          slots={{ toolbar: CustomToolbar }}
+          slots={{ toolbar: CustomToolbar }} // حافظنا على التول بار بتاعك عشان الـ Search
           loading={isGlobalLoading}
           disableRowSelectionOnClick
-          rowHeight={60}
           sx={{
             border: "none",
             color: "text.primary",
             "& .MuiDataGrid-columnHeaders": {
               backgroundColor: "action.hover",
               color: "text.primary",
-              fontWeight: "700",
-              borderBottom: 1,
-              borderColor: "divider",
+              fontWeight: "bold", // 🌟 بولد زي الـ FAQ
             },
             "& .MuiDataGrid-cell": {
-              borderBottom: 1,
               borderColor: "divider",
-              color: "text.primary",
             },
             "& .MuiDataGrid-row:hover": {
               backgroundColor: "action.hover",
             },
+            "& .MuiDataGrid-footerContainer": {
+              borderColor: "divider",
+            },
             "& .MuiTablePagination-root": {
               color: "text.primary",
-            },
-            "& .MuiDataGrid-footerContainer": {
-              borderTop: 1,
-              borderColor: "divider",
             },
             "& .MuiButtonBase-root": {
               color: "text.primary",
             },
           }}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 10 } },
+          }}
+          pageSizeOptions={[5, 10, 20]}
         />
       </Paper>
 

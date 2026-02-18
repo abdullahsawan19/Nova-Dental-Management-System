@@ -40,11 +40,15 @@ const BranchModule = () => {
     return "No Address Available";
   };
 
-  const getEmbedUrl = (url) => {
-    if (!url) return "";
-    return url.includes("embed") ? url : `${url}&output=embed`;
-  };
+  const getEmbedUrl = () => {
+    const url = activeBranch?.locationUrl;
+    if (url && url.includes("embed")) {
+      return url;
+    }
+    const searchQuery = `${activeBranch?.name || ""} ${activeBranch?.address || ""}`;
 
+    return `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  };
   return (
     <Box
       sx={{
@@ -87,7 +91,7 @@ const BranchModule = () => {
             style={{ border: 0, minHeight: "100%", filter: "grayscale(20%)" }}
             loading="lazy"
             allowFullScreen
-            src={getEmbedUrl(activeBranch?.locationUrl)}
+            src={getEmbedUrl()}
           />
 
           <Button

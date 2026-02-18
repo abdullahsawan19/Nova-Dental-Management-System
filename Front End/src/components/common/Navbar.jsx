@@ -44,8 +44,21 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const { token, user } = useSelector((state) => state.auth || {});
+  const { activeBranch } = useSelector((state) => state.branches || {});
+
   const { mode, toggleColorMode } = useThemeContext();
   const currentHash = useScrollSpy();
+
+  const lang = user?.preferredLanguage || "en";
+  const getBranchName = () => {
+    const val = activeBranch?.name;
+    if (!val) return "ClinicPro";
+    if (typeof val === "string") return val;
+    if (val[lang]) return val[lang];
+    if (val.en) return val.en;
+    if (val.ar) return val.ar;
+    return "ClinicPro";
+  };
 
   const handleOpen = () => {
     fetcher.load("/profile/update");
@@ -58,14 +71,19 @@ const Navbar = () => {
 
   const handleNavClick = (path) => {
     if (mobileOpen) setMobileOpen(false);
+
     if (path.includes("#")) {
       const sectionId = path.split("#")[1];
       if (location.pathname === "/") {
-        const elem = document.getElementById(sectionId);
-        if (elem) elem.scrollIntoView({ behavior: "smooth" });
+        setTimeout(() => {
+          const elem = document.getElementById(sectionId);
+          if (elem) elem.scrollIntoView({ behavior: "smooth" });
+        }, 150);
       } else {
         navigate(path);
       }
+    } else {
+      navigate(path);
     }
   };
 
@@ -95,7 +113,7 @@ const Navbar = () => {
               sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}
             >
               <Link to="/" style={{ textDecoration: "none", color: "#1976d2" }}>
-                ClinicPro
+                {getBranchName()}
               </Link>
             </Typography>
           </Box>
@@ -130,7 +148,7 @@ const Navbar = () => {
             variant="h6"
             sx={{ my: 2, fontWeight: "bold", color: "primary.main" }}
           >
-            ClinicPro
+            {getBranchName()}
           </Typography>
           <Divider sx={{ borderColor: "divider" }} />
           <List>
