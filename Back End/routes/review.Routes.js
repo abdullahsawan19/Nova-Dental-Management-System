@@ -6,12 +6,12 @@ const { authorize } = require("../middlewares/role.middleware");
 const router = express.Router();
 
 // ============================================================
-// 1️⃣ PUBLIC ROUTES (Guest + All)
+//  PUBLIC ROUTES (Guest + All)
 // ============================================================
 router.get("/", reviewController.getAllReviews);
 
 // ============================================================
-// 2️⃣ USER ROUTES (Protected)
+//  USER ROUTES (Protected)
 // ============================================================
 
 router.post(
@@ -22,7 +22,7 @@ router.post(
 );
 
 // ============================================================
-// 3️⃣ ADMIN ROUTES (Protected)
+//  ADMIN ROUTES (Protected)
 // ============================================================
 router.delete(
   "/admin/:id",

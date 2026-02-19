@@ -1,17 +1,10 @@
 const multer = require("multer");
+const sharp = require("sharp");
+const path = require("path");
+const fs = require("fs");
 const AppError = require("../utils/appError");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads");
-  },
-  filename: function (req, file, cb) {
-    const ext = file.mimetype.split("/")[1];
-    const userId = req.user ? req.user.id : "admin";
-    const uniqueName = `service-${userId}-${Date.now()}.${ext}`;
-    cb(null, uniqueName);
-  },
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
@@ -27,4 +20,35 @@ const upload = multer({
   limits: { fileSize: 1024 * 1024 * 10 },
 });
 
-module.exports = upload;
+const resizeImage = async (req, res, next) => {
+  if (!req.file) return next();
+
+  const ext = "webp";
+  const userId = req.user ? req.user.id : "admin";
+  const uniqueName = `service-${userId}-${Date.now()}.${ext}`;
+
+  const uploadPath = path.join(__dirname, "../uploads");
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+  }
+
+  const filePath = path.join(uploadPath, uniqueName);
+
+  try {
+    await sharp(req.file.buffer)
+      .resize(800, 800, { fit: "inside", withoutEnlargement: true })
+      .toFormat("webp")
+      .webp({ quality: 80 })
+      .toFile(filePath);
+
+    req.file.filename = uniqueName;
+    req.file.path = filePath;
+    req.file.destination = uploadPath;
+
+    next();
+  } catch (error) {
+    return next(new AppError("Error processing image", 500));
+  }
+};
+
+module.exports = { upload, resizeImage };

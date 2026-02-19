@@ -39,12 +39,21 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const limiter = rateLimit({
-  max: 200,
+  max: 100,
   windowMs: 15 * 60 * 1000,
-  message: "Too many requests from this IP, please try again in an hour!",
+  message: "Too many requests from this IP, please try again in an 15 minutes!",
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+app.use(
+  "/api/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    maxAge: "30d",
+    immutable: true,
+  }),
+);
+
 app.use("/api", limiter);
 
 app.post(

@@ -2,7 +2,7 @@ const express = require("express");
 const doctorController = require("../controllers/doctor.controller");
 const { authenticate } = require("../middlewares/auth.middleware");
 const { authorize } = require("../middlewares/role.middleware");
-const upload = require("../config/multer.Config");
+const { upload, resizeImage } = require("../config/multer.Config");
 
 const router = express.Router();
 
@@ -20,6 +20,7 @@ router.patch(
   authenticate,
   authorize("doctor"),
   upload.single("photo"),
+  resizeImage,
   doctorController.updateDoctorProfile,
 );
 
