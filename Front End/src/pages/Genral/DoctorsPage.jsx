@@ -1,17 +1,10 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  Button,
-  Box,
-  Container,
-  Pagination,
-} from "@mui/material";
+import { Grid, Typography, Box, Container, Pagination } from "@mui/material";
+
+import CustomCard from "../../components/ui/CustomCard";
+import Button from "../../components/ui/Button";
 
 const DoctorsPage = () => {
   const { doctors } = useSelector((state) => state.doctor || {});
@@ -67,94 +60,91 @@ const DoctorsPage = () => {
               key={doc._id}
               sx={{ display: "flex", justifyContent: "center" }}
             >
-              <Card
+              <CustomCard
+                variant="outlined"
+                mediaHeight={250}
+                media={
+                  doc.photo && doc.photo !== "Doctor.jfif"
+                    ? `${import.meta.env.VITE_API_URL}/uploads/${doc.photo}`
+                    : "/default-doctor.jpg"
+                }
+                mediaAlt={doc.user?.name || "Doctor"}
                 sx={{
-                  height: "400px",
-                  width: "100%",
+                  height: "450px",
+                  width: "230px",
+                  mx: "auto",
                   display: "flex",
                   flexDirection: "column",
                   borderRadius: 4,
-                  overflow: "hidden",
-                  border: 1,
-                  borderColor: "divider",
                   bgcolor: "background.paper",
-                  transition: "transform 0.3s, box-shadow 0.3s",
-                  "&:hover": {
-                    transform: "translateY(-5px)",
-                    boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-                  },
-                }}
-              >
-                <Box
-                  sx={{
-                    position: "relative",
-                    height: "220px",
-                    width: "100%",
+                  "& .MuiCardMedia-root": {
                     flexShrink: 0,
                     bgcolor: "action.hover",
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    sx={{ height: "100%", width: "100%", objectFit: "cover" }}
-                    image={
-                      doc.photo && doc.photo !== "Doctor.jfif"
-                        ? `${import.meta.env.VITE_API_URL}/uploads/${doc.photo}`
-                        : "/default-doctor.jpg"
-                    }
-                    alt={doc.user?.name || "Doctor"}
-                  />
-                </Box>
-
-                <CardContent
-                  sx={{
+                  },
+                  "& .MuiCardContent-root": {
                     flexGrow: 1,
                     display: "flex",
                     flexDirection: "column",
-                    p: 2,
+                    justifyContent: "center",
+                    alignItems: "center",
                     textAlign: "center",
-                  }}
-                >
+                    p: 2,
+                    pb: 0,
+                    width: "100%",
+                    overflow: "hidden",
+                    boxSizing: "border-box",
+                  },
+                }}
+                actionsSx={{ width: "100%", p: 2, pt: 2 }}
+                actions={
+                  <Button
+                    variant="outlined"
+                    onClick={() => navigate(`/doctors/${doc._id}`)}
+                    sx={{
+                      height: "40px",
+                      py: 0,
+                      borderWidth: 2,
+                      "&:hover": {
+                        borderWidth: 2,
+                      },
+                    }}
+                  >
+                    View Details
+                  </Button>
+                }
+              >
+                <Box sx={{ width: "100%", overflow: "hidden", px: 1 }}>
                   <Typography
                     variant="h6"
                     fontWeight="700"
                     color="text.primary"
-                    sx={{ mb: 0.5, lineHeight: 1.2 }}
+                    sx={{
+                      mb: 0.5,
+                      lineHeight: 1.2,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      display: "block",
+                    }}
                   >
                     Dr. {doc.user?.name}
                   </Typography>
+
                   <Typography
                     variant="body2"
                     color="primary.main"
                     fontWeight="bold"
-                    sx={{ mb: 1 }}
+                    sx={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
                   >
                     {doc.specialization || "General Dentist"}
                   </Typography>
-
-                  <Box sx={{ mt: "auto", width: "100%" }}>
-                    <Button
-                      variant="outlined"
-                      fullWidth
-                      onClick={() => navigate(`/doctors/${doc._id}`)}
-                      sx={{
-                        height: "40px",
-                        borderRadius: 2,
-                        textTransform: "none",
-                        fontWeight: "bold",
-                        borderWidth: 2,
-                        "&:hover": {
-                          borderWidth: 2,
-                          bgcolor: "primary.main",
-                          color: "white",
-                        },
-                      }}
-                    >
-                      View Details
-                    </Button>
-                  </Box>
-                </CardContent>
-              </Card>
+                </Box>
+              </CustomCard>
             </Grid>
           ))}
         </Grid>

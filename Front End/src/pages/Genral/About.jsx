@@ -1,10 +1,13 @@
-import { Box, Container, Typography, Grid, Paper, Button } from "@mui/material";
+import { Box, Container, Typography, Grid, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useSelector } from "react-redux";
+
+import CustomCard from "../../components/ui/CustomCard";
+import Button from "../../components/ui/Button";
 
 const About = () => {
   const navigate = useNavigate();
@@ -13,22 +16,24 @@ const About = () => {
 
   const features = [
     {
-      icon: <MedicalServicesIcon fontSize="large" color="primary" />,
+      icon: (
+        <MedicalServicesIcon sx={{ fontSize: 60, color: "primary.main" }} />
+      ),
       title: "Advanced Technology",
       desc: "We use the latest dental equipment and techniques to ensure painless and effective treatments.",
     },
     {
-      icon: <VerifiedUserIcon fontSize="large" color="primary" />,
+      icon: <VerifiedUserIcon sx={{ fontSize: 60, color: "primary.main" }} />,
       title: "Expert Doctors",
       desc: "Our team consists of highly qualified professionals with years of experience in dental care.",
     },
     {
-      icon: <EmojiEmotionsIcon fontSize="large" color="primary" />,
+      icon: <EmojiEmotionsIcon sx={{ fontSize: 60, color: "primary.main" }} />,
       title: "Patient Comfort",
       desc: "Your comfort is our priority. We provide a relaxing environment to make your visit stress-free.",
     },
     {
-      icon: <AccessTimeIcon fontSize="large" color="primary" />,
+      icon: <AccessTimeIcon sx={{ fontSize: 60, color: "primary.main" }} />,
       title: "Flexible Hours",
       desc: "We offer convenient scheduling options, including evening and weekend appointments.",
     },
@@ -37,59 +42,52 @@ const About = () => {
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: 8 }}>
       <Container maxWidth="lg">
-        <Grid container spacing={6} alignItems="center" mb={10}>
-          <Grid item xs={12} md={6}>
-            <Typography
-              variant="h3"
-              fontWeight="900"
-              color="text.primary"
-              gutterBottom
-              sx={{
-                fontSize: { xs: "2.2rem", md: "3rem" },
-                letterSpacing: "-0.02em",
-              }}
-            >
-              About{" "}
-              <Box component="span" sx={{ color: "primary.main" }}>
-                {branchName}
-              </Box>
-            </Typography>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              paragraph
-              sx={{ fontSize: "1.1rem", lineHeight: 1.8 }}
-            >
-              At {branchName}, we believe that a healthy smile is a beautiful
-              smile. Founded with the vision of providing top-notch dental care,
-              our clinic combines state-of-the-art technology with
-              compassionate, personalized treatment.
-            </Typography>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              paragraph
-              sx={{ fontSize: "1.1rem", lineHeight: 1.8 }}
-            >
-              Whether you need a routine checkup, cosmetic dentistry, or complex
-              oral surgery, our dedicated team is here to ensure you receive the
-              highest standard of care in a comfortable environment.
-            </Typography>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Box
-              component="img"
-              src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-              alt="Clinic Team"
-              sx={{
-                width: "100%",
-                height: "auto",
-                borderRadius: 4,
-                boxShadow: 6,
-              }}
-            />
-          </Grid>
-        </Grid>
+        <Box
+          sx={{
+            mb: 12,
+            textAlign: "center",
+            maxWidth: "800px",
+            mx: "auto",
+          }}
+        >
+          <Typography
+            variant="h3"
+            fontWeight="900"
+            color="text.primary"
+            gutterBottom
+            sx={{
+              fontSize: { xs: "2.2rem", md: "3rem" },
+              letterSpacing: "-0.02em",
+              mb: 4,
+            }}
+          >
+            About{" "}
+            <Box component="span" sx={{ color: "primary.main" }}>
+              {branchName}
+            </Box>
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            paragraph
+            sx={{ fontSize: "1.1rem", lineHeight: 1.8 }}
+          >
+            At {branchName}, we believe that a healthy smile is a beautiful
+            smile. Founded with the vision of providing top-notch dental care,
+            our clinic combines state-of-the-art technology with compassionate,
+            personalized treatment.
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            paragraph
+            sx={{ fontSize: "1.1rem", lineHeight: 1.8 }}
+          >
+            Whether you need a routine checkup, cosmetic dentistry, or complex
+            oral surgery, our dedicated team is here to ensure you receive the
+            highest standard of care in a comfortable environment.
+          </Typography>
+        </Box>
 
         <Box mb={10} textAlign="center">
           <Typography
@@ -104,46 +102,50 @@ const About = () => {
             We are committed to delivering excellence in every smile.
           </Typography>
 
-          <Grid container spacing={4} alignItems="stretch">
+          <Grid container spacing={4} justifyContent="center">
             {features.map((feature, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <Paper
-                  elevation={0}
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={6}
+                lg={6}
+                key={index}
+                sx={{ display: "flex", justifyContent: "center" }}
+              >
+                <CustomCard
+                  variant="outlined"
                   sx={{
-                    p: 4,
-                    height: "100%",
+                    height: "300px",
+                    width: "100%",
+                    maxWidth: "400px",
                     display: "flex",
                     flexDirection: "column",
+                    justifyContent: "center",
                     alignItems: "center",
+                    textAlign: "center",
                     borderRadius: 4,
-                    border: 1,
-                    borderColor: "divider",
+                    p: 4,
                     bgcolor: "background.paper",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      transform: "translateY(-5px)",
-                      boxShadow: 4,
-                      borderColor: "primary.main",
-                    },
                   }}
                 >
-                  <Box sx={{ mb: 2 }}>{feature.icon}</Box>
+                  <Box sx={{ mb: 3 }}>{feature.icon}</Box>
                   <Typography
-                    variant="h6"
-                    fontWeight="bold"
+                    variant="h5"
+                    fontWeight="800"
                     color="text.primary"
-                    mb={1}
+                    mb={2}
                   >
                     {feature.title}
                   </Typography>
                   <Typography
-                    variant="body2"
+                    variant="body1"
                     color="text.secondary"
                     lineHeight={1.6}
                   >
                     {feature.desc}
                   </Typography>
-                </Paper>
+                </CustomCard>
               </Grid>
             ))}
           </Grid>
@@ -173,21 +175,16 @@ const About = () => {
           </Typography>
           <Button
             variant="contained"
-            size="large"
             onClick={() => navigate("/appointment")}
             sx={{
               bgcolor: "background.paper",
               color: "primary.main",
-              fontWeight: "bold",
+              width: "auto",
               px: 5,
-              py: 1.5,
-              borderRadius: "50px",
-              textTransform: "none",
               "&:hover": {
                 bgcolor: "background.default",
                 transform: "translateY(-2px)",
               },
-              transition: "all 0.3s ease",
             }}
           >
             Book Appointment Now

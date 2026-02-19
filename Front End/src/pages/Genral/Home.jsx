@@ -1,66 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box, Typography, Container, Button } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import CustomAlert from "../../components/feedback/Alert";
+import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
+
+import PaymentAlert from "../../components/common/PaymentAlert";
+import useHashScroll from "../../components/common/useHashScroll";
+
 import PublicServices from "./PublicServices";
 import PublicReviews from "./PublicReviews";
 import PublicDoctors from "./PublicDoctors";
 
-import coverImage from "../../assets/public/Cover.jfif";
-
 const Home = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const location = useLocation();
   const navigate = useNavigate();
-  const alertShown = useRef(false);
 
-  const [alertConfig, setAlertConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
-
-  useEffect(() => {
-    if (searchParams.get("payment") === "success" && !alertShown.current) {
-      alertShown.current = true;
-      setAlertConfig({
-        open: true,
-        message: "Payment Successful! Your appointment is confirmed ✅",
-        severity: "success",
-      });
-      const newParams = new URLSearchParams(searchParams);
-      newParams.delete("payment");
-      setSearchParams(newParams, { replace: true });
-    }
-  }, [searchParams, setSearchParams]);
-
-  useEffect(() => {
-    if (location.hash) {
-      const id = location.hash.slice(1);
-      const elem = document.getElementById(id);
-      if (elem) {
-        setTimeout(() => {
-          elem.scrollIntoView({ behavior: "smooth" });
-        }, 100);
-      }
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }, [location]);
-
-  const handleCloseAlert = () => {
-    setAlertConfig((prev) => ({ ...prev, open: false }));
-  };
+  useHashScroll();
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
-      <CustomAlert
-        open={alertConfig.open}
-        onClose={handleCloseAlert}
-        message={alertConfig.message}
-        severity={alertConfig.severity}
-      />
+      <PaymentAlert />
 
       <Box
         sx={{
@@ -73,7 +30,7 @@ const Home = () => {
           justifyContent: "center",
           textAlign: "center",
           px: 2,
-          backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url(${coverImage})`,
+          backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url(/Cover.jfif)`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundAttachment: { xs: "scroll", md: "fixed" },
@@ -134,6 +91,38 @@ const Home = () => {
       </Box>
 
       <Container maxWidth="lg">
+        <Box
+          sx={{
+            textAlign: "center",
+            maxWidth: "800px",
+            mx: "auto",
+            mt: 10,
+            mb: 2,
+            px: 2,
+          }}
+        >
+          <HealthAndSafetyIcon
+            sx={{ fontSize: 50, color: "primary.main", mb: 2 }}
+          />
+          <Typography
+            variant="h4"
+            fontWeight="800"
+            color="text.primary"
+            gutterBottom
+          >
+            A Healthy Smile Starts at Home
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ fontSize: "1.1rem", lineHeight: 1.8 }}
+          >
+            Brushing your teeth twice a day and flossing regularly is the
+            foundation of good oral hygiene. Take care of your daily habits, and
+            let us take care of the rest!
+          </Typography>
+        </Box>
+
         <Box id="services" sx={{ py: 8 }}>
           <PublicServices />
         </Box>

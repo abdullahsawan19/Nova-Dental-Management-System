@@ -25,7 +25,6 @@ const Footer = () => {
 
   const getBranchName = () => {
     const val = activeBranch?.name;
-    console.log(val);
     if (!val) return "ClinicPro";
     if (typeof val === "string") return val;
     if (val[lang]) return val[lang];

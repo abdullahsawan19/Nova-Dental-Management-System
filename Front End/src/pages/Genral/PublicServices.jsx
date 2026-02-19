@@ -3,11 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
   Grid,
-  Card,
-  CardMedia,
-  CardContent,
   Typography,
-  Button,
   Box,
   IconButton,
   useMediaQuery,
@@ -16,6 +12,9 @@ import {
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+
+import CustomCard from "../../components/ui/CustomCard";
+import Button from "../../components/ui/Button";
 
 const PublicServices = () => {
   const { services } = useSelector((state) => state.services || {});
@@ -53,6 +52,8 @@ const PublicServices = () => {
         (_, i) => safeServices[(startIndex + i) % safeServices.length],
       )
     : safeServices;
+
+  if (safeServices.length === 0) return null;
 
   return (
     <Box
@@ -117,137 +118,112 @@ const PublicServices = () => {
               key={`${service._id}-${index}`}
               sx={{ display: "flex", justifyContent: "center" }}
             >
-              <Card
+              <CustomCard
+                variant="outlined"
+                mediaHeight={220}
+                media={`${import.meta.env.VITE_API_URL}/uploads/${service.image}`}
+                mediaAlt={service.name}
                 sx={{
+                  position: "relative",
                   height: "450px",
-                  width: "100%",
+                  width: "230px",
+                  minWidth: "230px",
+                  maxWidth: "230px",
+                  mx: "auto",
                   display: "flex",
                   flexDirection: "column",
                   borderRadius: 4,
-                  overflow: "hidden",
-                  border: 1,
-                  borderColor: "divider",
                   bgcolor: "background.paper",
-                  transition: "transform 0.3s, box-shadow 0.3s",
-                  "&:hover": {
-                    transform: "translateY(-5px)",
-                    boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-                  },
-                }}
-                onClick={() => navigate(`/services/${service._id}`)}
-              >
-                <Box
-                  sx={{
-                    position: "relative",
-                    height: "220px",
-                    width: "100%",
+                  "& .MuiCardMedia-root": {
                     flexShrink: 0,
                     bgcolor: "action.hover",
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    sx={{ height: "100%", width: "100%", objectFit: "cover" }}
-                    image={`${import.meta.env.VITE_API_URL}/uploads/${service.image}`}
-                    alt={service.name}
-                  />
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: 10,
-                      right: 10,
-                      bgcolor: "background.paper",
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 2,
-                      fontWeight: "bold",
-                      color: "primary.main",
-                      fontSize: "0.85rem",
-                      boxShadow: 1,
-                    }}
-                  >
-                    {service.fees} EGP
-                  </Box>
-                </Box>
-
-                <CardContent
-                  sx={{
+                  },
+                  "& .MuiCardContent-root": {
                     flexGrow: 1,
                     display: "flex",
                     flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    textAlign: "center",
                     p: 2,
-                    pb: 2,
-                  }}
-                >
-                  <Box
+                    pb: 0,
+                    width: "100%",
+                    overflow: "hidden",
+                    boxSizing: "border-box",
+                  },
+                }}
+                actionsSx={{ width: "100%", p: 2, pt: 2 }}
+                actions={
+                  <Button
+                    variant="outlined"
+                    onClick={() => navigate(`/services/${service._id}`)}
                     sx={{
-                      height: "55px",
-                      mb: 1,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      overflow: "hidden",
+                      height: "40px",
+                      py: 0,
+                      borderWidth: 2,
+                      "&:hover": {
+                        borderWidth: 2,
+                      },
                     }}
                   >
-                    <Tooltip title={service.name} placement="top">
-                      <Typography
-                        variant="h6"
-                        fontWeight="700"
-                        color="text.primary"
-                        sx={{
-                          textAlign: "center",
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          lineHeight: "1.2",
-                          fontSize: "1.1rem",
-                        }}
-                      >
-                        {service.name}
-                      </Typography>
-                    </Tooltip>
-                  </Box>
+                    View Details
+                  </Button>
+                }
+              >
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    bgcolor: "background.paper",
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 2,
+                    fontWeight: "bold",
+                    color: "primary.main",
+                    fontSize: "0.85rem",
+                    boxShadow: 2,
+                    zIndex: 10,
+                  }}
+                >
+                  {service.fees} EGP
+                </Box>
 
-                  <Box sx={{ height: "45px", overflow: "hidden", mb: 1 }}>
+                <Box sx={{ width: "100%", overflow: "hidden", px: 1 }}>
+                  <Tooltip title={service.name} placement="top">
                     <Typography
-                      variant="body2"
-                      color="text.secondary"
+                      variant="h6"
+                      fontWeight="700"
+                      color="text.primary"
                       sx={{
-                        textAlign: "center",
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        lineHeight: "1.4",
+                        mb: 0.5,
+                        lineHeight: 1.2,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "block",
                       }}
                     >
-                      {service.description ||
-                        "Top-tier dental care services available."}
+                      {service.name}
                     </Typography>
-                  </Box>
+                  </Tooltip>
 
-                  <Box sx={{ mt: "auto", width: "100%" }}>
-                    <Button
-                      variant="outlined"
-                      fullWidth
-                      sx={{
-                        height: "40px",
-                        borderRadius: 2,
-                        textTransform: "none",
-                        fontWeight: "bold",
-                        borderWidth: 2,
-                        "&:hover": {
-                          borderWidth: 2,
-                          bgcolor: "primary.main",
-                          color: "white",
-                        },
-                      }}
-                    >
-                      View Details
-                    </Button>
-                  </Box>
-                </CardContent>
-              </Card>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      mt: 1,
+                    }}
+                  >
+                    {service.description ||
+                      "Top-tier dental care services available."}
+                  </Typography>
+                </Box>
+              </CustomCard>
             </Grid>
           ))}
         </Grid>

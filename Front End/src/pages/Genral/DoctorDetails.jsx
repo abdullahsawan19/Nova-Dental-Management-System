@@ -1,18 +1,14 @@
+import React from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import {
   Box,
   Container,
   Grid,
   Typography,
-  Button,
-  Card,
-  CardMedia,
   Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Paper,
+  alpha,
+  useTheme,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EmailIcon from "@mui/icons-material/Email";
@@ -20,179 +16,236 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import SchoolIcon from "@mui/icons-material/School";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 
+import Button from "../../components/ui/Button";
+
+const DetailItem = ({ icon, label, value }) => {
+  const theme = useTheme();
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 2,
+        p: 1.5,
+        px: 2,
+        borderRadius: 2,
+        bgcolor: "background.default",
+        border: "1px solid",
+        borderColor: "divider",
+        transition: "all 0.3s ease",
+        "&:hover": {
+          transform: "translateX(5px)",
+          borderColor: "primary.main",
+          boxShadow: `0 4px 10px ${alpha(theme.palette.primary.main, 0.08)}`,
+        },
+      }}
+    >
+      <Box
+        sx={{
+          width: 40,
+          height: 40,
+          borderRadius: "50%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          bgcolor: "primary.main",
+          color: "white",
+          flexShrink: 0,
+          boxShadow: 1,
+        }}
+      >
+        {React.cloneElement(icon, { fontSize: "small" })}
+      </Box>
+      <Box>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          fontWeight="bold"
+          sx={{
+            textTransform: "uppercase",
+            letterSpacing: 0.5,
+            fontSize: "0.7rem",
+          }}
+        >
+          {label}
+        </Typography>
+        <Typography
+          variant="body1"
+          color="text.primary"
+          fontWeight="bold"
+          sx={{ fontSize: "0.95rem", mt: 0.2 }}
+        >
+          {value}
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
 const DoctorDetails = () => {
   const doctor = useLoaderData();
   const navigate = useNavigate();
 
-  if (!doctor || Object.keys(doctor).length === 0) {
-    return (
-      <Box sx={{ textAlign: "center", py: 10 }}>
-        <Typography variant="h5" color="error">
-          No details found for this doctor.
-        </Typography>
-        <Button onClick={() => navigate(-1)} sx={{ mt: 2 }}>
-          Go Back
-        </Button>
-      </Box>
-    );
-  }
-
   const { user = {}, education = "", photo = "", specialization = "" } = doctor;
 
   return (
-    <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: 6 }}>
-      <Container maxWidth="lg">
+    <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: 4 }}>
+      <Container maxWidth="md">
         <Button
-          startIcon={<ArrowBackIcon />}
+          variant="text"
           onClick={() => navigate(-1)}
-          sx={{ mb: 2 }}
+          sx={{
+            mb: 2,
+            width: "fit-content",
+            bgcolor: "transparent",
+            color: "text.secondary",
+            py: 0.5,
+            px: 1,
+            "&:hover": {
+              bgcolor: "action.hover",
+              color: "text.primary",
+            },
+          }}
         >
-          Back
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <ArrowBackIcon fontSize="small" />
+            <Typography variant="body2" fontWeight="bold">
+              Back
+            </Typography>
+          </Box>
         </Button>
 
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 4,
+            borderRadius: 3,
             overflow: "hidden",
-            border: 1,
-            borderColor: "divider",
             bgcolor: "background.paper",
+            boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
           }}
         >
           <Grid container>
-            <Grid
-              item
-              xs={12}
-              md={4}
-              sx={{
-                bgcolor: "action.hover",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                p: 4,
-              }}
-            >
-              <Card
+            <Grid item xs={12} md={5} sx={{ p: { xs: 2, md: 3 } }}>
+              <Box
                 sx={{
-                  borderRadius: "50%",
-                  width: 250,
-                  height: 250,
-                  border: 5,
-                  borderColor: "background.paper",
-                  boxShadow: 3,
+                  width: "100%",
+                  height: { xs: 300, md: "100%" },
+                  minHeight: 350,
+                  maxHeight: 400,
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  boxShadow: 1,
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05),
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                <CardMedia
-                  component="img"
-                  image={
+                <img
+                  src={
                     photo && photo !== "Doctor.jfif"
                       ? `${import.meta.env.VITE_API_URL}/uploads/${photo}`
                       : "/default-doctor.jpg"
                   }
-                  sx={{ width: "100%", height: "100%", objectFit: "cover" }}
                   alt={user?.name || "Doctor"}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                  }}
                 />
-              </Card>
+              </Box>
             </Grid>
 
-            <Grid item xs={12} md={8} sx={{ p: { xs: 3, md: 5 } }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  flexWrap: "wrap",
-                  gap: 2,
-                }}
-              >
-                <Box>
-                  <Typography
-                    variant="h3"
-                    fontWeight="800"
-                    color="text.primary"
-                    gutterBottom
-                  >
-                    Dr. {user?.name || "Unknown"}
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    color="primary.main"
-                    fontWeight="bold"
-                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                  >
-                    <LocalHospitalIcon />
+            <Grid
+              item
+              xs={12}
+              md={7}
+              sx={{
+                p: { xs: 3, md: 4 },
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Box sx={{ mb: 2 }}>
+                <Typography
+                  variant="h4"
+                  fontWeight="800"
+                  color="text.primary"
+                  gutterBottom
+                >
+                  Dr. {user?.name || "Unknown"}
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 1,
+                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                    color: "primary.main",
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 1.5,
+                  }}
+                >
+                  <LocalHospitalIcon sx={{ fontSize: "1rem" }} />
+                  <Typography variant="body2" fontWeight="bold">
                     {specialization || "General Dentist"}
                   </Typography>
                 </Box>
-
-                <Button
-                  variant="contained"
-                  size="large"
-                  sx={{ borderRadius: 8, px: 4, fontWeight: "bold" }}
-                  onClick={() => navigate("/appointment")}
-                >
-                  Book Appointment
-                </Button>
               </Box>
 
-              <Divider sx={{ my: 4 }} />
+              <Divider sx={{ mb: 3 }} />
 
               <Typography
-                variant="h6"
+                variant="subtitle1"
                 fontWeight="bold"
-                color="text.primary"
+                color="text.secondary"
                 gutterBottom
+                sx={{ mb: 2 }}
               >
                 Professional Details
               </Typography>
 
-              <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-                <ListItem disablePadding sx={{ mb: 2 }}>
-                  <ListItemIcon>
-                    <SchoolIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Education & Background"
-                    secondary={education || "Pending update..."}
-                    primaryTypographyProps={{
-                      fontWeight: "bold",
-                      color: "text.primary",
-                    }}
-                    secondaryTypographyProps={{ color: "text.secondary" }}
-                  />
-                </ListItem>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1.5,
+                  mb: 4,
+                }}
+              >
+                <DetailItem
+                  icon={<SchoolIcon />}
+                  label="Education"
+                  value={education || "Pending update..."}
+                />
+                <DetailItem
+                  icon={<EmailIcon />}
+                  label="Email"
+                  value={user?.email || "Not available"}
+                />
+                <DetailItem
+                  icon={<PhoneIcon />}
+                  label="Phone"
+                  value={user?.phone || "Not available"}
+                />
+              </Box>
 
-                <ListItem disablePadding sx={{ mb: 2 }}>
-                  <ListItemIcon>
-                    <EmailIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Email Address"
-                    secondary={user?.email || "Not available"}
-                    primaryTypographyProps={{
-                      fontWeight: "bold",
-                      color: "text.primary",
-                    }}
-                    secondaryTypographyProps={{ color: "text.secondary" }}
-                  />
-                </ListItem>
-
-                <ListItem disablePadding>
-                  <ListItemIcon>
-                    <PhoneIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Phone Number"
-                    secondary={user?.phone || "Not available"}
-                    primaryTypographyProps={{
-                      fontWeight: "bold",
-                      color: "text.primary",
-                    }}
-                    secondaryTypographyProps={{ color: "text.secondary" }}
-                  />
-                </ListItem>
-              </List>
+              <Button
+                onClick={() => navigate("/appointment")}
+                sx={{
+                  mt: "auto",
+                  py: 1.2,
+                  fontSize: "1rem",
+                  boxShadow: 2,
+                  borderRadius: 2,
+                }}
+              >
+                Book Appointment
+              </Button>
             </Grid>
           </Grid>
         </Paper>
