@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import DocDashboard from "../layouts/DocDashboard";
 import {
   doctorAppointmentsLoader,
@@ -7,7 +8,10 @@ import {
   doctorAppointmentsAction,
   doctorProfileAction,
 } from "../features/Doctor/doctorAction";
-import DoctorAppointment from "../pages/Doctor/DoctorAppointment";
+const DoctorAppointment = lazy(
+  () => import("../pages/Doctor/DoctorAppointment"),
+);
+import SuspenseLoader from "../components/ui/SuspenseLoader.jsx";
 
 const doctorRoutes = [
   {
@@ -18,13 +22,21 @@ const doctorRoutes = [
     children: [
       {
         index: true,
-        element: <DoctorAppointment />,
+        element: (
+          <Suspense fallback={<SuspenseLoader />}>
+            <DoctorAppointment />
+          </Suspense>
+        ),
         loader: doctorAppointmentsLoader,
         action: doctorAppointmentsAction,
       },
       {
         path: "appointments",
-        element: <DoctorAppointment />,
+        element: (
+          <Suspense fallback={<SuspenseLoader />}>
+            <DoctorAppointment />
+          </Suspense>
+        ),
         loader: doctorAppointmentsLoader,
         action: doctorAppointmentsAction,
       },

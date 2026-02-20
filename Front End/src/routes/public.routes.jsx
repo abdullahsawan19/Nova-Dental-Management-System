@@ -1,72 +1,112 @@
-import Login from "../features/auth/LoginForm.jsx";
-import Signup from "../features/auth/SignupForm.jsx";
-import BranchModule from "../pages/Genral/BranchModule.jsx";
+import React, { Suspense, lazy } from "react";
+import { Box, CircularProgress } from "@mui/material";
 
 import { activeBranchLoader } from "../features/branches/branchesLoader.js";
-import Home from "../pages/Genral/Home.jsx";
-import Unauthorized from "../pages/Genral/Unauthorized.jsx";
 import { serviceDetailsLoader } from "../features/services/servicesLoader.js";
-import ServiceDetails from "../pages/Genral/ServiceDetails.jsx";
 import { homeLoader } from "../features/Home/homeLoader.js";
 import { homeAction } from "../features/Home/homeAction.js";
-import DoctorsPage from "../pages/Genral/DoctorsPage.jsx";
 import {
   doctorDetailsLoader,
   doctorsLoader,
 } from "../features/doctors/doctorsLoader.js";
-import DoctorDetails from "../pages/Genral/DoctorDetails.jsx";
-import Appointment from "../pages/Genral/appointment.jsx";
 import { appointmentLoader } from "../features/appointments/appointmentsLoader.js";
 import { appointmentAction } from "../features/appointments/appointmentsAction.js";
-import Faq from "../pages/Genral/Faq.jsx";
 import { publicFaqLoader } from "../features/Faq/faqLoader.js";
-import About from "../pages/Genral/About.jsx";
+
+const Home = lazy(() => import("../pages/General/Home.jsx"));
+const DoctorsPage = lazy(() => import("../pages/General/DoctorsPage.jsx"));
+const DoctorDetails = lazy(() => import("../pages/General/DoctorDetails.jsx"));
+const ServiceDetails = lazy(
+  () => import("../pages/General/ServiceDetails.jsx"),
+);
+const BranchModule = lazy(() => import("../pages/General/BranchModule.jsx"));
+const Appointment = lazy(() => import("../pages/General/appointment.jsx"));
+const Faq = lazy(() => import("../pages/General/Faq.jsx"));
+const About = lazy(() => import("../pages/General/About.jsx"));
+const Unauthorized = lazy(() => import("../pages/General/Unauthorized.jsx"));
+import SuspenseLoader from "../components/ui/SuspenseLoader.jsx";
 
 const publicRoutes = [
   {
     index: true,
-    element: <Home />,
+    element: (
+      <Suspense fallback={<SuspenseLoader />}>
+        <Home />
+      </Suspense>
+    ),
     loader: homeLoader,
     action: homeAction,
   },
   {
     path: "/doctors",
-    element: <DoctorsPage />,
+    element: (
+      <Suspense fallback={<SuspenseLoader />}>
+        <DoctorsPage />
+      </Suspense>
+    ),
     loader: doctorsLoader,
   },
   {
     path: "/doctors/:id",
-    element: <DoctorDetails />,
+    element: (
+      <Suspense fallback={<SuspenseLoader />}>
+        <DoctorDetails />
+      </Suspense>
+    ),
     loader: doctorDetailsLoader,
   },
   {
     path: "services/:id",
-    element: <ServiceDetails />,
+    element: (
+      <Suspense fallback={<SuspenseLoader />}>
+        <ServiceDetails />
+      </Suspense>
+    ),
     loader: serviceDetailsLoader,
   },
   {
     path: "/branch",
-    element: <BranchModule />,
+    element: (
+      <Suspense fallback={<SuspenseLoader />}>
+        <BranchModule />
+      </Suspense>
+    ),
     loader: activeBranchLoader,
   },
   {
     path: "appointment",
-    element: <Appointment />,
+    element: (
+      <Suspense fallback={<SuspenseLoader />}>
+        <Appointment />
+      </Suspense>
+    ),
     loader: appointmentLoader,
     action: appointmentAction,
   },
   {
     path: "/faq",
-    element: <Faq />,
+    element: (
+      <Suspense fallback={<SuspenseLoader />}>
+        <Faq />
+      </Suspense>
+    ),
     loader: publicFaqLoader,
   },
   {
     path: "/about",
-    element: <About />,
+    element: (
+      <Suspense fallback={<SuspenseLoader />}>
+        <About />
+      </Suspense>
+    ),
   },
   {
     path: "/unauthorized",
-    element: <Unauthorized />,
+    element: (
+      <Suspense fallback={<SuspenseLoader />}>
+        <Unauthorized />
+      </Suspense>
+    ),
   },
 ];
 export default publicRoutes;

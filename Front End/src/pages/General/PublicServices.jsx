@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -29,27 +29,26 @@ const PublicServices = () => {
   const cardsToShow = isLarge ? 4 : isMedium ? 2 : 1;
   const [startIndex, setStartIndex] = useState(0);
 
+  const validStartIndex =
+    startIndex >= safeServices.length && safeServices.length > 0
+      ? 0
+      : startIndex;
+
   const isSliderActive = safeServices.length > cardsToShow;
 
-  useEffect(() => {
-    if (startIndex >= safeServices.length && safeServices.length > 0) {
-      setStartIndex(0);
-    }
-  }, [safeServices.length, startIndex]);
-
   const handleNext = () => {
-    setStartIndex((prev) => (prev + 1) % safeServices.length);
+    setStartIndex((validStartIndex + 1) % safeServices.length);
   };
 
   const handlePrev = () => {
     setStartIndex(
-      (prev) => (prev - 1 + safeServices.length) % safeServices.length,
+      (validStartIndex - 1 + safeServices.length) % safeServices.length,
     );
   };
 
   const visibleServices = isSliderActive
     ? Array.from({ length: cardsToShow }).map(
-        (_, i) => safeServices[(startIndex + i) % safeServices.length],
+        (_, i) => safeServices[(validStartIndex + i) % safeServices.length],
       )
     : safeServices;
 

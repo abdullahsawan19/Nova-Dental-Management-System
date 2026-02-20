@@ -1,17 +1,15 @@
 import { store } from "../../store/store";
 import { getAllUsers } from "../users/userSlice";
-import { getAllDoctors } from "../doctors/doctorSlice";
+import { fetchAdminDoctors } from "../doctors/doctorSlice";
 import { fetchAllAppointments } from "../appointments/appointmentsSlice";
 
 export const adminDashboardLoader = async () => {
   try {
-    const today = new Date().toISOString().split("T")[0];
-
     const [usersResponse, doctorsResponse, appointmentsResponse] =
       await Promise.all([
         store.dispatch(getAllUsers({ role: "patient" })).unwrap(),
-        store.dispatch(getAllDoctors()).unwrap(),
-        store.dispatch(fetchAllAppointments({ date: today })).unwrap(),
+        store.dispatch(fetchAdminDoctors()).unwrap(),
+        store.dispatch(fetchAllAppointments()).unwrap(),
       ]);
 
     const patientsCount =
@@ -21,21 +19,21 @@ export const adminDashboardLoader = async () => {
       0;
 
     const doctorsCount =
-      doctorsResponse?.metadata?.totalDocs ||
-      doctorsResponse?.results ||
-      doctorsResponse?.data?.doctors?.length ||
-      0;
+      doctorsResponse?.results || doctorsResponse?.data?.doctors?.length || 0;
 
-    const appointmentsToday =
-      appointmentsResponse?.results ||
-      appointmentsResponse?.data?.appointments?.length ||
-      0;
+    const allAppointments = appointmentsResponse?.data?.appointments || [];
 
-    console.log("Admin Stats Loaded:", {
-      patientsCount,
-      doctorsCount,
-      appointmentsToday,
-    });
+    const todayObj = new Date();
+    const year = todayObj.getFullYear();
+    const month = String(todayObj.getMonth() + 1).padStart(2, "0");
+    const day = String(todayObj.getDate()).padStart(2, "0");
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const appointmentsToday = allAppointments.filter((app) => {
+      if (!app.date) return false;
+      const appDateOnly = app.date.split("T")[0];
+      return appDateOnly === todayFormatted;
+    }).length;
 
     return {
       patientsCount,

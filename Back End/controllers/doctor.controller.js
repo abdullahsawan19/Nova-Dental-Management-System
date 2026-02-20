@@ -37,13 +37,9 @@ const localizeDoctorData = (doc, lang) => {
 // === Controllers ===
 
 exports.getAllDoctors = catchAsync(async (req, res, next) => {
-  let userLang = req.query.lang;
-  if (!userLang && req.user && req.user.preferredLanguage) {
-    userLang = req.user.preferredLanguage;
-  }
-  if (!userLang) userLang = "en";
+  let userLang = req.query.lang || "en";
 
-  let filter = { isDeleted: false };
+  let filter = { isDeleted: false, isActive: true };
 
   if (req.query.specialization || req.query.service) {
     filter.specialization = req.query.specialization || req.query.service;
@@ -68,24 +64,61 @@ exports.getAllDoctors = catchAsync(async (req, res, next) => {
 
   const doctors = await features.query;
 
-  const validDoctors = doctors.filter((doc) => doc.user !== null);
+  const validDoctors = doctors.filter(
+    (doc) => doc.user !== null && doc.user.isActive === true,
+  );
 
   const localizedDoctors = validDoctors.map((doc) =>
     localizeDoctorData(doc, userLang),
   );
 
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 6;
   const totalDocs = await Doctor.countDocuments(filter);
 
   res.status(200).json({
     status: "success",
     metadata: {
-      currentPage: page,
-      limit: limit,
-      totalDocs: totalDocs,
-      totalPages: Math.ceil(totalDocs / limit),
+      totalDocs,
+      totalPages: Math.ceil(totalDocs / (req.query.limit || 6)),
     },
+    results: localizedDoctors.length,
+    data: { doctors: localizedDoctors },
+  });
+});
+
+exports.getAdminDoctors = catchAsync(async (req, res, next) => {
+  let userLang = req.query.lang || "en";
+
+  let filter = { isDeleted: false };
+
+  const features = new APIFeatures(
+    Doctor.find(filter)
+      .populate({
+        path: "user",
+        select: "name email phone preferredLanguage isActive",
+      })
+      .populate({
+        path: "specialization",
+        select: "name image description",
+      }),
+    req.query,
+  )
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+
+  const doctors = await features.query;
+
+  const validDoctors = doctors.filter((doc) => doc.user !== null);
+  const localizedDoctors = validDoctors.map((doc) =>
+    localizeDoctorData(doc, userLang),
+  );
+
+  const totalDocs = await Doctor.countDocuments(filter);
+
+  res.status(200).json({
+    status: "success",
+    metadata: { totalDocs },
     results: localizedDoctors.length,
     data: { doctors: localizedDoctors },
   });

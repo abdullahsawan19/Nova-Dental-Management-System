@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
-import { Box, Typography, Button, Container, Paper, Grid } from "@mui/material";
+import { Box, Typography, Container, Paper, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import Button from "../../components/ui/Button";
 
 const ServiceDetails = () => {
   const { currentService, isLoading } = useSelector((state) => state.services);
@@ -27,8 +28,28 @@ const ServiceDetails = () => {
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: 6 }}>
       <Container maxWidth="lg">
-        <Button onClick={() => navigate(-1)} sx={{ mb: 2 }}>
-          Back
+        <Button
+          variant="text"
+          onClick={() => navigate(-1)}
+          sx={{
+            mb: 2,
+            width: "fit-content",
+            bgcolor: "transparent",
+            color: "text.secondary",
+            py: 0.5,
+            px: 1,
+            "&:hover": {
+              bgcolor: "action.hover",
+              color: "text.primary",
+            },
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <ArrowBackIcon fontSize="small" />
+            <Typography variant="body2" fontWeight="bold">
+              Back
+            </Typography>
+          </Box>
         </Button>
 
         <Paper

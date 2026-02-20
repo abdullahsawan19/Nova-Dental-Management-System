@@ -1,27 +1,34 @@
 import DashboardLayout from "../layouts/DashboardLayout";
-import AdminDashboard from "../features/admin/Pages/AdminDashboard";
-import MangeBranches from "../pages/admin/MangeBranches";
 import { branchesLoader } from "../features/branches/branchesLoader";
 import { branchAction } from "../features/branches/branch.action";
-import ManageDoctors from "../pages/admin/MangeDoctors";
-import { doctorsLoader } from "../features/doctors/doctorsLoader";
+import { adminDoctorsLoader } from "../features/doctors/doctorsLoader";
 import { doctorsAction } from "../features/doctors/doctorsAction";
-import ManageUsers from "../pages/admin/MangeUsers";
 import { usersLoader } from "../features/users/userLoader";
 import { manageUsersAction } from "../features/users/userAction";
-import ServicesTable from "../pages/admin/MangeServices";
 import { adminServicesLoader } from "../features/services/servicesLoader";
 import { serviceAction } from "../features/services/serviceAction";
 import { adminReviewsLoader } from "../features/reviews/reviewLoader";
 import { reviewAction } from "../features/reviews/reviewAction";
-import ManageReviews from "../pages/admin/ManageReviews";
 import { adminDashboardLoader } from "../features/admin/adminLoader.js";
-import ManageAppointments from "../pages/admin/ManageAppointments.jsx";
 import { adminAppointmentsLoader } from "../features/appointments/admin/adminAppointmentsLoader.js";
 import { adminAppointmentsAction } from "../features/appointments/admin/adminAppointmentsAction.js";
-import ManageFaq from "../pages/admin/ManageFaq.jsx";
 import { faqAction } from "../features/Faq/faqAction.js";
 import { adminFaqLoader } from "../features/Faq/faqLoader.js";
+import SuspenseLoader from "../components/ui/SuspenseLoader.jsx";
+import { lazy, Suspense } from "react";
+
+const AdminDashboard = lazy(
+  () => import("../features/admin/Pages/AdminDashboard"),
+);
+const MangeBranches = lazy(() => import("../pages/admin/MangeBranches"));
+const ManageDoctors = lazy(() => import("../pages/admin/MangeDoctors"));
+const ManageUsers = lazy(() => import("../pages/admin/MangeUsers"));
+const ServicesTable = lazy(() => import("../pages/admin/MangeServices"));
+const ManageReviews = lazy(() => import("../pages/admin/ManageReviews"));
+const ManageAppointments = lazy(
+  () => import("../pages/admin/ManageAppointments.jsx"),
+);
+const ManageFaq = lazy(() => import("../pages/admin/ManageFaq.jsx"));
 
 const adminRoutes = [
   {
@@ -29,48 +36,80 @@ const adminRoutes = [
     children: [
       {
         index: true,
-        element: <AdminDashboard />,
+        element: (
+          <Suspense fallback={<SuspenseLoader />}>
+            <AdminDashboard />
+          </Suspense>
+        ),
         loader: adminDashboardLoader,
       },
       {
         path: "appointments",
-        element: <ManageAppointments />,
+        element: (
+          <Suspense fallback={<SuspenseLoader />}>
+            <ManageAppointments />
+          </Suspense>
+        ),
         loader: adminAppointmentsLoader,
         action: adminAppointmentsAction,
       },
       {
         path: "branches",
-        element: <MangeBranches />,
+        element: (
+          <Suspense fallback={<SuspenseLoader />}>
+            <MangeBranches />
+          </Suspense>
+        ),
         loader: branchesLoader,
         action: branchAction,
       },
       {
         path: "users",
-        element: <ManageUsers />,
+        element: (
+          <Suspense fallback={<SuspenseLoader />}>
+            <ManageUsers />
+          </Suspense>
+        ),
         loader: usersLoader,
         action: manageUsersAction,
       },
       {
         path: "doctors",
-        element: <ManageDoctors />,
-        loader: doctorsLoader,
+        element: (
+          <Suspense fallback={<SuspenseLoader />}>
+            <ManageDoctors />
+          </Suspense>
+        ),
+        loader: adminDoctorsLoader,
         action: doctorsAction,
       },
       {
         path: "services",
-        element: <ServicesTable />,
+        element: (
+          <Suspense fallback={<SuspenseLoader />}>
+            <ServicesTable />
+          </Suspense>
+        ),
         loader: adminServicesLoader,
         action: serviceAction,
       },
       {
         path: "reviews",
-        element: <ManageReviews />,
+        element: (
+          <Suspense fallback={<SuspenseLoader />}>
+            <ManageReviews />
+          </Suspense>
+        ),
         loader: adminReviewsLoader,
         action: reviewAction,
       },
       {
         path: "faq",
-        element: <ManageFaq />,
+        element: (
+          <Suspense fallback={<SuspenseLoader />}>
+            <ManageFaq />
+          </Suspense>
+        ),
         loader: adminFaqLoader,
         action: faqAction,
       },

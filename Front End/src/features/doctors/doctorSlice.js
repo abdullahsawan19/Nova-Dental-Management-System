@@ -27,6 +27,16 @@ export const getAllDoctors = createAsyncThunk(
     }
   },
 );
+export const fetchAdminDoctors = createAsyncThunk(
+  "doctor/adminAll",
+  async (params, thunkAPI) => {
+    try {
+      return await doctorServices.getAdminDoctors(params);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  },
+);
 
 export const getDoctorById = createAsyncThunk(
   "doctor/data",
@@ -86,6 +96,19 @@ const doctorSlice = createSlice({
         state.doctors = action.payload.data.doctors || action.payload;
       })
       .addCase(getAllDoctors.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // ============ Get Admin Doctors (All) ============
+      .addCase(fetchAdminDoctors.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchAdminDoctors.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.doctors = action.payload.data?.doctors || action.payload;
+      })
+      .addCase(fetchAdminDoctors.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })

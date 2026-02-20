@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import {
   Grid,
@@ -34,27 +34,24 @@ const PublicReviews = () => {
   const cardsToShow = isLarge ? 4 : isMedium ? 2 : 1;
   const [startIndex, setStartIndex] = useState(0);
 
+  const validStartIndex =
+    startIndex >= safeReviews.length && safeReviews.length > 0 ? 0 : startIndex;
+
   const isSliderActive = safeReviews.length > cardsToShow;
 
-  useEffect(() => {
-    if (startIndex >= safeReviews.length && safeReviews.length > 0) {
-      setStartIndex(0);
-    }
-  }, [safeReviews.length, startIndex]);
-
   const handleNext = () => {
-    setStartIndex((prev) => (prev + 1) % safeReviews.length);
+    setStartIndex((validStartIndex + 1) % safeReviews.length);
   };
 
   const handlePrev = () => {
     setStartIndex(
-      (prev) => (prev - 1 + safeReviews.length) % safeReviews.length,
+      (validStartIndex - 1 + safeReviews.length) % safeReviews.length,
     );
   };
 
   const visibleReviews = isSliderActive
     ? Array.from({ length: cardsToShow }).map(
-        (_, i) => safeReviews[(startIndex + i) % safeReviews.length],
+        (_, i) => safeReviews[(validStartIndex + i) % safeReviews.length],
       )
     : safeReviews;
 

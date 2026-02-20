@@ -10,6 +10,7 @@ import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 const AdminDashboard = () => {
   const { patientsCount, doctorsCount, appointmentsToday } =
     useLoaderData() || {};
+  console.log(appointmentsToday);
 
   const { user } = useSelector((state) => state.auth || {});
 

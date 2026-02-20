@@ -24,6 +24,13 @@ router.patch(
   doctorController.updateDoctorProfile,
 );
 
+router.get(
+  "/admin/all",
+  authenticate,
+  authorize("admin"),
+  doctorController.getAdminDoctors,
+);
+
 router.get("/:id", doctorController.getDoctorById);
 
 module.exports = router;

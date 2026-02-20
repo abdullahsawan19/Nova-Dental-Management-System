@@ -15,40 +15,34 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import MapIcon from "@mui/icons-material/Map";
 
 const BranchModule = () => {
-  const { activeBranch } = useSelector((state) => state.branches);
-
+  const { activeBranch } = useSelector((state) => state.branches || {});
   const { user } = useSelector((state) => state.auth || {});
   const lang = user?.preferredLanguage || "en";
 
-  const getName = () => {
-    const val = activeBranch?.name;
-    if (!val) return "Clinic Branch";
-    if (typeof val === "string") return val;
-    if (val[lang]) return val[lang];
-    if (val.en) return val.en;
-    if (val.ar) return val.ar;
-    return "Clinic Branch";
+  const getLocalizedText = (value, fallback) => {
+    if (!value) return fallback;
+    if (typeof value === "string") return value;
+    return value[lang] || value.en || value.ar || fallback;
   };
 
-  const getAddress = () => {
-    const val = activeBranch?.address;
-    if (!val) return "No Address Available";
-    if (typeof val === "string") return val;
-    if (val[lang]) return val[lang];
-    if (val.en) return val.en;
-    if (val.ar) return val.ar;
-    return "No Address Available";
-  };
+  const branchName = getLocalizedText(activeBranch?.name, "Clinic Branch");
+  const branchAddress = getLocalizedText(
+    activeBranch?.address,
+    "No Address Available",
+  );
 
   const getEmbedUrl = () => {
     const url = activeBranch?.locationUrl;
     if (url && url.includes("embed")) {
       return url;
     }
-    const searchQuery = `${activeBranch?.name || ""} ${activeBranch?.address || ""}`;
+    const searchQuery = `${branchName} ${branchAddress}`;
 
-    return `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+    return `http://googleusercontent.com/maps.google.com/maps?q=${encodeURIComponent(
+      searchQuery,
+    )}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   };
+
   return (
     <Box
       sx={{
@@ -127,7 +121,7 @@ const BranchModule = () => {
                 gutterBottom
                 sx={{ fontSize: { xs: "1.8rem", md: "2.5rem" } }}
               >
-                {getName()}
+                {branchName}
               </Typography>
               <Stack direction="row" alignItems="flex-start" gap={1}>
                 <LocationOnIcon
@@ -139,7 +133,7 @@ const BranchModule = () => {
                   color="text.secondary"
                   lineHeight={1.6}
                 >
-                  {getAddress()}
+                  {branchAddress}
                 </Typography>
               </Stack>
             </Box>

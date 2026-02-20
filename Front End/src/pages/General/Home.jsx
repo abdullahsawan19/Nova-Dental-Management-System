@@ -1,16 +1,24 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, Container, Button } from "@mui/material";
+import { Box, Typography, Container } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 
 import PaymentAlert from "../../components/common/PaymentAlert";
 import useHashScroll from "../../components/common/useHashScroll";
 
+import Button from "../../components/ui/Button";
+
 import PublicServices from "./PublicServices";
 import PublicReviews from "./PublicReviews";
 import PublicDoctors from "./PublicDoctors";
+import { useSelector } from "react-redux";
 
 const Home = () => {
+  const { activeBranch } = useSelector((state) => state.branches || {});
+
+  const branchName = activeBranch?.name;
+
   const navigate = useNavigate();
 
   useHashScroll();
@@ -46,7 +54,7 @@ const Home = () => {
             fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4.5rem" },
           }}
         >
-          Welcome to ClinicPro
+          Welcome to {branchName}
         </Typography>
 
         <Typography
@@ -64,18 +72,15 @@ const Home = () => {
         </Typography>
 
         <Button
-          variant="contained"
           size="large"
           startIcon={<CalendarMonthIcon />}
           onClick={() => navigate("/appointment")}
           sx={{
+            width: { xs: "100%", sm: "fit-content" },
             px: { xs: 4, md: 6 },
             py: { xs: 1.5, md: 2 },
             fontSize: { xs: "1.1rem", md: "1.2rem" },
             borderRadius: "50px",
-            textTransform: "none",
-            fontWeight: "bold",
-            bgcolor: "primary.main",
             color: "white",
             boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
             "&:hover": {
@@ -83,7 +88,6 @@ const Home = () => {
               boxShadow: "0 12px 32px rgba(0,0,0,0.4)",
               transform: "translateY(-3px)",
             },
-            transition: "all 0.3s ease",
           }}
         >
           Book Appointment Now

@@ -54,7 +54,7 @@ const FloatingChat = () => {
         { role: "user", parts: [{ text: userText }] },
         { role: "model", parts: [{ text: aiReply }] },
       ]);
-    } catch (error) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         { sender: "ai", text: "Sorry, connection issue. Try again later." },

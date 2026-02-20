@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link, useFetcher, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -10,6 +10,7 @@ import {
   Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   Divider,
   Dialog,
@@ -18,7 +19,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import UpdatePatientData from "../../pages/Genral/UpdatePatientData";
+import UpdatePatientData from "../../pages/General/UpdatePatientData";
 import { useThemeContext } from "../../theme/ThemeContextProvider";
 
 import { useScrollSpy } from "./useScrollSpy";
@@ -50,15 +51,13 @@ const Navbar = () => {
   const currentHash = useScrollSpy();
 
   const lang = user?.preferredLanguage || "en";
-  const getBranchName = () => {
+
+  const branchName = useMemo(() => {
     const val = activeBranch?.name;
     if (!val) return "ClinicPro";
     if (typeof val === "string") return val;
-    if (val[lang]) return val[lang];
-    if (val.en) return val.en;
-    if (val.ar) return val.ar;
-    return "ClinicPro";
-  };
+    return val[lang] || val.en || val.ar || "ClinicPro";
+  }, [activeBranch, lang]);
 
   const handleOpen = () => {
     fetcher.load("/profile/update");
@@ -70,8 +69,7 @@ const Navbar = () => {
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   const handleNavClick = (path) => {
-    if (mobileOpen) setMobileOpen(false);
-
+    setMobileOpen(false);
     if (path.includes("#")) {
       const sectionId = path.split("#")[1];
       if (location.pathname === "/") {
@@ -95,36 +93,62 @@ const Navbar = () => {
           bgcolor: "background.paper",
           color: "text.primary",
           boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+          width: "100%",
+          overflow: "hidden",
         }}
       >
         <Toolbar
-          sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            px: { xs: 1, sm: 2 },
+          }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+          {/* Logo & Menu Toggle */}
+          <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
             <IconButton
               color="inherit"
               onClick={handleDrawerToggle}
-              sx={{ mr: 1, display: { md: "none" } }}
+              sx={{ display: { md: "none" }, mr: 0.5 }}
             >
               <MenuIcon sx={{ color: "primary.main" }} />
             </IconButton>
+
             <Typography
               variant="h6"
-              sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}
+              noWrap
+              sx={{
+                fontWeight: "bold",
+                fontSize: { xs: "1.1rem", sm: "1.25rem" },
+                maxWidth: { xs: "150px", sm: "none" },
+              }}
             >
-              <Link to="/" style={{ textDecoration: "none", color: "#1976d2" }}>
-                {getBranchName()}
+              <Link
+                to="/"
+                style={{
+                  textDecoration: "none",
+                  color: "#1976d2",
+                  display: "block",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {branchName}
               </Link>
             </Typography>
           </Box>
 
-          <DesktopNav
-            navLinks={navLinks}
-            currentHash={currentHash}
-            handleNavClick={handleNavClick}
-            mode={mode}
-          />
+          {/* Desktop Navigation (Hidden on Mobile) */}
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
+            <DesktopNav
+              navLinks={navLinks}
+              currentHash={currentHash}
+              handleNavClick={handleNavClick}
+              mode={mode}
+            />
+          </Box>
 
+          {/* User Actions & Theme Toggle */}
           <UserActions
             token={token}
             user={user}
@@ -135,54 +159,74 @@ const Navbar = () => {
         </Toolbar>
       </AppBar>
 
+      {/* Mobile Drawer */}
       <Drawer
         anchor="left"
         open={mobileOpen}
         onClose={handleDrawerToggle}
+        ModalProps={{ keepMounted: true }}
         sx={{
-          "& .MuiDrawer-paper": { width: 240, bgcolor: "background.paper" },
+          "& .MuiDrawer-paper": {
+            width: 260,
+            bgcolor: "background.paper",
+            backgroundImage: "none",
+          },
         }}
       >
-        <Box sx={{ textAlign: "center", p: 2 }}>
-          <Typography
-            variant="h6"
-            sx={{ my: 2, fontWeight: "bold", color: "primary.main" }}
+        <Box sx={{ p: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+            }}
           >
-            {getBranchName()}
-          </Typography>
-          <Divider sx={{ borderColor: "divider" }} />
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", color: "primary.main" }}
+            >
+              {branchName}
+            </Typography>
+            <IconButton onClick={handleDrawerToggle}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Divider />
           <List>
             {navLinks.map((link) => (
               <ListItem key={link.title} disablePadding>
-                <ListItemText>
-                  <Box
-                    component="div"
-                    onClick={() => handleNavClick(link.path)}
-                    sx={{
-                      p: 1.5,
-                      color: "text.secondary",
-                      cursor: "pointer",
-                      "&:hover": { color: "primary.main" },
+                <ListItemButton onClick={() => handleNavClick(link.path)}>
+                  <ListItemText
+                    primary={link.title}
+                    slotProps={{
+                      primary: {
+                        sx: {
+                          fontWeight: 500,
+                          color:
+                            location.pathname + location.hash === link.path
+                              ? "primary.main"
+                              : "text.secondary",
+                        },
+                      },
                     }}
-                  >
-                    {link.title}
-                  </Box>
-                </ListItemText>
+                  />
+                </ListItemButton>
               </ListItem>
             ))}
           </List>
         </Box>
       </Drawer>
 
+      {/* Profile Dialog */}
       <Dialog
         open={openProfile}
         onClose={handleClose}
         maxWidth="xs"
         fullWidth
+        scroll="body"
         PaperProps={{
-          sx: {
-            bgcolor: "background.paper",
-          },
+          sx: { bgcolor: "background.paper", borderRadius: 3 },
         }}
       >
         <DialogTitle
@@ -190,15 +234,13 @@ const Navbar = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            color: "text.primary",
+            pb: 1,
           }}
         >
-          <b>Update Profile</b>
-          <IconButton
-            onClick={handleClose}
-            size="small"
-            sx={{ color: "text.primary" }}
-          >
+          <Typography variant="h6" fontWeight="bold">
+            Update Profile
+          </Typography>
+          <IconButton onClick={handleClose} size="small">
             <CloseIcon />
           </IconButton>
         </DialogTitle>

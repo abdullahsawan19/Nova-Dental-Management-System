@@ -6,6 +6,11 @@ const doctorServices = {
     return response.data;
   },
 
+  getAdminDoctors: async (params) => {
+    const response = await axiosInstance.get("/doctors/admin/all", { params });
+    return response.data;
+  },
+
   getDoctorById: async (id) => {
     const response = await axiosInstance.get(`/doctors/${id}`);
     return response.data;

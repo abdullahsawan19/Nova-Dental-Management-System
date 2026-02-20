@@ -14,10 +14,13 @@ import {
   Divider,
   Paper,
 } from "@mui/material";
+import { useSelector } from "react-redux";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 
 const Signup = () => {
+  const { activeBranch } = useSelector((state) => state.branches || {});
+  const branchName = activeBranch?.name;
   const error = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
@@ -54,7 +57,7 @@ const Signup = () => {
         textAlign="center"
         sx={{ mb: 4 }}
       >
-        Join ClinicPro today and manage your health easily.
+        Join {branchName || "ClinicPro"} today and manage your health easily.
       </Typography>
 
       {error && (

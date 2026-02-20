@@ -12,8 +12,12 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import { useThemeContext } from "../theme/ThemeContextProvider";
+import { useSelector } from "react-redux";
 
 const AuthLayout = () => {
+  const { activeBranch } = useSelector((state) => state.branches || {});
+  const branchName = activeBranch?.name;
+
   const navigate = useNavigate();
   const { mode, toggleColorMode } = useThemeContext();
 
@@ -76,7 +80,7 @@ const AuthLayout = () => {
           }}
           onClick={() => navigate("/")}
         >
-          ClinicPro
+          {branchName || "ClinicPro"}
         </Typography>
 
         <IconButton

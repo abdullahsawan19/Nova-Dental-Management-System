@@ -43,12 +43,7 @@ const MangeServices = () => {
 
   const [openModal, setOpenModal] = useState(false);
   const [currentService, setCurrentService] = useState(null);
-
-  useEffect(() => {
-    if (actionData?.success) {
-      handleCloseModal();
-    }
-  }, [actionData]);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const handleToggleActive = (id, currentStatus) => {
     const fd = new FormData();
@@ -71,7 +66,17 @@ const MangeServices = () => {
   const handleCloseModal = () => {
     setOpenModal(false);
     setCurrentService(null);
+    setHasSubmitted(false);
   };
+
+  useEffect(() => {
+    if (hasSubmitted && actionData?.success) {
+      const timer = setTimeout(() => {
+        handleCloseModal();
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [actionData, hasSubmitted]);
 
   const columns = [
     {
@@ -162,13 +167,14 @@ const MangeServices = () => {
                 size="small"
                 color="success"
                 inputProps={{ "aria-label": "controlled" }}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  handleToggleActive(params.row._id, params.row.isActive);
+                }}
               />
             </Tooltip>
           }
           label="Toggle"
-          onClick={() =>
-            handleToggleActive(params.row._id, params.row.isActive)
-          }
         />,
         <GridActionsCellItem
           icon={
@@ -313,6 +319,7 @@ const MangeServices = () => {
             method="post"
             encType="multipart/form-data"
             key={currentService ? currentService._id : "new"}
+            onSubmit={() => setHasSubmitted(true)}
           >
             <input
               type="hidden"

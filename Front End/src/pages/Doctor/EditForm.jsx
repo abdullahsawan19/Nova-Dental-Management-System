@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"; // ضفنا useState هنا
+import React, { useEffect, useState } from "react";
 import { Box, CircularProgress, MenuItem, Typography } from "@mui/material";
 import { useRouteLoaderData } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -6,6 +6,7 @@ import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 
 const EditForm = ({ fetcher, onSuccess }) => {
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const isSubmitting = fetcher.state === "submitting";
 
   const doctorData = useRouteLoaderData("doctor-root");
@@ -21,6 +22,16 @@ const EditForm = ({ fetcher, onSuccess }) => {
     user.photo || "../../assets/public/Doctor.jfif",
   );
 
+  useEffect(() => {
+    if (hasSubmitted && fetcher.data?.success && fetcher.state === "idle") {
+      const timer = setTimeout(() => {
+        if (onSuccess) onSuccess();
+        setHasSubmitted(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [fetcher.data, fetcher.state, onSuccess, hasSubmitted]);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -28,20 +39,12 @@ const EditForm = ({ fetcher, onSuccess }) => {
     }
   };
 
-  useEffect(() => {
-    if (fetcher.data?.success && fetcher.state === "idle") {
-      const timer = setTimeout(() => {
-        if (onSuccess) onSuccess();
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [fetcher.data, fetcher.state, onSuccess]);
-
   return (
     <fetcher.Form
       method="patch"
       action="/doctor/my-profile"
       encType="multipart/form-data"
+      onSubmit={() => setHasSubmitted(true)}
     >
       <input type="hidden" name="intent" value="updateProfile" />
 

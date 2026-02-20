@@ -1,53 +1,56 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useSubmit, useActionData, useNavigation } from "react-router-dom";
 import { Box, Typography, Container } from "@mui/material";
 import AppointmentForm from "../../features/appointments/AppointmentForm";
 import CustomAlert from "../../components/feedback/Alert";
 
+import { clearCheckoutUrl } from "../../features/appointments/appointmentsSlice";
+
 const Appointment = () => {
   const submit = useSubmit();
+  const dispatch = useDispatch();
+
+  const { checkoutUrl } = useSelector((state) => state.appointments);
   const actionData = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
-  const [bookingData, setBookingData] = useState({
-    serviceId: "",
-    doctorId: "",
-    date: "",
-    timeSlot: "",
+  useEffect(() => {
+    if (checkoutUrl) {
+      const url = checkoutUrl;
+
+      dispatch(clearCheckoutUrl());
+
+      window.location.href = url;
+    }
+  }, [checkoutUrl, dispatch]);
+
+  const [bookingData, setBookingData] = useState(() => {
+    const savedData = sessionStorage.getItem("pendingBooking");
+    return savedData
+      ? JSON.parse(savedData)
+      : { serviceId: "", doctorId: "", date: "", timeSlot: "" };
   });
 
-  const [alertInfo, setAlertInfo] = useState({
-    open: false,
-    message: "",
-    severity: "info",
-  });
+  useEffect(() => {
+    sessionStorage.removeItem("pendingBooking");
+  }, []);
+
+  const [dismissedError, setDismissedError] = useState(null);
+
+  const isAlertOpen = Boolean(
+    actionData?.error && actionData.error !== dismissedError,
+  );
 
   const handleCloseAlert = (event, reason) => {
     if (reason === "clickaway") return;
-    setAlertInfo({ ...alertInfo, open: false });
+    setDismissedError(actionData.error);
   };
-
-  useEffect(() => {
-    const savedData = sessionStorage.getItem("pendingBooking");
-    if (savedData) {
-      setBookingData(JSON.parse(savedData));
-      sessionStorage.removeItem("pendingBooking");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (actionData?.error) {
-      setAlertInfo({
-        open: true,
-        message: actionData.error,
-        severity: "error",
-      });
-    }
-  }, [actionData]);
 
   const handleBookSubmit = () => {
     submit(bookingData, { method: "post" });
+    setDismissedError(null);
   };
 
   return (
@@ -71,10 +74,10 @@ const Appointment = () => {
       </Container>
 
       <CustomAlert
-        open={alertInfo.open}
+        open={isAlertOpen}
         onClose={handleCloseAlert}
-        message={alertInfo.message}
-        severity={alertInfo.severity}
+        message={actionData?.error || ""}
+        severity="error"
       />
     </Box>
   );
