@@ -65,7 +65,6 @@ app.post(
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 
-//  if (process.env.NODE_ENV === "production") {
 app.use(
   mongoSanitize({
     replaceWith: "_",
@@ -95,12 +94,8 @@ app.use(
     ],
   }),
 );
-// }
 
 app.use(compression());
-
-// app.use(express.static(path.join(__dirname, "public")));
-// app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 app.use("/api/users", require("./routes/user.Routes"));
