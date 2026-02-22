@@ -12,7 +12,7 @@ import SmartToyIcon from "@mui/icons-material/SmartToy";
 import CloseIcon from "@mui/icons-material/Close";
 import ForumRoundedIcon from "@mui/icons-material/ForumRounded";
 import chatServices from "../../services/chatServices";
-import ChatForm from "../../features/chat/chatForm";
+import ChatForm from "../../features/chat/ChatForm";
 
 const FloatingChat = () => {
   const [isOpen, setIsOpen] = useState(false);
