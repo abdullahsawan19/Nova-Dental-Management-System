@@ -1,4 +1,4 @@
-const express = require("express");
+ const express = require("express");
 const doctorController = require("../controllers/doctor.controller");
 const { authenticate } = require("../middlewares/auth.middleware");
 const { authorize } = require("../middlewares/role.middleware");
