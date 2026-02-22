@@ -4,7 +4,7 @@ const connectDB = async () => {
   const URI =
     "mongodb+srv://abdullahsawan19_db_user:uBxCTc3ptDBHYQmR@graduationproject0.5iwlj4n.mongodb.net/clinic?retryWrites=true&w=majority";
 
-  if (mongoose.connection.readyState >= 1) {
+  if (mongoose.connection.readyState === 1) {
     console.log("✅ Already connected to MongoDB");
     return;
   }
@@ -12,7 +12,7 @@ const connectDB = async () => {
   try {
     await mongoose.connect(URI, {
       serverSelectionTimeoutMS: 5000,
-      bufferCommands: false,
+      family: 4,
     });
     console.log("✅✅✅✅✅ Database Connected Successfully on Vercel");
   } catch (error) {
