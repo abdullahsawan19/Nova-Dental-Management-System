@@ -1,23 +1,22 @@
 const mongoose = require("mongoose");
 
+let isConnected = false;
+
 const connectDB = async () => {
   const URI =
     "mongodb+srv://abdullahsawan19_db_user:uBxCTc3ptDBHYQmR@graduationproject0.5iwlj4n.mongodb.net/clinic?retryWrites=true&w=majority";
 
-  if (mongoose.connection.readyState === 1) {
-    console.log("✅ Already connected to MongoDB");
+  if (isConnected) {
     return;
   }
 
-  try {
-    await mongoose.connect(URI, {
-      serverSelectionTimeoutMS: 5000,
-      family: 4,
-    });
-    console.log("✅✅✅✅✅ Database Connected Successfully on Vercel");
-  } catch (error) {
-    console.log(`❎❎❎❎❎ Database connection error: ${error.message}`);
-  }
+  const db = await mongoose.connect(URI, {
+    serverSelectionTimeoutMS: 5000,
+    family: 4,
+  });
+
+  isConnected = db.connections[0].readyState === 1;
+  console.log("✅ Database Connected on Vercel");
 };
 
 module.exports = connectDB;
