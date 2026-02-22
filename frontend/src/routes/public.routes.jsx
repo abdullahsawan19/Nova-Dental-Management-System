@@ -20,7 +20,7 @@ const ServiceDetails = lazy(
   () => import("../pages/General/ServiceDetails.jsx"),
 );
 const BranchModule = lazy(() => import("../pages/General/BranchModule.jsx"));
-const Appointment = lazy(() => import("../pages/General/appointment.jsx"));
+const Appointment = lazy(() => import("../pages/General/Appointment.jsx"));
 const Faq = lazy(() => import("../pages/General/Faq.jsx"));
 const About = lazy(() => import("../pages/General/About.jsx"));
 const Unauthorized = lazy(() => import("../pages/General/Unauthorized.jsx"));
