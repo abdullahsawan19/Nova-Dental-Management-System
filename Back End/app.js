@@ -4,8 +4,8 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
-const mongoSanitize = require("express-mongo-sanitize");
-const xss = require("xss-clean");
+const mongoSanitize = require("@exortek/express-mongo-sanitize");
+const sanitizeHtml = require("sanitize-html");
 const hpp = require("hpp");
 const cors = require("cors");
 const compression = require("compression");
@@ -65,26 +65,42 @@ app.post(
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 
-// app.use(mongoSanitize());
-
-// app.use(xss());
-
-// app.use(
-//   hpp({
-//     whitelist: [
-//       "fees",
-//       "ratingsQuantity",
-//       "ratingsAverage",
-//       "specialization",
-//       "role",
-//     ],
-//   }),
-// );
+//  if (process.env.NODE_ENV === "production") {
+app.use(
+  mongoSanitize({
+    replaceWith: "_",
+  }),
+);
+app.use((req, res, next) => {
+  if (req.body) {
+    for (let key in req.body) {
+      if (typeof req.body[key] === "string") {
+        req.body[key] = sanitizeHtml(req.body[key], {
+          allowedTags: [],
+          allowedAttributes: {},
+        });
+      }
+    }
+  }
+  next();
+});
+app.use(
+  hpp({
+    whitelist: [
+      "fees",
+      "ratingsQuantity",
+      "ratingsAverage",
+      "specialization",
+      "role",
+    ],
+  }),
+);
+// }
 
 app.use(compression());
 
-app.use(express.static(path.join(__dirname, "public")));
-app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
+// app.use(express.static(path.join(__dirname, "public")));
+// app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 app.use("/api/users", require("./routes/user.Routes"));

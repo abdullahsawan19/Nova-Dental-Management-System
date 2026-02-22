@@ -22,17 +22,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false,
-    //   validate: {
-    //     validator: function (value) {
-    //       return validator.isStrongPassword(value, {
-    //         minLength: 8,
-    //         minLowercase: 1,
-    //         minUppercase: 1,
-    //         minNumbers: 1,
-    //         minSymbols: 1,
-    //       });
-    //     },
-    //   },
+    validate: {
+      validator: function (value) {
+        return validator.isStrongPassword(value, {
+          minLength: 8,
+          minLowercase: 1,
+          minUppercase: 1,
+          minNumbers: 1,
+        });
+      },
+    },
   },
   passwordConfirm: {
     type: String,
