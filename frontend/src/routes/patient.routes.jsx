@@ -10,7 +10,7 @@ const UpdatePatientData = lazy(
 const AppointmentsDeatils = lazy(
   () => import("../pages/General/AppointmentsDeatils"),
 );
-const Appointment = lazy(() => import("../pages/General/appointment"));
+const Appointment = lazy(() => import("../pages/General/Appointment"));
 
 const patientRoutes = [
   {
