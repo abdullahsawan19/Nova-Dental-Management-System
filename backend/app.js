@@ -99,20 +99,6 @@ app.use(
 
 app.use(compression());
 
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (error) {
-    console.error("💥 DB Connection Fatal Error:", error);
-    return res.status(500).json({
-      status: "fail",
-      message: "Vercel failed to connect to MongoDB",
-      error: error.message,
-    });
-  }
-});
-
 // Routes
 app.use("/api/users", require("./routes/user.Routes"));
 app.use("/api/doctors", require("./routes/doctor.Routes"));
