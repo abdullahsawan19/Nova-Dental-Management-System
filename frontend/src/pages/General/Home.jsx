@@ -15,8 +15,7 @@ import PublicDoctors from "./PublicDoctors";
 import { useSelector } from "react-redux";
 
 const Home = () => {
-  const { activeBranch } = useSelector((state) => state.branches || {});
-
+  const activeBranch = useSelector((state) => state.branches?.activeBranch);
   const branchName = activeBranch?.name;
 
   const navigate = useNavigate();

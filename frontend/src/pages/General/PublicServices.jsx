@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -249,4 +249,4 @@ const PublicServices = () => {
   );
 };
 
-export default PublicServices;
+export default memo(PublicServices);

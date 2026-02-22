@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, memo } from "react";
 import { useSelector } from "react-redux";
 import { Link, useFetcher, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -252,4 +252,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default memo(Navbar);

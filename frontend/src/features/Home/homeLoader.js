@@ -10,24 +10,18 @@ export const homeLoader = async ({ request }) => {
 
     const state = store.getState();
 
-    if (state.services.services.length === 0) {
+    if (!state.services?.services?.length) {
       await store.dispatch(fetchServices({ params: { lang }, isAdmin: false }));
-    } else {
-      store.dispatch(fetchServices({ params: { lang }, isAdmin: false }));
     }
 
-    if (state.reviews.reviews.length === 0) {
+    if (!state.reviews?.reviews?.length) {
       await store.dispatch(
         fetchReviews({ limit: 10, sort: "-rating,-createdAt" }),
       );
-    } else {
-      store.dispatch(fetchReviews({ limit: 20 }));
     }
 
-    if (state.doctor.doctors.length === 0) {
+    if (!state.doctor?.doctors?.length) {
       await store.dispatch(getAllDoctors({ params: { lang } }));
-    } else {
-      store.dispatch(getAllDoctors({ params: { lang } }));
     }
 
     return null;
