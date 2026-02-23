@@ -19,7 +19,7 @@ const connectDB = async () => {
   cached.conn = await cached.promise;
   return cached.conn;
 };
+
 console.log("MONGO_URL:", process.env.MONGO_URL);
-await connectDB();
-console.log("DB CONNECTED");
+
 module.exports = connectDB;
