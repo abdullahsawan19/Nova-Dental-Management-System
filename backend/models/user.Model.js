@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     lowercase: true,
-    validate: validator.isEmail,
+    validate: [validator.isEmail, "Please provide a valid email"],
   },
   password: {
     type: String,
@@ -32,6 +32,8 @@ const userSchema = new mongoose.Schema({
         });
       },
     },
+    message:
+      "Password is too weak. It must contain at least 8 characters, 1 uppercase, 1 lowercase, and 1 number.",
   },
   passwordConfirm: {
     type: String,

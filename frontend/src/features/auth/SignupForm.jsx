@@ -18,6 +18,8 @@ import { useSelector } from "react-redux";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 
+import { getFriendlyErrorMessage } from "../../utils/errorHandler";
+
 const Signup = () => {
   const { activeBranch } = useSelector((state) => state.branches || {});
   const branchName = activeBranch?.name;
@@ -26,6 +28,8 @@ const Signup = () => {
   const isSubmitting = navigation.state === "submitting";
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/";
+
+  const displayError = error ? getFriendlyErrorMessage(error) : null;
 
   return (
     <Paper
@@ -60,11 +64,9 @@ const Signup = () => {
         Join {branchName || "ClinicPro"} today and manage your health easily.
       </Typography>
 
-      {error && (
+      {displayError && (
         <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
-          {typeof error === "string"
-            ? error
-            : "Signup failed, please check your data"}
+          {displayError}
         </Alert>
       )}
 

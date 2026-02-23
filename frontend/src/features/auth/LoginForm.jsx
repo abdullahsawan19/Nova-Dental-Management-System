@@ -17,12 +17,16 @@ import {
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 
+import { getFriendlyErrorMessage } from "../../utils/errorHandler";
+
 const Login = () => {
   const error = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/";
+
+  const displayError = error ? getFriendlyErrorMessage(error) : null;
 
   return (
     <Paper
@@ -57,9 +61,9 @@ const Login = () => {
         Login to access your appointments and medical records.
       </Typography>
 
-      {error && (
+      {displayError && (
         <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
-          {typeof error === "string" ? error : "Invalid email or password"}
+          {displayError}
         </Alert>
       )}
 
@@ -73,7 +77,6 @@ const Login = () => {
             placeholder="name@gmail.com"
             required
           />
-
           <Input
             label="Password"
             type="password"
