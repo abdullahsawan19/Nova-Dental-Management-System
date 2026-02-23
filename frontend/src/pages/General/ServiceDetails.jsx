@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { Box, Typography, Container, Paper, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const ServiceDetails = () => {
   const { currentService, isLoading } = useSelector((state) => state.services);

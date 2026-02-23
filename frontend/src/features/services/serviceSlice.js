@@ -67,6 +67,7 @@ const serviceSlice = createSlice({
   name: "services",
   initialState: {
     services: [],
+    currentService: null,
     isLoading: false,
     error: null,
     successMessage: null,
