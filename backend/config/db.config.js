@@ -1,30 +1,23 @@
 const mongoose = require("mongoose");
 
-mongoose.set("bufferCommands", false);
+let cached = global.mongoose;
 
-let isConnected = false;
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
 const connectDB = async () => {
-  if (!process.env.MONGO_URL) {
-    console.error("💥💥💥 FATAL ERROR: MONGO_URL is UNDEFINED inside Vercel!");
-    throw new Error("Vercel cannot see the MONGO_URL environment variable.");
-  }
+  if (cached.conn) return cached.conn;
 
-  if (isConnected) {
-    return;
-  }
-
-  try {
-    const db = await mongoose.connect(process.env.MONGO_URL, {
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(process.env.MONGO_URL, {
+      bufferCommands: false,
       serverSelectionTimeoutMS: 5000,
-      family: 4,
     });
-    isConnected = db.connections[0].readyState === 1;
-    console.log("✅✅✅✅✅ Database Connected Successfully on Vercel");
-  } catch (error) {
-    console.error(`❎❎❎❎❎ REAL ERROR CAUGHT:`, error);
-    throw error;
   }
-};
 
+  cached.conn = await cached.promise;
+  return cached.conn;
+};
+console.log("MONGO_URL:", process.env.MONGO_URL);
 module.exports = connectDB;
