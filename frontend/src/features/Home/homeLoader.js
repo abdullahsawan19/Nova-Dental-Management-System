@@ -3,7 +3,7 @@ import { fetchServices } from "../../features/services/serviceSlice";
 import { fetchReviews } from "../../features/reviews/reviewSlice";
 import { getAllDoctors } from "../../features/doctors/doctorSlice";
 
-export const homeLoader = async ({ request }) => {
+export const homeLoader = ({ request }) => {
   try {
     const url = new URL(request.url);
     const lang = url.searchParams.get("lang") || "en";
@@ -11,17 +11,15 @@ export const homeLoader = async ({ request }) => {
     const state = store.getState();
 
     if (!state.services?.services?.length) {
-      await store.dispatch(fetchServices({ params: { lang }, isAdmin: false }));
+      store.dispatch(fetchServices({ params: { lang }, isAdmin: false }));
     }
 
     if (!state.reviews?.reviews?.length) {
-      await store.dispatch(
-        fetchReviews({ limit: 10, sort: "-rating,-createdAt" }),
-      );
+      store.dispatch(fetchReviews({ limit: 10, sort: "-rating,-createdAt" }));
     }
 
     if (!state.doctor?.doctors?.length) {
-      await store.dispatch(getAllDoctors({ params: { lang } }));
+      store.dispatch(getAllDoctors({ params: { lang } }));
     }
 
     return null;
