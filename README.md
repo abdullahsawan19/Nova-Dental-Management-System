@@ -20,7 +20,7 @@ A comprehensive, full-stack Dental Clinic Management System designed to handle e
 | :---: | :---: |
 | <img src="./screenshots/home.png.png" alt="Home Page" width="400"/> | <img src="./screenshots/admin.png.png" alt="Admin Dashboard" width="400"/> |
 | **Booking & Appointments** | **Responsive Mobile View** |
-| <img src="./screenshots/booking.png.png" alt="Booking" width="400"/> | <img src="./screenshots/mobile.png.png" alt="Mobile View" width="400"/> |
+| <img src="./screenshots/booking.png.png" alt="Booking" width="400"/> | <img src="./screenshots/mobile.png.jpg" alt="Mobile View" width="400"/> |
 
 ---
 
