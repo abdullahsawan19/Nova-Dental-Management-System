@@ -34,7 +34,8 @@ const createSendToken = async (user, statusCode, res) => {
   const cookieOptions = {
     expires: new Date(Date.now() + refreshExpires * 24 * 60 * 60 * 1000),
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
+    sameSite: "None",
   };
 
   res.cookie("jwt", refreshToken, cookieOptions);
@@ -74,6 +75,8 @@ exports.logout = async (req, res) => {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
     path: "/",
+    secure: true,
+    sameSite: "None",
   });
   await User.findByIdAndUpdate(req.user.id, { refreshToken: null });
   res.status(200).json({ status: "success" });
