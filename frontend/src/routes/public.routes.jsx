@@ -1,5 +1,4 @@
 import React, { Suspense, lazy } from "react";
-import { Box, CircularProgress } from "@mui/material";
 
 import { activeBranchLoader } from "../features/branches/branchesLoader.js";
 import { serviceDetailsLoader } from "../features/services/servicesLoader.js";
