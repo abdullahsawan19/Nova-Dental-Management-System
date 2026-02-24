@@ -33,12 +33,15 @@ const BranchModule = () => {
 
   const getEmbedUrl = () => {
     const url = activeBranch?.locationUrl;
+
     if (url && url.includes("embed")) {
       return url;
     }
-    const searchQuery = `${branchName} ${branchAddress}`;
 
-    return `http://googleusercontent.com/maps.google.com/maps?q=${encodeURIComponent(
+    const searchQuery =
+      branchAddress !== "No Address Available" ? branchAddress : "Cairo, Egypt";
+
+    return `https://maps.google.com/maps?q=${encodeURIComponent(
       searchQuery,
     )}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   };
